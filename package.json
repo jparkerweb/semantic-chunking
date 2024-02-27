@@ -1,0 +1,14 @@
+{
+  "name": "semantic-chunking",
+  "version": "1.0.0",
+  "description": "",
+  "main": "chunkit.js",
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@xenova/transformers": "^2.15.1",
+    "fs": "^0.0.1-security"
+  }
+}
