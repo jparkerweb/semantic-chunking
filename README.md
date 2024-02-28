@@ -14,4 +14,3 @@ This example project loads the contents of `example.txt` (modify for your own ne
 
 ### Run:
 - `node chunkit`
-- 
