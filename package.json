@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "semantically create chunks from large text (useful for passing to LLM workflows)",
   "repository": {
 		"type": "git",
@@ -16,6 +16,10 @@
   ],
   "author": "jparkerweb@gmail.com",
   "license": "ISC",
+  "scripts": {
+    "clean-models": "find ./models -type f ! -name '*.url' -delete",
+    "clean-models-win": "powershell -Command \"Get-ChildItem -Path ./models -Recurse | Where-Object { !$_.PSIsContainer -and $_.Extension -ne '.url' } | Remove-Item\""
+  },
   "dependencies": {
     "@xenova/transformers": "^2.15.1",
     "fs": "^0.0.1-security"
