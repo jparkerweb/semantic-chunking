@@ -2,10 +2,11 @@ import { env, pipeline, AutoTokenizer } from '@xenova/transformers';
 import fs from 'fs';
 
 env.localModelPath = 'models/';
-env.allowRemoteModels = false;
+env.cacheDir = 'models/';
+env.allowRemoteModels = true;
 
-const ONNX_EMBEDDING_MODEL = "paraphrase-multilingual-MiniLM-L12-v2";
-const ONNX_EMBEDDING_MODEL_QUANTIZED = false;
+const ONNX_EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
+const ONNX_EMBEDDING_MODEL_QUANTIZED = true;
 const MAX_TOKEN_SIZE = 500;
 const SIMILARITY_THRESHOLD = .567;
 
@@ -164,9 +165,8 @@ async function main() {
     const text = await fs.promises.readFile('./example.txt', 'utf8');
     const sentences = splitTextIntoSentences(text);
     const similarities = await computeSimilarities(sentences);
+
     const initialChunks = createChunks(sentences, similarities, MAX_TOKEN_SIZE, SIMILARITY_THRESHOLD);
-
-
     console.log('\n\n=============\ninitialChunks\n=============');
     initialChunks.forEach((chunk, index) => {
         console.log("\n\n\n");
@@ -179,9 +179,7 @@ async function main() {
     
     // Combine initial chunks into larger ones without exceeding maxTokenSize
     const combinedChunks = combineChunks(initialChunks, MAX_TOKEN_SIZE, tokenizer);
-    
     console.log('\n\n=============\ncombinedChunks\n=============');
-    // Output the combined chunks
     combinedChunks.forEach((chunk, index) => {
         console.log("\n\n\n");
         console.log("--------------------");
