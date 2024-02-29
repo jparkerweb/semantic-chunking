@@ -6,28 +6,32 @@ env.localModelPath = 'models/';
 env.cacheDir = 'models/';
 env.allowRemoteModels = true;
 
+// tokenizer and generateEmbedding global variables
+let tokenizer;
+let generateEmbedding;
+
 // default parameters
 const LOGGING = false;
 const MAX_TOKEN_SIZE = 500;
 const SIMILARITY_THRESHOLD = .567;
 const ONNX_EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
 const ONNX_EMBEDDING_MODEL_QUANTIZED = true;
-
-// tokenizer and generateEmbedding global variables
-let tokenizer;
-let generateEmbedding;
+const COMBINE_SIMILARITY_CHUNKS = true;
 
 // ---------------------------
 // -- Main chunkit function --
 // ---------------------------
 export async function chunkit(
-    text = "",
-    logging = LOGGING,
-    maxTokenSize = MAX_TOKEN_SIZE,
-    similarityThreshold = SIMILARITY_THRESHOLD,
-    onnxEmbeddingModel = ONNX_EMBEDDING_MODEL,
-    onnxEmbeddingModelQuantized = ONNX_EMBEDDING_MODEL_QUANTIZED
-    ) {
+    text,
+    {
+        logging = LOGGING,
+        maxTokenSize = MAX_TOKEN_SIZE,
+        similarityThreshold = SIMILARITY_THRESHOLD,
+        onnxEmbeddingModel = ONNX_EMBEDDING_MODEL,
+        onnxEmbeddingModelQuantized = ONNX_EMBEDDING_MODEL_QUANTIZED,
+        combineSimilarityChunks = COMBINE_SIMILARITY_CHUNKS
+    } = {}) {
+
         // Load the tokenizer
         tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
 
@@ -56,20 +60,25 @@ export async function chunkit(
         }
 
         // Combine initial chunks into larger ones without exceeding maxTokenSize
-        const combinedChunks = combineChunks(initialChunks, maxTokenSize, tokenizer, logging);
-        if (logging) { 
-            console.log('\n\n=============\ncombinedChunks\n=============');
-            combinedChunks.forEach((chunk, index) => {
-                console.log("\n\n\n");
-                console.log("--------------------");
-                console.log("Chunk " + (index + 1));
-                console.log("--------------------");
-                console.log(chunk);
-            });
-        }
+        if (combineSimilarityChunks) {
+            const combinedChunks = combineChunks(initialChunks, maxTokenSize, tokenizer, logging);
+            if (logging) { 
+                console.log('\n\n=============\ncombinedChunks\n=============');
+                combinedChunks.forEach((chunk, index) => {
+                    console.log("\n\n\n");
+                    console.log("--------------------");
+                    console.log("Chunk " + (index + 1));
+                    console.log("--------------------");
+                    console.log(chunk);
+                });
+            }
 
-        // Return the combined chunks
-        return combinedChunks;
+            // Return the combined chunks
+            return combinedChunks;
+        } else {
+            // Return the initial chunks
+            return initialChunks;
+        }
 }
 
 
@@ -77,16 +86,22 @@ export async function chunkit(
 // -- test function --
 // -------------------
 export async function test() {
+    console.log('\n\n');
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.log('!!! Running test function... !!!');
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.log('\n\n');
+
     const text = await fs.promises.readFile('./example.txt', 'utf8');
     
     // try chunkit with default parameters
     try {
-        await chunkit(text, true);
+        await chunkit(text, { logging: true, similarityThreshold: .7 });
     } catch (error) {
         console.error(error);
     }
 }
-
+// await test()
 
 
 
