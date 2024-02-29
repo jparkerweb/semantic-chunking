@@ -1,11 +1,16 @@
 {
   "name": "semantic-chunking",
   "version": "1.0.0",
-  "description": "",
+  "description": "semantically create chunks from large text (useful for passing to LLM workflows)",
   "main": "chunkit.js",
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "chunking",
+    "semantic",
+    "transformers",
+    "xenova"
+  ],
+  "author": "jparkerweb@gmail.com",
   "license": "ISC",
   "dependencies": {
     "@xenova/transformers": "^2.15.1",
