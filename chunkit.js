@@ -1,24 +1,98 @@
 import { env, pipeline, AutoTokenizer } from '@xenova/transformers';
 import fs from 'fs';
 
+// model environment variables
 env.localModelPath = 'models/';
 env.cacheDir = 'models/';
 env.allowRemoteModels = true;
 
-const ONNX_EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
-const ONNX_EMBEDDING_MODEL_QUANTIZED = true;
+// default parameters
+const LOGGING = false;
 const MAX_TOKEN_SIZE = 500;
 const SIMILARITY_THRESHOLD = .567;
+const ONNX_EMBEDDING_MODEL = "Xenova/paraphrase-multilingual-MiniLM-L12-v2";
+const ONNX_EMBEDDING_MODEL_QUANTIZED = true;
 
-const tokenizer = await AutoTokenizer.from_pretrained(ONNX_EMBEDDING_MODEL);
+// tokenizer and generateEmbedding global variables
+let tokenizer;
+let generateEmbedding;
+
+// ---------------------------
+// -- Main chunkit function --
+// ---------------------------
+export async function chunkit(
+    text = "",
+    logging = LOGGING,
+    maxTokenSize = MAX_TOKEN_SIZE,
+    similarityThreshold = SIMILARITY_THRESHOLD,
+    onnxEmbeddingModel = ONNX_EMBEDDING_MODEL,
+    onnxEmbeddingModelQuantized = ONNX_EMBEDDING_MODEL_QUANTIZED
+    ) {
+        // Load the tokenizer
+        tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
+
+        // Create the embedding pipeline
+        generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, {
+            quantized: onnxEmbeddingModelQuantized,
+        });
+
+        // Split the text into sentences
+        const sentences = splitTextIntoSentences(text);
+
+        // Compute the similarities between sentences
+        const similarities = await computeSimilarities(sentences);
+
+        // Create the initial chunks
+        const initialChunks = createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging);
+        if (logging) {
+            console.log('\n\n=============\ninitialChunks\n=============');
+            initialChunks.forEach((chunk, index) => {
+                console.log("\n\n\n");
+                console.log("--------------------");
+                console.log("Chunk " + (index + 1));
+                console.log("--------------------");
+                console.log(chunk);
+            });
+        }
+
+        // Combine initial chunks into larger ones without exceeding maxTokenSize
+        const combinedChunks = combineChunks(initialChunks, maxTokenSize, tokenizer, logging);
+        if (logging) { 
+            console.log('\n\n=============\ncombinedChunks\n=============');
+            combinedChunks.forEach((chunk, index) => {
+                console.log("\n\n\n");
+                console.log("--------------------");
+                console.log("Chunk " + (index + 1));
+                console.log("--------------------");
+                console.log(chunk);
+            });
+        }
+
+        // Return the combined chunks
+        return combinedChunks;
+}
 
 
-// -----------------------------------
-// -- Create the embedding pipeline --
-// -----------------------------------
-const generateEmbedding = await pipeline('feature-extraction', ONNX_EMBEDDING_MODEL, {
-    quantized: ONNX_EMBEDDING_MODEL_QUANTIZED,
-});
+// -------------------
+// -- test function --
+// -------------------
+export async function test() {
+    const text = await fs.promises.readFile('./example.txt', 'utf8');
+    
+    // try chunkit with default parameters
+    try {
+        await chunkit(text, true);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
+
+
+// **********************
+// ** HELPER FUNCTIONS **
+// **********************
 
 
 // -------------------------------------
@@ -84,33 +158,37 @@ function cosineSimilarity(vecA, vecB) {
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
-function createChunks(sentences, similarities, maxTokenSize, similarityThreshold) {
+function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
     let chunks = [];
     let currentChunk = [sentences[0]];
 
 
     let currentChunkSize;
     let sentenceTokenCount;
-    console.log(`!! new chunk !! --> 1`)
+    if (logging) { console.log(`!! new chunk !! --> 1`) }
     
     for (let i = 1; i < sentences.length; i++) {
       currentChunkSize = tokenizer(currentChunk.join(" ")).input_ids.size;
       sentenceTokenCount = tokenizer(sentences[i]).input_ids.size;
-      console.log('sentenceTokenCount', sentenceTokenCount);
-      console.log('currentChunkSize', currentChunkSize);
-      console.log('maxTokenSize', maxTokenSize)
-      console.log('similarity', similarities[i - 1])
-      console.log('similarityThreshold', similarityThreshold)
+      if (logging) { 
+        console.log('sentenceTokenCount', sentenceTokenCount);
+        console.log('currentChunkSize', currentChunkSize);
+        console.log('maxTokenSize', maxTokenSize)
+        console.log('similarity', similarities[i - 1])
+        console.log('similarityThreshold', similarityThreshold)
+      }
 
       if (similarities[i - 1] >= similarityThreshold && currentChunkSize  + sentenceTokenCount <= maxTokenSize) {
           currentChunk.push(sentences[i]);
-          console.log('keep going...')
+          if (logging) { console.log('keep going...') }
       } else {
           chunks.push(currentChunk.join(" "));
           currentChunk = [sentences[i]];
-          console.log('stop...')
-          console.log('\n')
-          console.log(`!! new chunk !! --> ${chunks.length + 1}`)
+          if (logging) { 
+            console.log('stop...')
+            console.log('\n')
+            console.log(`!! new chunk !! --> ${chunks.length + 1}`)
+          }
       }
     }
   
@@ -154,44 +232,3 @@ function combineChunks(initialChunks, maxTokenSize, tokenizer) {
 
     return combinedChunks;
 }
-
-
-
-
-// -------------------
-// -- Main function --
-// -------------------
-async function main() {
-    const text = await fs.promises.readFile('./example.txt', 'utf8');
-    const sentences = splitTextIntoSentences(text);
-    const similarities = await computeSimilarities(sentences);
-
-    const initialChunks = createChunks(sentences, similarities, MAX_TOKEN_SIZE, SIMILARITY_THRESHOLD);
-    console.log('\n\n=============\ninitialChunks\n=============');
-    initialChunks.forEach((chunk, index) => {
-        console.log("\n\n\n");
-        console.log("--------------------");
-        console.log("Chunk " + (index + 1));
-        console.log("--------------------");
-        console.log(chunk);
-    });
-    
-    
-    // Combine initial chunks into larger ones without exceeding maxTokenSize
-    const combinedChunks = combineChunks(initialChunks, MAX_TOKEN_SIZE, tokenizer);
-    console.log('\n\n=============\ncombinedChunks\n=============');
-    combinedChunks.forEach((chunk, index) => {
-        console.log("\n\n\n");
-        console.log("--------------------");
-        console.log("Chunk " + (index + 1));
-        console.log("--------------------");
-        console.log(chunk);
-    });
-}
-
-
-
-// ---------------------------
-// -- Run the main function --
-// ---------------------------
-main().catch(console.error);
