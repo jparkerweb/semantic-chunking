@@ -137,10 +137,12 @@ function splitTextIntoSentences(text) {
 async function computeSimilarities(sentences) {
     const embeddings = await Promise.all(sentences.map(sentence => createEmbedding(sentence)));
     let similarities = [];
+
     for (let i = 0; i < embeddings.length - 1; i++) {
       const sim = cosineSimilarity(embeddings[i], embeddings[i + 1]);
       similarities.push(sim);
     }
+
     return similarities;
 }
 
@@ -176,15 +178,15 @@ function cosineSimilarity(vecA, vecB) {
 function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
     let chunks = [];
     let currentChunk = [sentences[0]];
-
-
     let currentChunkSize;
     let sentenceTokenCount;
+
     if (logging) { console.log(`!! new chunk !! --> 1`) }
     
     for (let i = 1; i < sentences.length; i++) {
       currentChunkSize = tokenizer(currentChunk.join(" ")).input_ids.size;
       sentenceTokenCount = tokenizer(sentences[i]).input_ids.size;
+
       if (logging) { 
         console.log('sentenceTokenCount', sentenceTokenCount);
         console.log('currentChunkSize', currentChunkSize);
@@ -195,10 +197,12 @@ function createChunks(sentences, similarities, maxTokenSize, similarityThreshold
 
       if (similarities[i - 1] >= similarityThreshold && currentChunkSize  + sentenceTokenCount <= maxTokenSize) {
           currentChunk.push(sentences[i]);
+
           if (logging) { console.log('keep going...') }
       } else {
           chunks.push(currentChunk.join(" "));
           currentChunk = [sentences[i]];
+
           if (logging) { 
             console.log('stop...')
             console.log('\n')
@@ -225,7 +229,8 @@ function combineChunks(initialChunks, maxTokenSize, tokenizer) {
     let currentChunkText = "";
 
     initialChunks.forEach(chunk => {
-        const chunkTokenCount = tokenizer(chunk).input_ids.size; // This is a number
+        const chunkTokenCount = tokenizer(chunk).input_ids.size;
+
         if (currentChunkTokenCount + chunkTokenCount <= maxTokenSize) {
             // Add to current chunk
             currentChunkText += (currentChunkText ? " " : "") + chunk; // Add a space if not the first chunk
@@ -235,6 +240,7 @@ function combineChunks(initialChunks, maxTokenSize, tokenizer) {
             if (currentChunkText) { // Make sure we don't add empty chunks
                 combinedChunks.push(currentChunkText);
             }
+
             currentChunkText = chunk;
             currentChunkTokenCount = chunkTokenCount; // Reset the token count for the new chunk
         }
