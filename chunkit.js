@@ -1,4 +1,5 @@
 import { env, pipeline, AutoTokenizer } from '@xenova/transformers';
+import sentencize from '@stdlib/nlp-sentencize';
 import fs from 'fs';
 
 // model environment variables
@@ -41,7 +42,7 @@ export async function chunkit(
         });
 
         // Split the text into sentences
-        const sentences = splitTextIntoSentences(text);
+        const sentences = sentencize(text);
 
         // Compute the similarities between sentences
         const similarities = await computeSimilarities(sentences);
@@ -49,12 +50,12 @@ export async function chunkit(
         // Create the initial chunks
         const initialChunks = createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging);
         if (logging) {
-            console.log('\n\n=============\ninitialChunks\n=============');
+            console.log('\n=============\ninitialChunks\n=============');
             initialChunks.forEach((chunk, index) => {
-                console.log("\n\n\n");
-                console.log("--------------------");
-                console.log("Chunk " + (index + 1));
-                console.log("--------------------");
+                console.log("\n");
+                console.log(`--------------`);
+                console.log(`-- Chunk ${(index + 1)} --`);
+                console.log(`--------------`);
                 console.log(chunk);
             });
         }
@@ -120,14 +121,6 @@ async function createEmbedding(text) {
     });
 
     return embeddings.data;
-}
-
-
-// -------------------------------------------
-// -- Function to split text into sentences --
-// -------------------------------------------
-function splitTextIntoSentences(text) {
-    return text.match(/[^.!?]+[.!?]+|\s*\n\s*/g) || [text]; // Split by sentences or new lines
 }
 
 
