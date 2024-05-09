@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "semantically create chunks from large text (useful for passing to LLM workflows)",
   "repository": {
     "type": "git",
@@ -13,6 +13,9 @@
     "chunking",
     "sentence",
     "transformers",
+    "transformers.js",
+    "emmbeddings",
+    "onnx",
     "xenova",
     "nlp"
   ],
