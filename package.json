@@ -1,7 +1,7 @@
 {
   "name": "semantic-chunking",
-  "version": "1.1.0",
-  "description": "semantically create chunks from large text (useful for passing to LLM workflows)",
+  "version": "1.1.1",
+  "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "repository": {
     "type": "git",
     "url": "https://github.com/jparkerweb/semantic-chunking.git"

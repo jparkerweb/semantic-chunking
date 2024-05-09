@@ -1,6 +1,7 @@
 # 🍱 semantic-chunking
 
-Semantically create chunks from large texts, which is useful for workflows involving large language models (LLMs).
+Semantically create chunks from large texts.  
+Useful for workflows involving large language models (LLMs).
 
 ## Install
 
