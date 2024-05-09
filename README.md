@@ -87,6 +87,9 @@ main();
 
 ```
 
+Look at the `example.js` file in the root of this project for a more complex example of using all the optional parameters.
+
+
 ## Tuning
 
 The behavior of the `chunkit` function can be finely tuned using several optional parameters in the options object. Understanding how each parameter affects the function can help you optimize the chunking process for your specific requirements.
