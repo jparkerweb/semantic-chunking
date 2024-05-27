@@ -176,7 +176,7 @@ Each of these parameters allows you to customize the `chunkit` function to bette
 
 ## `cramit` - 🧼 The Quick & Dirty
 
-There is an additional function you can import to just "cram" sentences together till they meet your target token size for when you just need high quick desity chunks.
+There is an additional function you can import to just "cram" sentences together till they meet your target token size for when you just need quick, high desity chunks.
 
 Basic usage:
 
