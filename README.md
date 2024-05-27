@@ -171,3 +171,57 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 | BAAI/bge-small-en-v1.5                       | false     | [https://huggingface.co/BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5)                                             | 133 MB  |
 
 Each of these parameters allows you to customize the `chunkit` function to better fit the text size, content complexity, and performance requirements of your application.
+
+---
+
+## `cramit` - 🧼 The Quick & Dirty
+
+There is an additional function you can import to just "cram" sentences together till they meet your target token size for when you just need high quick desity chunks.
+
+Basic usage:
+
+```javascript
+import { cramit } from 'semantic-chunking';
+
+let frogText = "A frog hops into a deli and croaks to the cashier, \"I'll have a sandwich, please.\" The cashier, surprised, quickly makes the sandwich and hands it over. The frog takes a big bite, looks around, and then asks, \"Do you have any flies to go with this?\" The cashier, taken aback, replies, \"Sorry, we're all out of flies today.\" The frog shrugs and continues munching on its sandwich, clearly unfazed by the lack of fly toppings. Just another day in the life of a sandwich-loving amphibian! 🐸🥪";
+
+async function main() {
+    let myFrogChunks = await cramit(frogText, { maxTokenSize: 65 });
+    console.log("myFrogChunks", myFrogChunks);
+}
+main();
+
+```
+
+Look at the `example2.js` file in the root of this project for a more complex example of using all the optional parameters.
+
+### Tuning
+
+The behavior of the `chunkit` function can be finely tuned using several optional parameters in the options object. Understanding how each parameter affects the function can help you optimize the chunking process for your specific requirements.
+
+#### `logging`
+
+- **Type**: Boolean
+- **Default**: `false`
+- **Description**: Enables detailed debug output during the chunking process. Turning this on can help in diagnosing how chunks are formed or why certain chunks are combined.
+
+#### `maxTokenSize`
+
+- **Type**: Integer
+- **Default**: `500`
+- **Description**: Sets the maximum number of tokens allowed in a single chunk. Smaller values result in smaller, more numerous chunks, while larger values can create fewer, larger chunks. It’s crucial for maintaining manageable chunk sizes when processing large texts.
+
+#### `onnxEmbeddingModel`
+
+- **Type**: String
+- **Default**: `Xenova/paraphrase-multilingual-MiniLM-L12-v2`
+- **Description**: Specifies the model used to generate sentence embeddings. Different models may yield different qualities of embeddings, affecting the chunking quality, especially in multilingual contexts.
+- **Resource Link**: [ONNX Embedding Models](https://huggingface.co/models?pipeline_tag=feature-extraction&library=onnx&sort=trending)  
+  Link to a filtered list of embedding models converted to ONNX library format by Xenova.  
+  Refer to the Model table below for a list of suggested models and their sizes (choose a multilingual model if you need to chunk text other than English).  
+
+#### `onnxEmbeddingModelQuantized`
+
+- **Type**: Boolean
+- **Default**: `true`
+- **Description**: Indicates whether to use a quantized version of the specified model. Quantized models generally offer faster performance with a slight trade-off in accuracy, which can be beneficial when processing very large datasets.
