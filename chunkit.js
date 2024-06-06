@@ -133,15 +133,16 @@ export async function cramit(
 
     // Load the tokenizer
     tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
-
+    
     // Split the text into sentences
     const sentences = sentencize(text);
-
+    
     // Create chunks
     const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
-
+    
     if (logging) {
-        console.log('\n=============\nChunks\n=============');
+        console.log('\nCRAMIT');
+        console.log('=============\nChunks\n=============');
         chunks.forEach((chunk, index) => {
             console.log("\n");
             console.log(`--------------`);
