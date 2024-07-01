@@ -1,7 +1,9 @@
 import { chunkit } from './chunkit.js';
 import fs from 'fs';
 
-const text = await fs.promises.readFile('./example.txt', 'utf8');
+const fp = "data/docs/human-agents.txt";
+
+const text = await fs.promises.readFile(fp, 'utf8');
 
 // start timing
 const startTime = performance.now();
@@ -27,7 +29,7 @@ const endTime = performance.now();
 
 // calculate tracked time in seconds
 let trackedTimeSeconds = (endTime - startTime) / 1000;
-trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
+trackedTimeSeconds = parseFloat(trackedTimeSeconds.toFixed(2));
 
 console.log("\n\n\n");
 // console.log("myTestChunks:");

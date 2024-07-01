@@ -3,3 +3,5 @@ node_modules/
 
 /models
 !/models/*/*.url
+
+.DS_Store
