@@ -12,6 +12,6 @@ cls:
     # tput reset
     clear && printf '\e[3J'
 
-chunk-file fp="data/example.txt": cls
+chunk-file fp="data/docs/aapl-2024-q2.txt": cls
   bun runner.js {{fp}}
 
