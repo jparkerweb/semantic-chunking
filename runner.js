@@ -1,4 +1,4 @@
-import { cramit } from './chunkit.js';
+import { chunkit } from './chunkit.js';
 import fs from 'fs';
 
 const fp = process.argv[2];
@@ -58,7 +58,7 @@ async function main() {
         const config = opts[key];
         console.log("config", { key, config });
 
-        let chunks = await cramit(
+        let chunks = await chunkit(
             text,
             config
         );
