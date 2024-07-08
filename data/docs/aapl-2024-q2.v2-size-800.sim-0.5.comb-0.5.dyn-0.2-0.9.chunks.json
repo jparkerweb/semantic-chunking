@@ -1,4 +1,18 @@
 {
+  "config": {
+    "logging": true,
+    "maxTokenSize": 800,
+    "similarityThreshold": 0.5,
+    "dynamicThresholdLowerBound": 0.2,
+    "dynamicThresholdUpperBound": 0.9,
+    "numSimilaritySentencesLookahead": 3,
+    "combineChunks": true,
+    "combineChunksSimilarityThreshold": 0.5,
+    "onnxEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
+    "onnxEmbeddingModelQuantized": true
+  },
+  "count": 362,
+  "trackedTimeSeconds": 14.92,
   "chunks": [
     "Apple Inc. (NASDAQ:AAPL) Q2 2024 Earnings Conference Call May 2, 2024 5:00 PM ET\n\nCompany Participants\n\nSuhasini Chandramouli - Director of Investor Relations\nTim Cook - Che Executive Officer\nLuca Maestri - Chief Financial Officer\n\nConference Call Participants\n\nMike Ng - Goldman Sachs\nWamsi Mohan - Bank of America\nErik Woodring - Morgan Stanley\nBen Reitzes - Melius\nKrish Sankar - TD Cowen\nAmit Daryanani - Evercore\nDavid Vogt - UBS\nSamik Chatterjee - JPMorgan\nAaron Rakers - Wells Fargo\nRichard Kramer - Arete Research\nAtif Malik - Citi\n\nSuhasini Chandramouli\n\nGood Afternoon, and welcome to the Apple Q2 Fiscal Year 2024 Earnings Conference Call. My name is Suhasini Chandramouli, Director of Investor Relations. Today's call is being recorded. Speaking first today is Apple's CEO, Tim Cook, and he'll be followed by CFO, Luca Maestri.",
     "After that, we'll open the call to questions from analysts.",
@@ -362,19 +376,5 @@
     "These replays will be available by approximately 5:00 P.M. Pacific Time today.",
     "Members of the press with additional questions can contact Josh Rosenstock at 408-862-1142, and financial analysts can contact me, Suhasini Chandramouli, with additional questions at 408-974-3123.",
     "Thank you again for joining us."
-  ],
-  "count": 362,
-  "trackedTimeSeconds": 15.22,
-  "config": {
-    "logging": true,
-    "maxTokenSize": 800,
-    "similarityThreshold": 0.5,
-    "dynamicThresholdLowerBound": 0.2,
-    "dynamicThresholdUpperBound": 0.9,
-    "numSimilaritySentencesLookahead": 3,
-    "combineChunks": true,
-    "combineChunksSimilarityThreshold": 0.5,
-    "onnxEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
-    "onnxEmbeddingModelQuantized": true
-  }
+  ]
 }

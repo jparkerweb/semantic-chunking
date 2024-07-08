@@ -1,4 +1,18 @@
 {
+  "config": {
+    "logging": true,
+    "maxTokenSize": 800,
+    "similarityThreshold": 0.25,
+    "dynamicThresholdLowerBound": 0.2,
+    "dynamicThresholdUpperBound": 0.9,
+    "numSimilaritySentencesLookahead": 3,
+    "combineChunks": true,
+    "combineChunksSimilarityThreshold": 0.3,
+    "onnxEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
+    "onnxEmbeddingModelQuantized": true
+  },
+  "count": 109,
+  "trackedTimeSeconds": 12.73,
   "chunks": [
     "Apple Inc. (NASDAQ:AAPL) Q2 2024 Earnings Conference Call May 2, 2024 5:00 PM ET\n\nCompany Participants\n\nSuhasini Chandramouli - Director of Investor Relations\nTim Cook - Che Executive Officer\nLuca Maestri - Chief Financial Officer\n\nConference Call Participants\n\nMike Ng - Goldman Sachs\nWamsi Mohan - Bank of America\nErik Woodring - Morgan Stanley\nBen Reitzes - Melius\nKrish Sankar - TD Cowen\nAmit Daryanani - Evercore\nDavid Vogt - UBS\nSamik Chatterjee - JPMorgan\nAaron Rakers - Wells Fargo\nRichard Kramer - Arete Research\nAtif Malik - Citi\n\nSuhasini Chandramouli\n\nGood Afternoon, and welcome to the Apple Q2 Fiscal Year 2024 Earnings Conference Call. My name is Suhasini Chandramouli, Director of Investor Relations. Today's call is being recorded. Speaking first today is Apple's CEO, Tim Cook, and he'll be followed by CFO, Luca Maestri. After that, we'll open the call to questions from analysts. Please note that some of the information you'll hear during our discussion today will consist of forward-looking statements, including, without limitation, those regarding revenue, gross margin, operating expenses, other income and expense, taxes, capital allocation and future business outlook, including the potential impact of macroeconomic conditions on the company's business and results of operations. These statements involve risks and uncertainties that may cause actual results or trends to differ materially from our forecast. For more information, please refer to the risk factors discussed in Apple's most recently filed Annual Report on Form 10-K and the Form 8-K filed with the SEC today, along with the associated press release. Apple assumes no obligation to update any forward-looking statements, which speak only as of the date they are made.",
     "I'd now like to turn the call over to Tim for introductory remarks. Tim Cook\n\nThank you, Suhasini. Good afternoon, everyone, and thanks for joining the call.",
@@ -109,19 +123,5 @@
     "Atif Malik\n\nThank you.",
     "Suhasini Chandramouli\n\nThank you, Atif. A replay of today's call will be available for two weeks on Apple podcasts as a webcast on apple.com/investor and via telephone. The number for the telephone replay is 866-583-1035. Please enter confirmation code 0467138 followed by the pound sign. These replays will be available by approximately 5:00 P.M. Pacific Time today. Members of the press with additional questions can contact Josh Rosenstock at 408-862-1142, and financial analysts can contact me, Suhasini Chandramouli, with additional questions at 408-974-3123.",
     "Thank you again for joining us."
-  ],
-  "count": 109,
-  "trackedTimeSeconds": 13.03,
-  "config": {
-    "logging": true,
-    "maxTokenSize": 800,
-    "similarityThreshold": 0.25,
-    "dynamicThresholdLowerBound": 0.2,
-    "dynamicThresholdUpperBound": 0.9,
-    "numSimilaritySentencesLookahead": 3,
-    "combineChunks": true,
-    "combineChunksSimilarityThreshold": 0.3,
-    "onnxEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
-    "onnxEmbeddingModelQuantized": true
-  }
+  ]
 }

@@ -1,4 +1,5 @@
 import { cramit } from './chunkit.js';
+import { chunkit } from './chunkit.js';
 import fs from 'fs';
 
 const fp = process.argv[2];
@@ -11,40 +12,40 @@ const opts = {
 
     v1: {
         logging: true,
-        maxTokenSize: 800,
-        similarityThreshold: .25,             // higher value requires higher similarity to be included (less inclusive)
-        dynamicThresholdLowerBound: .2,        // lower bound for dynamic threshold
-        dynamicThresholdUpperBound: .9,        // upper bound for dynamic threshold
-        numSimilaritySentencesLookahead: 3,
+        maxTokenSize: 1000,
+        similarityThreshold: .20,             // higher value requires higher similarity to be included (less inclusive)
+        dynamicThresholdLowerBound: .20,      // lower bound for dynamic threshold
+        dynamicThresholdUpperBound: 1,        // upper bound for dynamic threshold
+        numSimilaritySentencesLookahead: 5,
         combineChunks: true,
-        combineChunksSimilarityThreshold: 0.3, // lower value will combine more chunks (more inclusive)
+        combineChunksSimilarityThreshold: 0.2, // lower value will combine more chunks (more inclusive)
         onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
         onnxEmbeddingModelQuantized: true,
     },
-    v2: {
-        logging: true,
-        maxTokenSize: 800,
-        similarityThreshold: .5,             // higher value requires higher similarity to be included (less inclusive)
-        dynamicThresholdLowerBound: .2,        // lower bound for dynamic threshold
-        dynamicThresholdUpperBound: .9,        // upper bound for dynamic threshold
-        numSimilaritySentencesLookahead: 3,
-        combineChunks: true,
-        combineChunksSimilarityThreshold: 0.5, // lower value will combine more chunks (more inclusive)
-        onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
-        onnxEmbeddingModelQuantized: true,
-    },
-    v3: {
-        logging: true,
-        maxTokenSize: 800,
-        similarityThreshold: .75,             // higher value requires higher similarity to be included (less inclusive)
-        dynamicThresholdLowerBound: .2,        // lower bound for dynamic threshold
-        dynamicThresholdUpperBound: .9,        // upper bound for dynamic threshold
-        numSimilaritySentencesLookahead: 3,
-        combineChunks: true,
-        combineChunksSimilarityThreshold: 0.75, // lower value will combine more chunks (more inclusive)
-        onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
-        onnxEmbeddingModelQuantized: true,
-    },
+    // v2: {
+    //     logging: true,
+    //     maxTokenSize: 800,
+    //     similarityThreshold: .5,             // higher value requires higher similarity to be included (less inclusive)
+    //     dynamicThresholdLowerBound: .4,        // lower bound for dynamic threshold
+    //     dynamicThresholdUpperBound: .8,        // upper bound for dynamic threshold
+    //     numSimilaritySentencesLookahead: 3,
+    //     combineChunks: false,
+    //     combineChunksSimilarityThreshold: 0.5, // lower value will combine more chunks (more inclusive)
+    //     onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
+    //     onnxEmbeddingModelQuantized: true,
+    // },
+    // v3: {
+    //     logging: true,
+    //     maxTokenSize: 800,
+    //     similarityThreshold: .75,             // higher value requires higher similarity to be included (less inclusive)
+    //     dynamicThresholdLowerBound: .2,        // lower bound for dynamic threshold
+    //     dynamicThresholdUpperBound: .9,        // upper bound for dynamic threshold
+    //     numSimilaritySentencesLookahead: 3,
+    //     combineChunks: false,
+    //     combineChunksSimilarityThreshold: 0.75, // lower value will combine more chunks (more inclusive)
+    //     onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
+    //     onnxEmbeddingModelQuantized: true,
+    // },
 
 }
 
@@ -58,7 +59,7 @@ async function main() {
         const config = opts[key];
         console.log("config", { key, config });
 
-        let chunks = await cramit(
+        let chunks = await chunkit(
             text,
             config
         );
@@ -73,13 +74,13 @@ async function main() {
         console.log("\n\n\n");
         // console.log("myTestChunks:");
         // console.log(myTestChunks);
-        const desc = `size-${config.maxTokenSize}.sim-${config.similarityThreshold}.comb-${config.combineChunksSimilarityThreshold}.dyn-${config.dynamicThresholdLowerBound}-${config.dynamicThresholdUpperBound}`
+        const desc = `${key}-size-${config.maxTokenSize}.sim-${config.similarityThreshold}.comb-${config.combineChunksSimilarityThreshold}.dyn-${config.dynamicThresholdLowerBound}-${config.dynamicThresholdUpperBound}`
         const outfile = fp.replace('.txt', `.${desc}.chunks.json`);
         const output = {
-            chunks,
+            config,
             count: chunks.length,
             trackedTimeSeconds,
-            config,
+            chunks,
         }
 
         fs.promises.writeFile(outfile, JSON.stringify(output, null, 2));
@@ -91,14 +92,16 @@ async function main() {
         console.log("results", {
             chunks: chunks.length,
             trackedTimeSeconds,
-            config
+            config,
+            outfile
         })
 
     }
 
-    // console.log(chunks);
+    console.log("done");
+    process.exit(0);
 
 }
 
 
-main()
+await main()
