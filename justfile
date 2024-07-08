@@ -15,3 +15,8 @@ cls:
 chunk-file fp="data/docs/aapl-2024-q2.txt": cls
   bun runner.js {{fp}}
 
+# add the upstream remote to the fork
+git-add-upstream:
+  git remote add upstream git@github.com:jparkerweb/semantic-chunking.git
+  git remote -v
+
