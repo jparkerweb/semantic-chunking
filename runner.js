@@ -7,6 +7,11 @@ const text = await fs.promises.readFile(fp, 'utf8');
 // start timing
 const startTime = performance.now();
 
+
+function timetag() {
+    return Math.floor(Date.now() / 1000)
+}
+
 const opts = {
 
     v1: {
@@ -21,6 +26,7 @@ const opts = {
         onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
         onnxEmbeddingModelQuantized: true,
     },
+
     // v2: {
     //     logging: true,
     //     maxTokenSize: 800,
@@ -74,7 +80,8 @@ async function main() {
         // console.log("myTestChunks:");
         // console.log(myTestChunks);
         const desc = `${key}-size-${config.maxTokenSize}.sim-${config.similarityThreshold}.comb-${config.combineChunksSimilarityThreshold}.dyn-${config.dynamicThresholdLowerBound}-${config.dynamicThresholdUpperBound}`
-        const outfile = fp.replace('.txt', `.${desc}.chunks.json`);
+        // const outfile = fp.replace('.txt', `.${desc}.chunks.json`);
+        const outfile = fp.replace('.txt', `.${timetag()}.chunks.json`);
         const output = {
             config,
             count: chunks.length,
