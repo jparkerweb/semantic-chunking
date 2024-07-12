@@ -1,0 +1,10 @@
+[
+    {
+        "modelName": "Xenova/all-MiniLM-L6-v2",
+        "quantized": true
+    },
+    {
+        "modelName": "BAAI/bge-small-en-v1.5",
+        "quantized": false
+    }
+]
