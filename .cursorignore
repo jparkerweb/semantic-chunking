@@ -1,0 +1,7 @@
+#  directories to ignore during indexing
+.git/
+node_modules/
+models/
+
+# file patterns to ignore during indexing
+package-lock.json
