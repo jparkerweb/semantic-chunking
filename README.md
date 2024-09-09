@@ -42,6 +42,8 @@ const myChunks = await chunkit(text, chunkitOptions);
   - `combineChunksSimilarityThreshold`: Float (optional, default `0.5`) - Threshold for combining chunks based on similarity during the rebalance and combining phase.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
   - `onnxEmbeddingModelQuantized`: Boolean (optional, default `true`) - Indicates whether to use a quantized version of the embedding model.
+  - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
+  - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
 
 ## Workflow
 
