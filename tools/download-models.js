@@ -1,12 +1,19 @@
 import { pipeline, env as transformerCache } from "@xenova/transformers"
 import cliProgress from "cli-progress"
 import fs from "fs/promises"
+import path from "path"
+import { fileURLToPath } from 'url'
 
-const data = await fs.readFile('./tools/download-models-list.json', 'utf8');
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+// Update the file path to be relative to the script's location
+const dataFilePath = path.join(__dirname, 'download-models-list.json')
+const data = await fs.readFile(dataFilePath, 'utf8');
 const downloadModelsList = JSON.parse(data);
 
-
-transformerCache.cacheDir = "models"
+// Update the cache directory to be at the root of the project
+transformerCache.cacheDir = path.join(__dirname, '..', downloadModelsList.downloadLocation)
 
 console.log(`Downloading embedding models…`)
 
@@ -16,10 +23,9 @@ const bar = new cliProgress.SingleBar({
 	format: "[{bar}] {value}% | {model}",
 })
 
-
 let started = false
 
-for (const model of downloadModelsList) {
+for (const model of downloadModelsList.models) {
     console.log(`model: ${model.modelName}, quantized: ${model.quantized}`)
     bar.start(100, 0, { model: model.modelName})
     
@@ -35,7 +41,5 @@ for (const model of downloadModelsList) {
     bar.update(100)
     bar.stop()
 }
-
-
 
 console.log("Success!")
