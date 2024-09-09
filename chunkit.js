@@ -18,8 +18,6 @@ import sentencize from '@stdlib/nlp-sentencize';
 // ---------------------
 // -- model variables --
 // ---------------------
-env.localModelPath = 'models/'; // local model path
-env.cacheDir = 'models/';       // downloaded model cache directory
 env.allowRemoteModels = true;   // allow remote models (required for models to be be downloaded)
 let tokenizer;
 let generateEmbedding;
@@ -37,6 +35,9 @@ const COMBINE_CHUNKS = true;
 const COMBINE_CHUNKS_SIMILARITY_THRESHOLD = 0.4;
 const ONNX_EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
 const ONNX_EMBEDDING_MODEL_QUANTIZED = true;
+const LOCAL_MODEL_PATH = null;
+const MODEL_CACHE_DIR = null;
+
 
 
 // ---------------------------
@@ -55,7 +56,13 @@ export async function chunkit(
         combineChunksSimilarityThreshold = COMBINE_CHUNKS_SIMILARITY_THRESHOLD,
         onnxEmbeddingModel = ONNX_EMBEDDING_MODEL,
         onnxEmbeddingModelQuantized = ONNX_EMBEDDING_MODEL_QUANTIZED,
+        localModelPath = LOCAL_MODEL_PATH,
+        modelCacheDir = MODEL_CACHE_DIR,
     } = {}) {
+
+    // Set env variables if provided
+    if (localModelPath) env.localModelPath = localModelPath;
+    if (modelCacheDir) env.cacheDir = modelCacheDir;
 
     // Load the tokenizer
     tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
@@ -129,7 +136,13 @@ export async function cramit(
         maxTokenSize = MAX_TOKEN_SIZE,
         onnxEmbeddingModel = ONNX_EMBEDDING_MODEL,
         onnxEmbeddingModelQuantized = ONNX_EMBEDDING_MODEL_QUANTIZED,
+        localModelPath = LOCAL_MODEL_PATH,
+        modelCacheDir = MODEL_CACHE_DIR,
     } = {}) {
+
+    // Set env variables if provided
+    if (localModelPath) env.localModelPath = localModelPath;
+    if (modelCacheDir) env.cacheDir = modelCacheDir;
 
     // Load the tokenizer
     tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
