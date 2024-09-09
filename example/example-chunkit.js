@@ -1,4 +1,17 @@
-import { chunkit } from './chunkit.js';
+// ------------------------
+// -- example-chunkit.js --
+// -------------------------------------------------------------------------------
+// this is an example of how to use the chunkit function
+// first we import the chunkit function from the chunkit.js file
+// then we read the text from the example.txt file
+// then we call the chunkit function with the text and an options object
+// the options object is optional, but we are using it to set the logging to true
+// and to set the maxTokenSize to 300
+// and to set the onnxEmbeddingModel to "Xenova/all-MiniLM-L6-v2"
+// and to set the onnxEmbeddingModelQuantized to true
+// -------------------------------------------------------------------------------
+
+import { chunkit } from '../chunkit.js'; // this is typically just "import { chunkit } from 'semantic-chunking';", but this is a local test
 import fs from 'fs';
 
 const text = await fs.promises.readFile('./example.txt', 'utf8');
