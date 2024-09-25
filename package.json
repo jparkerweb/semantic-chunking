@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
     "emmbeddings",
     "onnx",
     "xenova",
+    "text-processing",
     "nlp"
   ],
   "author": "jparkerweb@gmail.com",
