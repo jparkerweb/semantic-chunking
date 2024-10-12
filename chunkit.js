@@ -9,7 +9,7 @@
 // ==================================================================
 
 import { env } from '@xenova/transformers';
-import sentencize from '@stdlib/nlp-sentencize';
+import { splitBySentence } from "string-segmenter"
 import { DEFAULT_CONFIG } from './config.js';
 import { initializeEmbeddingUtils, tokenizer } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
@@ -43,7 +43,10 @@ export async function chunkit(
     await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
 
     // Split the text into sentences
-    const sentences = sentencize(text);
+    const sentences = []
+    for (const { segment } of splitBySentence(text)) {
+        sentences.push(segment.trim())
+    }
 
     // Compute the similarities between sentences
     const { similarities, average, variance } = await computeAdvancedSimilarities(
@@ -115,7 +118,7 @@ export async function cramit(
     await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
     
     // Split the text into sentences
-    const sentences = sentencize(text);
+    const sentences = splitBySentence(text);
     
     // Create chunks without considering similarities
     const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);

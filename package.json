@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "repository": {
     "type": "git",
@@ -28,9 +28,9 @@
     "download-models": "node ./tools/download-models.js"
   },
   "dependencies": {
-    "@stdlib/nlp-sentencize": "^0.2.2",
     "@xenova/transformers": "^2.17.2",
     "cli-progress": "^3.12.0",
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "string-segmenter": "^1.0.1"
   }
 }
