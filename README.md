@@ -235,3 +235,9 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 Fill out the `tools/download-models.list.json` file with a list of models you want pre-downloaded, and if they are quantized or not (See the Curated ONNX Embedding Models section above for a list of models to try)
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/JItZqsL3umY/0.jpg)](https://www.youtube.com/watch?v=JItZqsL3umY)
+
+---
+
+## Appreciation
+If you enjoy this plugin please consider sending me a tip to support my work 😀
+### [🍵 tip me here](https://ko-fi.com/jparkerweb)
