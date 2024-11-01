@@ -118,7 +118,10 @@ export async function cramit(
     await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
     
     // Split the text into sentences
-    const sentences = splitBySentence(text);
+    const sentences = []
+    for (const { segment } of splitBySentence(text)) {
+        sentences.push(segment.trim())
+    }
     
     // Create chunks without considering similarities
     const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
