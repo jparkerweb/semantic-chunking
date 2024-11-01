@@ -30,8 +30,12 @@ let myTestChunks = await chunkit(
         numSimilaritySentencesLookahead: 3,
         combineChunks: true,
         combineChunksSimilarityThreshold: 0.3, // lower value will combine more chunks (more inclusive)
-        onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
+        onnxEmbeddingModel: "nomic-ai/nomic-embed-text-v1.5",
         onnxEmbeddingModelQuantized: true,
+        localModelPath: "../models",
+        modelCacheDir: "../models",
+        returnEmbedding: true,
+        returnTokenLength: true,
     }
 );
 
@@ -43,7 +47,7 @@ let trackedTimeSeconds = (endTime - startTime) / 1000;
 trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
 
 console.log("\n\n\n");
-// console.log("myTestChunks:");
-// console.log(myTestChunks);
+console.log("myTestChunks:");
+console.log(myTestChunks);
 console.log("length: " + myTestChunks.length);
 console.log("trackedTimeSeconds: " + trackedTimeSeconds);

@@ -11,4 +11,7 @@ export const DEFAULT_CONFIG = {
     ONNX_EMBEDDING_MODEL_QUANTIZED: true,
     LOCAL_MODEL_PATH: null,
     MODEL_CACHE_DIR: null,
+    RETURN_EMBEDDING: false,
+    RETURN_TOKEN_LENGTH: false,
+    CHUNK_PREFIX: null,
 };

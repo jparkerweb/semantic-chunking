@@ -1,7 +1,9 @@
 #  directories to ignore during indexing
 .git/
+.github/
 node_modules/
 models/
+example/
 
 # file patterns to ignore during indexing
 package-lock.json

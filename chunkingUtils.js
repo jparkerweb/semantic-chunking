@@ -98,3 +98,14 @@ export async function optimizeAndRebalanceChunks(combinedChunks, tokenizer, maxT
 
     return optimizedChunks.filter(chunk => chunk);
 }
+
+
+// ------------------------------------------------
+// -- Helper function to apply prefix to a chunk --
+// ------------------------------------------------
+export function applyPrefixToChunk(chunkPrefix, chunk) {
+    if (chunkPrefix && chunkPrefix.trim()) {
+        return `${chunkPrefix}: ${chunk}`;
+    }
+    return chunk;
+};

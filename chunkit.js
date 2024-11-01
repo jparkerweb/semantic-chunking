@@ -11,9 +11,9 @@
 import { env } from '@xenova/transformers';
 import { splitBySentence } from "string-segmenter"
 import { DEFAULT_CONFIG } from './config.js';
-import { initializeEmbeddingUtils, tokenizer } from './embeddingUtils.js';
+import { initializeEmbeddingUtils, tokenizer, createEmbedding } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
-import { createChunks, optimizeAndRebalanceChunks } from './chunkingUtils.js';
+import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
 
 // ---------------------------
 // -- Main chunkit function --
@@ -33,6 +33,9 @@ export async function chunkit(
         onnxEmbeddingModelQuantized = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL_QUANTIZED,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
+        returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
+        returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
+        chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
     } = {}) {
 
     // Set env variables if provided
@@ -90,9 +93,51 @@ export async function chunkit(
                 console.log(chunk);
             });
         }
-        return combinedChunks;
+        return await Promise.all(combinedChunks.map(async chunk => {
+            const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
+            const result = { text: prefixedChunk };
+            if (returnEmbedding) {
+                result.embedding = await createEmbedding(prefixedChunk);
+            }
+            if (returnTokenLength) {
+                try {
+                    const encoded = await tokenizer(prefixedChunk, { padding: true });
+                    if (encoded && encoded.input_ids) {
+                        result.tokenLength = encoded.input_ids.size;
+                    } else {
+                        console.error('Tokenizer returned unexpected format:', encoded);
+                        result.tokenLength = 0;
+                    }
+                } catch (error) {
+                    console.error('Error during tokenization:', error);
+                    result.tokenLength = 0;
+                }
+            }
+            return result;
+        }));
     } else {
-        return initialChunks;
+        return await Promise.all(initialChunks.map(async chunk => {
+            const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
+            const result = { text: prefixedChunk };
+            if (returnEmbedding) {
+                result.embedding = await createEmbedding(prefixedChunk);
+            }
+            if (returnTokenLength) {
+                try {
+                    const encoded = await tokenizer(prefixedChunk, { padding: true });
+                    if (encoded && encoded.input_ids) {
+                        result.tokenLength = encoded.input_ids.size;
+                    } else {
+                        console.error('Tokenizer returned unexpected format:', encoded);
+                        result.tokenLength = 0;
+                    }
+                } catch (error) {
+                    console.error('Error during tokenization:', error);
+                    result.tokenLength = 0;
+                }
+            }
+            return result;
+        }));
     }
 }
 
@@ -108,6 +153,9 @@ export async function cramit(
         onnxEmbeddingModelQuantized = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL_QUANTIZED,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
+        returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
+        returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
+        chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
     } = {}) {
 
     // Set env variables if provided
@@ -138,5 +186,26 @@ export async function cramit(
         });
     }
 
-    return chunks;
+    return await Promise.all(chunks.map(async chunk => {
+        const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
+        const result = { text: prefixedChunk };
+        if (returnEmbedding) {
+            result.embedding = await createEmbedding(prefixedChunk);
+        }
+        if (returnTokenLength) {
+            try {
+                const encoded = await tokenizer(prefixedChunk, { padding: true });
+                if (encoded && encoded.input_ids) {
+                    result.tokenLength = encoded.input_ids.size;
+                } else {
+                    console.error('Tokenizer returned unexpected format:', encoded);
+                    result.tokenLength = 0;
+                }
+            } catch (error) {
+                console.error('Error during tokenization:', error);
+                result.tokenLength = 0;
+            }
+        }
+        return result;
+    }));
 }

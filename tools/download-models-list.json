@@ -2,6 +2,10 @@
     "downloadLocation": "models/",
     "models": [
         {
+            "modelName": "nomic-ai/nomic-embed-text-v1.5",
+            "quantized": true
+        },
+        {
             "modelName": "Xenova/all-MiniLM-L6-v2",
             "quantized": true
         },

@@ -44,6 +44,17 @@ const myChunks = await chunkit(text, chunkitOptions);
   - `onnxEmbeddingModelQuantized`: Boolean (optional, default `true`) - Indicates whether to use a quantized version of the embedding model.
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
+  - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
+  - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
+  - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
+
+## Output
+
+The output is an array of chunks, each containing the following properties:
+
+- `text`: String - The chunked text.
+- `embedding`: Array - The embedding vector (if `returnEmbedding` is `true`).
+- `tokenLength`: Integer - The token length (if `returnTokenLength` is `true`).
 
 ## Workflow
 
@@ -89,7 +100,7 @@ main();
 
 ```
 
-Look at the `example.js` file in the root of this project for a more complex example of using all the optional parameters.
+Look at the `example\example-chunkit.js` file for a more complex example of using all the optional parameters.
 
 
 ## Tuning
@@ -164,6 +175,8 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 
 | Model                                        | Quantized | Link                                                                                                                                       | Size    |
 | -------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| nomic-ai/nomic-embed-text-v1.5               | true      | [https://huggingface.co/nomic-ai/nomic-embed-text-v1.5](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5)                             | 138 MB  |
+| nomic-ai/nomic-embed-text-v1.5               | false     | [https://huggingface.co/nomic-ai/nomic-embed-text-v1.5](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5)                             | 548 MB  |
 | Xenova/all-MiniLM-L6-v2                      | true      | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 23 MB   |
 | Xenova/all-MiniLM-L6-v2                      | false     | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 90.4 MB |
 | Xenova/paraphrase-multilingual-MiniLM-L12-v2 | true      | [https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) | 118 MB  |
@@ -195,7 +208,7 @@ main();
 
 ```
 
-Look at the `example2.js` file in the root of this project for a more complex example of using all the optional parameters.
+Look at the `example\example-cramit.js` file in the root of this project for a more complex example of using all the optional parameters.
 
 ### Tuning
 
@@ -238,6 +251,28 @@ Fill out the `tools/download-models.list.json` file with a list of models you wa
 
 ---
 
+## 🔍 RAG Tip!
+
+If you are using this library for a RAG application, consider using the `chunkPrefix` option to add a prefix to each chunk. This can help improve the quality of the embeddings and reduce the amount of context needed to be passed to the LLM for embedding models that support task prefixes.
+
+Chunk your large document like this:
+```javascript
+const text = await fs.promises.readFile('./large-document.txt', 'utf8');
+const myDocumentChunks = await chunkit(text, { chunkPrefix: "search_document" });
+```
+
+Get your search queries ready like this (use cramit for a quick large chunk):
+```javascript
+const mySearchQuery = "What is the capital of France?";
+const mySearchQueryChunk = await chunkit(mySearchQuery, { chunkPrefix: "search_query" });
+```
+
+Now you can use the `myDocumentChunks` and `mySearchQueryChunk` arrays in your RAG application or find the closest match using cosine similarity in memory.
+
+Happy Chunking!
+
+---
+
 ## Appreciation
-If you enjoy this plugin please consider sending me a tip to support my work 😀
+If you enjoy this library please consider sending me a tip to support my work 😀
 ### [🍵 tip me here](https://ko-fi.com/jparkerweb)
