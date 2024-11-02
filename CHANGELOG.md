@@ -5,16 +5,13 @@ All notable changes to this project will be documented in this file.
 ## [2.1.0] - 2024-11-01
 ### Updated
 - ⚠️ **BREAKING**: Input format now accepts array of document objects
-- Output array of chunks is now an array of objects with the following properties:
+- Output array of chunks extended with the following new properties:
   - `document_id`: Timestamp in milliseconds when processing started
   - `document_name`: Original document name or ""
   - `number_of_chunks`: Total number of chunks for the document
   - `chunk_number`: Current chunk number (1-based)
   - `model_name`: Name of the embedding model used
   - `is_model_quantized`: Whether the model is quantized
-  - `text`: The chunked text content
-  - `embedding`: (optional) Embedding vector if returnEmbedding is true
-  - `token_length`: (optional) Token count if returnTokenLength is true
 
 ## [2.0.0] - 2024-11-01
 ### Added
