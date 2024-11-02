@@ -86,8 +86,13 @@ import { chunkit } from 'semantic-chunking';
 import fs from 'fs';
 
 async function main() {
-    const text = await fs.promises.readFile('./test.txt', 'utf8');
-    let myChunks = await chunkit(text, { similarityThreshold: 0.3 });
+    const documents = [ 
+        {
+            document_name: "test document", 
+            document_text: await fs.promises.readFile('./test.txt', 'utf8') 
+        }
+    ];
+    let myChunks = await chunkit(documents, { similarityThreshold: 0.3 });
 
     myChunks.forEach((chunk, index) => {
         console.log(`\n-- Chunk ${index + 1} --`);
@@ -103,10 +108,16 @@ Example 2: Chunking with a small max token size:
 ```javascript
 import { chunkit } from 'semantic-chunking';
 
-let frogText = "A frog hops into a deli and croaks to the cashier, \"I'll have a sandwich, please.\" The cashier, surprised, quickly makes the sandwich and hands it over. The frog takes a big bite, looks around, and then asks, \"Do you have any flies to go with this?\" The cashier, taken aback, replies, \"Sorry, we're all out of flies today.\" The frog shrugs and continues munching on its sandwich, clearly unfazed by the lack of fly toppings. Just another day in the life of a sandwich-loving amphibian! 🐸🥪";
+const frogText = "A frog hops into a deli and croaks to the cashier, \"I'll have a sandwich, please.\" The cashier, surprised, quickly makes the sandwich and hands it over. The frog takes a big bite, looks around, and then asks, \"Do you have any flies to go with this?\" The cashier, taken aback, replies, \"Sorry, we're all out of flies today.\" The frog shrugs and continues munching on its sandwich, clearly unfazed by the lack of fly toppings. Just another day in the life of a sandwich-loving amphibian! 🐸🥪";
+const documents = [
+    {
+        document_name: "frog document",
+        document_text: frogText
+    }
+];
 
 async function main() {
-    let myFrogChunks = await chunkit(frogText, { maxTokenSize: 65 });
+    let myFrogChunks = await chunkit(documents, { maxTokenSize: 65 });
     console.log("myFrogChunks", myFrogChunks);
 }
 main();
