@@ -28,8 +28,15 @@ const myChunks = await chunkit(text, chunkitOptions);
 
 `chunkit` accepts a text string and an optional configuration object. Here are the details for each parameter:
 
-- `text`: String to be split into chunks.
-  
+- `documents`: array of documents. each document is an object containing `document_name` and `document_text`.
+  ```
+  documents = [
+    { document_name: "document1", document_text: "..." },
+    { document_name: "document2", document_text: "..." },
+    ...
+  ]
+  ```
+
 - **Chunkit Options Object:**
   
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
@@ -52,9 +59,15 @@ const myChunks = await chunkit(text, chunkitOptions);
 
 The output is an array of chunks, each containing the following properties:
 
+- `document_id`: Integer - A unique identifier for the document (current timestamp in milliseconds).
+- `document_name`: String - The name of the document being chunked (if provided).
+- `number_of_chunks`: Integer - The total number of final chunks returned from the input text.
+- `chunk_number`: Integer - The number of the current chunk.
+- `model_name`: String - The name of the embedding model used.
+- `is_model_quantized`: Boolean - Indicates whether the embedding model is quantized.
 - `text`: String - The chunked text.
 - `embedding`: Array - The embedding vector (if `returnEmbedding` is `true`).
-- `tokenLength`: Integer - The token length (if `returnTokenLength` is `true`).
+- `token_length`: Integer - The token length (if `returnTokenLength` is `true`).
 
 ## Workflow
 

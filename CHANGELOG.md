@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2024-11-01
+### Updated
+- ⚠️ **BREAKING**: Input format now accepts array of document objects
+- Output array of chunks is now an array of objects with the following properties:
+  - `document_id`: Timestamp in milliseconds when processing started
+  - `document_name`: Original document name or ""
+  - `number_of_chunks`: Total number of chunks for the document
+  - `chunk_number`: Current chunk number (1-based)
+  - `model_name`: Name of the embedding model used
+  - `is_model_quantized`: Whether the model is quantized
+  - `text`: The chunked text content
+  - `embedding`: (optional) Embedding vector if returnEmbedding is true
+  - `token_length`: (optional) Token count if returnTokenLength is true
+
 ## [2.0.0] - 2024-11-01
 ### Added
 - Added `returnEmbedding` option to `chunkit` and `cramit` functions to include embeddings in the output.
@@ -9,8 +23,8 @@ All notable changes to this project will be documented in this file.
 - Added `chunkPrefix` option to prefix each chunk with a task instruction (e.g., "search_document: ", "search_query: ").
 - Updated README to document new options and add RAG tips for using `chunkPrefix` with embedding models that support task prefixes.
 
-### ⚠️ Breaking Changes
-- Returned array of chunks is now an array of objects with `text`, `embedding`, and `tokenLength` properties. Previous versions returned an array of strings.
+### Updated
+- ⚠️ **BREAKING**: Returned array of chunks is now an array of objects with `text`, `embedding`, and `tokenLength` properties. Previous versions returned an array of strings.
 
 ---
 

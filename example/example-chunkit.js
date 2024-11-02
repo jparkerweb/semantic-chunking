@@ -14,28 +14,45 @@
 import { chunkit } from '../chunkit.js'; // this is typically just "import { chunkit } from 'semantic-chunking';", but this is a local test
 import fs from 'fs';
 
-const text = await fs.promises.readFile('./example.txt', 'utf8');
+// initialize documents array
+let documents = [];
+let textFiles = ['./example.txt', './example2.txt'];
+
+// read each text file and add it to the documents array
+for (const textFile of textFiles) {
+    documents.push({
+        document_name: textFile,
+        document_text: await fs.promises.readFile(textFile, 'utf8')
+    });
+}
+
+// add some sample text to the documents array
+documents.push({
+    document_name: "sample text",
+    document_text: "This is a sample text to test the chunkit function."
+});
 
 // start timing
 const startTime = performance.now();
 
 let myTestChunks = await chunkit(
-    text,
+    documents,
     {
-        logging: true,
+        logging: false,
         maxTokenSize: 300,
-        similarityThreshold: .577,             // higher value requires higher similarity to be included (less inclusive)
-        dynamicThresholdLowerBound: .2,        // lower bound for dynamic threshold
-        dynamicThresholdUpperBound: .9,        // upper bound for dynamic threshold
+        similarityThreshold: .411,             // higher value requires higher similarity to be included (less inclusive)
+        dynamicThresholdLowerBound: .3,        // lower bound for dynamic threshold
+        dynamicThresholdUpperBound: .7,        // upper bound for dynamic threshold
         numSimilaritySentencesLookahead: 3,
-        combineChunks: true,
-        combineChunksSimilarityThreshold: 0.3, // lower value will combine more chunks (more inclusive)
+        combineChunks: false,
+        combineChunksSimilarityThreshold: 0.45, // lower value will combine more chunks (more inclusive)
         onnxEmbeddingModel: "nomic-ai/nomic-embed-text-v1.5",
         onnxEmbeddingModelQuantized: true,
         localModelPath: "../models",
         modelCacheDir: "../models",
-        returnEmbedding: true,
+        returnEmbedding: false,
         returnTokenLength: true,
+        // chunkPrefix: "search_document",
     }
 );
 

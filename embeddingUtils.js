@@ -13,6 +13,11 @@ export async function initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbedding
     generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, {
         quantized: onnxEmbeddingModelQuantized,
     });
+
+    return {
+        modelName: onnxEmbeddingModel,
+        isQuantized: onnxEmbeddingModelQuantized
+    };
 }
 
 // -------------------------------------

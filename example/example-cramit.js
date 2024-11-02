@@ -16,13 +16,23 @@
 import { cramit } from '../chunkit.js'; // this is typically just "import { cramit } from 'semantic-chunking';", but this is a local test
 import fs from 'fs';
 
-const text = await fs.promises.readFile('./example.txt', 'utf8');
+// initialize documents array
+let documents = [];
+let textFiles = ['./example3.txt'];
+
+// read each text file and add it to the documents array
+for (const textFile of textFiles) {
+    documents.push({
+        document_name: textFile,
+        document_text: await fs.promises.readFile(textFile, 'utf8')
+    });
+}
 
 // start timing
 const startTime = performance.now();
 
 let myTestChunks = await cramit(
-    text,
+    documents,
     {
         logging: true,
         maxTokenSize: 300,
@@ -30,8 +40,9 @@ let myTestChunks = await cramit(
         onnxEmbeddingModelQuantized: true,
         localModelPath: "../models",
         modelCacheDir: "../models",
-        returnEmbedding: true,
+        returnEmbedding: false,
         returnTokenLength: true,
+        chunkPrefix: "search_query",
     }
 );
 

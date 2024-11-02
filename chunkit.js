@@ -19,7 +19,7 @@ import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './
 // -- Main chunkit function --
 // ---------------------------
 export async function chunkit(
-    text,
+    documents,
     {
         logging = DEFAULT_CONFIG.LOGGING,
         maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
@@ -38,114 +38,127 @@ export async function chunkit(
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
     } = {}) {
 
+    // Input validation
+    if (!Array.isArray(documents)) {
+        throw new Error('Input must be an array of document objects');
+    }
+
     // Set env variables if provided
     if (localModelPath) env.localModelPath = localModelPath;
     if (modelCacheDir) env.cacheDir = modelCacheDir;
 
     // Initialize embedding utilities
-    await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
+    const { modelName, isQuantized } = await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
 
-    // Split the text into sentences
-    const sentences = []
-    for (const { segment } of splitBySentence(text)) {
-        sentences.push(segment.trim())
-    }
-
-    // Compute the similarities between sentences
-    const { similarities, average, variance } = await computeAdvancedSimilarities(
-        sentences,
-        {
-            numSimilaritySentencesLookahead: numSimilaritySentencesLookahead,
-            logging: logging,
+    // Process each document
+    const allResults = await Promise.all(documents.map(async (doc) => {
+        if (!doc.document_text) {
+            throw new Error('Each document must have a document_text property');
         }
-    );
 
-    // Dynamically adjust the similarity threshold based on variance and average
-    let dynamicThreshold = similarityThreshold;
-    if (average != null && variance != null) {
-        dynamicThreshold = adjustThreshold(average, variance, similarityThreshold, dynamicThresholdLowerBound, dynamicThresholdUpperBound);
-    }
+        // Split the text into sentences
+        const sentences = [];
+        for (const { segment } of splitBySentence(doc.document_text)) {
+            sentences.push(segment.trim());
+        }
 
-    // Create the initial chunks using the adjusted threshold
-    const initialChunks = createChunks(sentences, similarities, maxTokenSize, dynamicThreshold, logging);
+        // Compute similarities and create chunks
+        const { similarities, average, variance } = await computeAdvancedSimilarities(
+            sentences,
+            {
+                numSimilaritySentencesLookahead,
+                logging,
+            }
+        );
 
-    if (logging) {
-        console.log('\n=============\ninitialChunks\n=============');
-        initialChunks.forEach((chunk, index) => {
-            console.log("\n");
-            console.log(`--------------`);
-            console.log(`-- Chunk ${(index + 1)} --`);
-            console.log(`--------------`);
-            console.log(chunk);
-        });
-    }
+        // Dynamically adjust the similarity threshold based on variance and average
+        let dynamicThreshold = similarityThreshold;
+        if (average != null && variance != null) {
+            dynamicThreshold = adjustThreshold(average, variance, similarityThreshold, dynamicThresholdLowerBound, dynamicThresholdUpperBound);
+        }
 
-    // Combine similar chunks and balance sizes if requested
-    if (combineChunks) {
-        const combinedChunks = await optimizeAndRebalanceChunks(initialChunks, tokenizer, maxTokenSize, combineChunksSimilarityThreshold);
+        // Create the initial chunks using the adjusted threshold
+        const initialChunks = createChunks(sentences, similarities, maxTokenSize, dynamicThreshold, logging);
+
+        // Log initial chunks if needed
         if (logging) {
-            console.log('\n\n=============\ncombinedChunks\n=============');
-            combinedChunks.forEach((chunk, index) => {
-                console.log("\n\n\n");
-                console.log("--------------------");
-                console.log("Chunk " + (index + 1));
-                console.log("--------------------");
+            console.log('\n=============\ninitialChunks\n=============');
+            initialChunks.forEach((chunk, index) => {
+                console.log("\n");
+                console.log(`--------------`);
+                console.log(`-- Chunk ${(index + 1)} --`);
+                console.log(`--------------`);
                 console.log(chunk);
             });
         }
-        return await Promise.all(combinedChunks.map(async chunk => {
+
+        let finalChunks;
+
+        // Combine similar chunks and balance sizes if requested
+        if (combineChunks) {
+            finalChunks = await optimizeAndRebalanceChunks(initialChunks, tokenizer, maxTokenSize, combineChunksSimilarityThreshold);
+            if (logging) {
+                console.log('\n\n=============\ncombinedChunks\n=============');
+                finalChunks.forEach((chunk, index) => {
+                    console.log("\n\n\n");
+                    console.log("--------------------");
+                    console.log("Chunk " + (index + 1));
+                    console.log("--------------------");
+                    console.log(chunk);
+                });
+            }
+        } else {
+            finalChunks = initialChunks;
+        }
+
+        const documentName = doc.document_name || ""; // Normalize document_name
+        const documentId = Date.now();
+        const numberOfChunks = finalChunks.length;
+
+        return Promise.all(finalChunks.map(async (chunk, index) => {
             const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
-            const result = { text: prefixedChunk };
+            const result = {
+                document_id: documentId,
+                document_name: documentName,
+                number_of_chunks: numberOfChunks,
+                chunk_number: index + 1,
+                model_name: modelName,
+                is_model_quantized: isQuantized,
+                text: prefixedChunk
+            };
+
             if (returnEmbedding) {
                 result.embedding = await createEmbedding(prefixedChunk);
             }
+
             if (returnTokenLength) {
                 try {
                     const encoded = await tokenizer(prefixedChunk, { padding: true });
                     if (encoded && encoded.input_ids) {
-                        result.tokenLength = encoded.input_ids.size;
+                        result.token_length = encoded.input_ids.size;
                     } else {
                         console.error('Tokenizer returned unexpected format:', encoded);
-                        result.tokenLength = 0;
+                        result.token_length = 0;
                     }
                 } catch (error) {
                     console.error('Error during tokenization:', error);
-                    result.tokenLength = 0;
+                    result.token_length = 0;
                 }
             }
+
             return result;
         }));
-    } else {
-        return await Promise.all(initialChunks.map(async chunk => {
-            const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
-            const result = { text: prefixedChunk };
-            if (returnEmbedding) {
-                result.embedding = await createEmbedding(prefixedChunk);
-            }
-            if (returnTokenLength) {
-                try {
-                    const encoded = await tokenizer(prefixedChunk, { padding: true });
-                    if (encoded && encoded.input_ids) {
-                        result.tokenLength = encoded.input_ids.size;
-                    } else {
-                        console.error('Tokenizer returned unexpected format:', encoded);
-                        result.tokenLength = 0;
-                    }
-                } catch (error) {
-                    console.error('Error during tokenization:', error);
-                    result.tokenLength = 0;
-                }
-            }
-            return result;
-        }));
-    }
+    }));
+
+    // Flatten the results array since we're processing multiple documents
+    return allResults.flat();
 }
 
 // --------------------------
 // -- Main cramit function --
 // --------------------------
 export async function cramit(
-    text,
+    documents,
     {
         logging = DEFAULT_CONFIG.LOGGING,
         maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
@@ -158,54 +171,84 @@ export async function cramit(
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
     } = {}) {
 
+    // Input validation
+    if (!Array.isArray(documents)) {
+        throw new Error('Input must be an array of document objects');
+    }
+
     // Set env variables if provided
     if (localModelPath) env.localModelPath = localModelPath;
     if (modelCacheDir) env.cacheDir = modelCacheDir;
 
     // Initialize embedding utilities
-    await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
-    
-    // Split the text into sentences
-    const sentences = []
-    for (const { segment } of splitBySentence(text)) {
-        sentences.push(segment.trim())
-    }
-    
-    // Create chunks without considering similarities
-    const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
-    
-    if (logging) {
-        console.log('\nCRAMIT');
-        console.log('=============\nChunks\n=============');
-        chunks.forEach((chunk, index) => {
-            console.log("\n");
-            console.log(`--------------`);
-            console.log(`-- Chunk ${(index + 1)} --`);
-            console.log(`--------------`);
-            console.log(chunk);
-        });
-    }
+    const { modelName, isQuantized } = await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
 
-    return await Promise.all(chunks.map(async chunk => {
-        const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
-        const result = { text: prefixedChunk };
-        if (returnEmbedding) {
-            result.embedding = await createEmbedding(prefixedChunk);
+    // Process each document
+    const allResults = await Promise.all(documents.map(async (doc) => {
+        if (!doc.document_text) {
+            throw new Error('Each document must have a document_text property');
         }
-        if (returnTokenLength) {
-            try {
-                const encoded = await tokenizer(prefixedChunk, { padding: true });
-                if (encoded && encoded.input_ids) {
-                    result.tokenLength = encoded.input_ids.size;
-                } else {
-                    console.error('Tokenizer returned unexpected format:', encoded);
-                    result.tokenLength = 0;
-                }
-            } catch (error) {
-                console.error('Error during tokenization:', error);
-                result.tokenLength = 0;
+
+        // Split the text into sentences
+        const sentences = [];
+        for (const { segment } of splitBySentence(doc.document_text)) {
+            sentences.push(segment.trim());
+        }
+        
+        // Create chunks without considering similarities
+        const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
+        
+        if (logging) {
+            console.log('\nCRAMIT');
+            console.log('=============\nChunks\n=============');
+            chunks.forEach((chunk, index) => {
+                console.log("\n");
+                console.log(`--------------`);
+                console.log(`-- Chunk ${(index + 1)} --`);
+                console.log(`--------------`);
+                console.log(chunk);
+            });
+        }
+
+        const documentName = doc.document_name || ""; // Normalize document_name
+        const documentId = Date.now();
+        const numberOfChunks = chunks.length;
+
+        return Promise.all(chunks.map(async (chunk, index) => {
+            const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
+            const result = {
+                document_id: documentId,
+                document_name: documentName,
+                number_of_chunks: numberOfChunks,
+                chunk_number: index + 1,
+                model_name: modelName,
+                is_model_quantized: isQuantized,
+                text: prefixedChunk
+            };
+
+            if (returnEmbedding) {
+                result.embedding = await createEmbedding(prefixedChunk);
             }
-        }
-        return result;
+
+            if (returnTokenLength) {
+                try {
+                    const encoded = await tokenizer(prefixedChunk, { padding: true });
+                    if (encoded && encoded.input_ids) {
+                        result.token_length = encoded.input_ids.size;
+                    } else {
+                        console.error('Tokenizer returned unexpected format:', encoded);
+                        result.token_length = 0;
+                    }
+                } catch (error) {
+                    console.error('Error during tokenization:', error);
+                    result.token_length = 0;
+                }
+            }
+
+            return result;
+        }));
     }));
+
+    // Flatten the results array since we're processing multiple documents
+    return allResults.flat();
 }
