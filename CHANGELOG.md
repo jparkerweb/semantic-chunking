@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2024-11-01
+### Updated
+- Updated example scripts in README.
+
 ## [2.1.0] - 2024-11-01
 ### Updated
 - ⚠️ **BREAKING**: Input format now accepts array of document objects
