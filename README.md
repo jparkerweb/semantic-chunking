@@ -281,17 +281,25 @@ If you are using this library for a RAG application, consider using the `chunkPr
 
 Chunk your large document like this:
 ```javascript
-const text = await fs.promises.readFile('./large-document.txt', 'utf8');
-const myDocumentChunks = await chunkit(text, { chunkPrefix: "search_document" });
+const largeDocumentText = await fs.promises.readFile('./large-document.txt', 'utf8');
+const documents = [ 
+    {
+        document_name: "large document",
+        document_text: largeDocumentText
+    }
+];
+const myDocumentChunks = await chunkit(documents, { chunkPrefix: "search_document" });
 ```
 
 Get your search queries ready like this (use cramit for a quick large chunk):
 ```javascript
-const mySearchQuery = "What is the capital of France?";
-const mySearchQueryChunk = await chunkit(mySearchQuery, { chunkPrefix: "search_query" });
+const documents = [
+    { document_text: "What is the capital of France?" } 
+];
+const mySearchQueryChunk = await chunkit(documents, { chunkPrefix: "search_query" });
 ```
 
-Now you can use the `myDocumentChunks` and `mySearchQueryChunk` arrays in your RAG application or find the closest match using cosine similarity in memory.
+Now you can use the `myDocumentChunks` and `mySearchQueryChunk` results in your RAG application, feed them to a vector database, or find the closest match using cosine similarity in memory. The possibilities are many!
 
 Happy Chunking!
 
