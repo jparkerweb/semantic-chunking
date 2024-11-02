@@ -26,7 +26,7 @@ const myChunks = await chunkit(text, chunkitOptions);
 
 ## Parameters
 
-`chunkit` accepts a text string and an optional configuration object. Here are the details for each parameter:
+`chunkit` accepts an array of document objects and an optional configuration object. Here are the details for each parameter:
 
 - `documents`: array of documents. each document is an object containing `document_name` and `document_text`.
   ```
