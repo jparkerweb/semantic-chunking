@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.4] - 2024-11-04
+### Updated
+- Updated README `cramit` example script to use updated document object input format.
+
 ## [2.1.3] - 2024-11-04
 ### Fixed
 - Fixed `cramit` function to properly pack sentences up to maxTokenSize
