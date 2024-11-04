@@ -8,55 +8,39 @@ import { createEmbedding } from './embeddingUtils.js';
 export function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
     let chunks = [];
     let currentChunk = [sentences[0]];
-    let currentChunkSize;
-    let sentenceTokenCount;
-
-    if (logging) { console.log(`!! new chunk !! --> 1`) }
+    
+    if (logging) {
+        console.log('Initial sentence:', sentences[0]);
+    }
 
     for (let i = 1; i < sentences.length; i++) {
-        currentChunkSize = tokenizer(currentChunk.join(" ")).input_ids.size;
-        sentenceTokenCount = tokenizer(sentences[i]).input_ids.size;
-
-        if (logging) {
-            console.log('sentenceTokenCount', sentenceTokenCount);
-            console.log('currentChunkSize', currentChunkSize);
-            console.log('maxTokenSize', maxTokenSize);
-            if (similarities) {
-                console.log('similarity', similarities[i - 1])
-                console.log('similarityThreshold', similarityThreshold)
-            }
+        const currentChunkSize = tokenizer(currentChunk.join(" ")).input_ids.size;
+        const sentenceTokenCount = tokenizer(sentences[i]).input_ids.size;
+        
+        // Never split if it would exceed maxTokenSize
+        if (currentChunkSize + sentenceTokenCount > maxTokenSize) {
+            if (logging) console.log('Chunk size limit reached:', currentChunkSize);
+            chunks.push(currentChunk.join(" "));
+            currentChunk = [sentences[i]];
+            continue;
         }
 
-        if (similarities) {
-            if (similarities[i - 1] >= similarityThreshold && currentChunkSize + sentenceTokenCount <= maxTokenSize) {
-                currentChunk.push(sentences[i]);
-                if (logging) { console.log('keep going...') }
-            } else {
-                chunks.push(currentChunk.join(" "));
-                currentChunk = [sentences[i]];
-                if (logging) {
-                    console.log('stop...')
-                    console.log('\n')
-                    console.log(`!! new chunk !! --> ${chunks.length + 1}`)
-                }
+        // Only combine if similarity threshold is met
+        if (similarities && similarities[i - 1] >= similarityThreshold) {
+            if (logging) {
+                console.log(`Adding sentence ${i} with similarity ${similarities[i - 1]}`);
             }
+            currentChunk.push(sentences[i]);
         } else {
-            if (currentChunkSize + sentenceTokenCount <= maxTokenSize) {
-                currentChunk.push(sentences[i]);
-                if (logging) { console.log('keep going...') }
-            } else {
-                chunks.push(currentChunk.join(" "));
-                currentChunk = [sentences[i]];
-                if (logging) {
-                    console.log('stop...')
-                    console.log('\n')
-                    console.log(`!! new chunk !! --> ${chunks.length + 1}`)
-                }
+            if (logging) {
+                console.log(`Starting new chunk at sentence ${i}, similarity was ${similarities ? similarities[i - 1] : 'N/A'}`);
             }
+            chunks.push(currentChunk.join(" "));
+            currentChunk = [sentences[i]];
         }
     }
 
-    if (currentChunk.length > 0 && currentChunk[0] !== "") {
+    if (currentChunk.length > 0) {
         chunks.push(currentChunk.join(" "));
     }
 
