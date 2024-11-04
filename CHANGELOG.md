@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.1.2] - 2024-11-02
+## [2.1.3] - 2024-11-04
+### Fixed
+- Fixed `cramit` function to properly pack sentences up to maxTokenSize
+
+### Updated
+- Improved chunk creation logic to better handle both chunkit and cramit modes
+- Enhanced token size calculation efficiency
+
+## [2.1.2] - 2024-11-04
 ### Fixed
 - Improved semantic chunking accuracy with stricter similarity thresholds
 - Enhanced logging in similarity calculations for better debugging
