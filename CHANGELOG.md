@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2024-11-02
+### Fixed
+- Improved semantic chunking accuracy with stricter similarity thresholds
+- Enhanced logging in similarity calculations for better debugging
+- Fixed chunk creation to better respect semantic boundaries
+
+### Updated
+- Default similarity threshold increased to 0.5
+- Default dynamic threshold bounds adjusted (0.4 - 0.8)
+- Improved chunk rebalancing logic with similarity checks
+- Updated logging for similarity scores between sentences
+
 ## [2.1.1] - 2024-11-01
 ### Updated
 - Updated example scripts in README.
