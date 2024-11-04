@@ -37,8 +37,16 @@ export async function computeAdvancedSimilarities(sentences, { numSimilaritySent
     for (let i = 0; i < embeddings.length - 1; i++) {
         let maxSimilarity = cosineSimilarity(embeddings[i], embeddings[i + 1]);
 
+        if (logging) {
+            console.log(`\nSimilarity scores for sentence ${i}:`);
+            console.log(`Base similarity with next sentence: ${maxSimilarity}`);
+        }
+
         for (let j = i + 2; j <= i + numSimilaritySentencesLookahead && j < embeddings.length; j++) {
             const sim = cosineSimilarity(embeddings[i], embeddings[j]);
+            if (logging) {
+                console.log(`Similarity with sentence ${j}: ${sim}`);
+            }
             maxSimilarity = Math.max(maxSimilarity, sim);
         }
 
