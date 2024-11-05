@@ -16,7 +16,7 @@ import fs from 'fs';
 
 // initialize documents array
 let documents = [];
-let textFiles = ['./different.txt', './similar.txt'];
+let textFiles = ['./similar.txt'];
 
 // read each text file and add it to the documents array
 for (const textFile of textFiles) {

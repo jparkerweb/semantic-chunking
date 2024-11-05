@@ -56,6 +56,13 @@ export async function chunkit(
             throw new Error('Each document must have a document_text property');
         }
 
+        // Normalize document text by converting single line breaks to spaces
+        // but preserving multiple line breaks
+        let normalizedText = doc.document_text.replace(/([^\n])\n([^\n])/g, '$1 $2');
+        // Convert multiple spaces to single space
+        normalizedText = normalizedText.replace(/\s{2,}/g, ' ');
+        doc.document_text = normalizedText;
+
         // Split the text into sentences
         const sentences = [];
         for (const { segment } of splitBySentence(doc.document_text)) {
