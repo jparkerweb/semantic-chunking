@@ -13,7 +13,14 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+
+// Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve node_modules directory (only for highlight.js)
+app.use('/node_modules/highlight.js', express.static(
+  path.join(__dirname, 'node_modules/highlight.js')
+));
 
 // Basic route
 app.get('/', (req, res) => {

@@ -29,6 +29,7 @@ body {
     overflow: hidden;
 }
 
+
 .container {
     display: flex;
     flex-direction: column;
@@ -38,6 +39,16 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     padding: 20px;
     position: relative;
+    opacity: 0;
+    animation: fadeInContent 0.3s ease-out forwards;
+}
+@keyframes fadeInContent {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 h1.title {
@@ -456,7 +467,6 @@ pre {
     white-space: nowrap;
 }
 
-/* Add these styles */
 .results-header {
     display: flex;
     justify-content: space-between;
@@ -475,6 +485,7 @@ pre {
     font-size: 0.75em;
     color: var(--text-color);
     opacity: 0.8;
+    align-items: center;
 }
 
 .results-stats span {
@@ -518,7 +529,6 @@ pre {
     opacity: 1;
 }
 
-/* Updated tooltip styles */
 .secondary-button::after {
     content: attr(data-tooltip);
     position: absolute;
@@ -537,9 +547,9 @@ pre {
     border: 1px solid var(--border-color);
     z-index: 1000;
     width: max-content;
-    max-width: 200px; /* Add max-width */
-    white-space: normal; /* Allow text to wrap */
-    text-align: center; /* Center the wrapped text */
+    max-width: 200px;
+    white-space: normal;
+    text-align: center;
 }
 
 /* Ensure tooltip stays within viewport */
@@ -559,7 +569,6 @@ pre {
     transform: none;
 }
 
-/* Add these styles */
 .button-group {
     display: flex;
     gap: 10px;
@@ -578,7 +587,7 @@ pre {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7);
-    overflow: hidden; /* Prevent body scroll */
+    overflow: hidden;
 }
 
 .modal-content {
@@ -589,17 +598,17 @@ pre {
     border-radius: 8px;
     width: 90%;
     max-width: 1000px;
-    max-height: 96vh; /* Leave some space at top and bottom */
+    max-height: 96vh;
     position: relative;
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Hide overflow for flex container */
+    overflow: hidden;
     user-select: none;
 }
 
 .modal-content h2 {
     margin: 0 0 20px 0;
-    padding-right: 30px; /* Space for close button */
+    padding-right: 30px;
 }
 
 .close {
@@ -624,7 +633,7 @@ pre {
     border: 1px solid var(--border-color);
     border-radius: 4px;
     overflow-y: auto;
-    flex: 1; /* Take remaining space */
+    flex: 1;
     min-height: 0; /* Allow flex item to shrink */
     font-family: var(--font-mono);
     user-select: text;
@@ -645,7 +654,6 @@ pre {
     min-width: 100px;
 }
 
-/* Add these styles */
 .default-message {
     display: flex;
     align-items: center;
@@ -755,8 +763,22 @@ pre {
     z-index: 1;
 }
 
+.top-link svg {
+    transition: all 0.2s ease-in-out;
+}
+
 .top-link:hover {
     opacity: 1;
+}
+
+.top-link.-github:hover svg {
+    fill: #0984e3;
+    transform: scale(1.1);
+}
+
+.top-link.-support:hover svg {
+    fill: #fd79a8;
+    transform: scale(1.3);
 }
 
 .top-link svg {
@@ -765,12 +787,59 @@ pre {
     fill: currentColor;
 }
 
-/* Remove the old github-link styles since they're replaced by top-link */
-.github-link {
-    display: none;
-}
-
-/* Update container to handle absolute positioning */
 .container {
     position: relative;
+}
+
+#resultsJson code {
+    font-family: var(--font-mono);
+    background: transparent;
+    padding: 0;
+}
+
+.hljs {
+    background: var(--pre-bg) !important;
+    color: var(--text-color) !important;
+}
+
+.resize-toggle {
+    background: var(--primary-color);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.resize-toggle:hover {
+    background-color: #1976D2;
+}
+
+.resize-toggle svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s;
+}
+
+.resize-toggle.wrapped svg {
+    transform: rotate(90deg);
+}
+
+.resize-toggle svg path {
+    stroke-width: 1.5;
+}
+
+#resultsJson {
+    white-space: pre;
+    transition: white-space 0s;
+}
+
+#resultsJson.wrapped {
+    white-space: pre-wrap;
 }

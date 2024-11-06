@@ -34,6 +34,7 @@ document.querySelectorAll('input[type="range"]').forEach(input => {
         display.appendChild(description);
     }
 
+    // Update similarity display
     function updateSimilarityDisplay(value) {
         const number = display.querySelector('.number');
         const description = display.querySelector('.description');
@@ -78,10 +79,10 @@ document.querySelectorAll('input[type="range"]').forEach(input => {
     input.addEventListener('input', (e) => updateSimilarityDisplay(e.target.value));
 });
 
-// Add this after the range input display setup
 const combineChunksToggle = document.getElementById('combineChunks');
 const dependentControls = document.querySelectorAll('.depends-on-combine-chunks');
 
+// Update dependent controls
 function updateDependentControls() {
     const isEnabled = combineChunksToggle.checked;
     dependentControls.forEach(control => {
@@ -132,6 +133,7 @@ const spinner = document.createElement('div');
 spinner.className = 'spinner';
 resultsJson.parentNode.insertBefore(spinner, resultsJson);
 
+// Process form handler
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const submitButton = form.querySelector('button[type="submit"]');
@@ -179,9 +181,15 @@ form.addEventListener('submit', async (e) => {
         spinner.classList.remove('visible');
         defaultMessage.style.display = 'none';
         resultsJson.style.display = 'block';
-        resultsJson.textContent = JSON.stringify(result, null, 2);
-        downloadButton.disabled = false; // Enable download button only after successful results
-        
+
+        // Create code element and set content safely
+        const codeElement = document.createElement('code');
+        codeElement.className = 'language-json';
+        codeElement.textContent = JSON.stringify(result, null, 2);
+        resultsJson.textContent = ''; // Clear existing content
+        resultsJson.appendChild(codeElement);
+        hljs.highlightElement(codeElement);
+
         // Calculate and display stats
         if (result.length > 0) {
             const numChunks = result[0].number_of_chunks;
@@ -218,11 +226,24 @@ form.addEventListener('submit', async (e) => {
         
     } catch (error) {
         console.error('Error:', error);
-        showToast(error.message);
+        let errorMessage = error.message;
+        
+        if (errorMessage.includes('Could not locate file:')) {
+            errorMessage += '<br><br>Some models may not have both a quantized & non-quantized version,';
+            errorMessage += '<br>please toggle this option and try again, or choose a different model';
+        }
+        
+        showToast(errorMessage);
         downloadButton.disabled = true;
         spinner.classList.remove('visible');
         resultsJson.style.display = 'block';
-        resultsJson.textContent = JSON.stringify({ error: error.message }, null, 2);
+        
+        const codeElement = document.createElement('code');
+        codeElement.className = 'language-json';
+        codeElement.textContent = JSON.stringify({ error: error.message }, null, 2);
+        resultsJson.textContent = ''; // Clear existing content
+        resultsJson.appendChild(codeElement);
+        hljs.highlightElement(codeElement);
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = 'Process Text';
@@ -232,7 +253,7 @@ form.addEventListener('submit', async (e) => {
 // Initialize download button as disabled
 document.getElementById('downloadButton').disabled = true;
 
-// Add this after the existing fetch for sample.txt
+// Document buttons handler
 document.querySelectorAll('.document-buttons button').forEach(button => {
     button.addEventListener('click', async () => {
         const fileType = button.dataset.file;
@@ -252,13 +273,13 @@ document.querySelectorAll('.document-buttons button').forEach(button => {
     });
 });
 
-// Add this to your main.js
 const modal = document.getElementById('codeModal');
 const getCodeBtn = document.getElementById('getCodeButton');
 const closeBtn = document.querySelector('.close');
 const copyBtn = document.getElementById('copyCode');
-const codeExample = document.getElementById('codeExample');
+const codeExample = document.querySelector('#codeExample code');
 
+// Get Code button handler
 getCodeBtn.onclick = () => {
     // Get all form data and properly handle checkbox values
     const formData = {};
@@ -276,8 +297,12 @@ getCodeBtn.onclick = () => {
     // getting the actual boolean values here
     codeExample.textContent = generateCode(formData);
     modal.style.display = "block";
+    // Clear the highlighted state before highlighting again
+    delete codeExample.dataset.highlighted;
+    hljs.highlightElement(codeExample);
 };
 
+// Generate Code function
 function generateCode(formData) {
     // No need to convert checkbox values since they're already booleans
     return `// import the semantic-chunking library
@@ -318,16 +343,19 @@ const myChunks = await chunkit(
 console.log(myChunks);`;
 }
 
+// Close Modal button handler
 closeBtn.onclick = () => {
     modal.style.display = "none";
 };
 
+// Close Modal on click outside
 window.onclick = (event) => {
     if (event.target === modal) {
         modal.style.display = "none";
     }
 };
 
+// Copy Code button handler
 copyBtn.onclick = () => {
     navigator.clipboard.writeText(codeExample.textContent)
         .then(() => {
@@ -343,19 +371,18 @@ copyBtn.onclick = () => {
         });
 };
 
-// Add close button handler
+// Close Modal button handler
 const closeModalBtn = document.getElementById('closeModal');
-
 closeModalBtn.onclick = () => {
     modal.style.display = "none";
 };
 
-// Update toast functionality
+// Toast functionality
 function showToast(message, type = 'error', duration = 7000) {
     const toastContainer = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.textContent = message;
+    toast.innerHTML = message;
 
     // Clear any existing toasts
     toastContainer.innerHTML = '';
@@ -390,4 +417,32 @@ function showToast(message, type = 'error', duration = 7000) {
 // Add this with your other event listeners
 document.querySelector('.info-icon').addEventListener('click', () => {
     showToast('More model choices can be added by updating the "models.json" file in the "webui" directory.', 'info', 7000);
+});
+
+// Add after other initialization code
+const resultsContent = document.querySelector('.results-content');
+
+// Create and add the resize toggle button
+const processingTimeSpan = document.getElementById('processingTime');
+
+// Create and add the resize toggle button
+const resizeToggle = document.createElement('button');
+resizeToggle.className = 'resize-toggle';
+resizeToggle.innerHTML = `
+    <svg viewBox="0 0 24 24">
+        <path d="M17 8.5L20 11.5L17 14.5M7 8.5L4 11.5L7 14.5M5.5 11.5H18.5" 
+              stroke="white" 
+              stroke-width="2" 
+              stroke-linecap="round" 
+              stroke-linejoin="round"
+              fill="none"/>
+    </svg>
+`;
+resizeToggle.title = "Toggle text wrapping";
+processingTimeSpan.parentNode.insertBefore(resizeToggle, processingTimeSpan.nextSibling);
+
+// Add click handler
+resizeToggle.addEventListener('click', () => {
+    resultsJson.classList.toggle('wrapped');
+    resizeToggle.classList.toggle('wrapped');
 });

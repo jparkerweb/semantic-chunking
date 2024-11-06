@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.2.0] - 2024-03-19
+## [2.2.1] - 2024-11-06
+### Added
+- Added Highlight.js to Web UI for syntax highlighting of JSON results and code samples
+- Added JSON results toggle button to turn line wrapping on/off
+
+## [2.2.0] - 2024-11-05
 ### Added
 - New Web UI tool for experimenting with semantic chunking settings
   - Interactive form interface for all chunking parameters

@@ -12,6 +12,8 @@ A web-based interface for experimenting with and tuning Semantic Chunking settin
 - Code generation for your settings
 - Example texts for testing
 - Dark mode interface
+- Syntax highlighting of JSON results and code samples
+- Line wrapping toggle for JSON results
 
 ![semantic-chunking_web-ui](../img/semantic-chunking_web-ui.gif)
 
