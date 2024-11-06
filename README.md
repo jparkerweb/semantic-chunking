@@ -1,6 +1,6 @@
 # 🍱 semantic-chunking
 
-Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).
+NPM Package for Semantically creating chunks from large texts. Useful for workflows involving large language models (LLMs).
 
 ## Features
 
@@ -11,6 +11,16 @@ Semantically create chunks from large texts. Useful for workflows involving larg
 - Quantized model support
 - Chunk prefix support for RAG workflows
 - Web UI for experimenting with settings
+
+## Semantic Chunking Workflow
+_how it works_
+
+1. **Sentence Splitting**: The input text is split into an array of sentences.
+2. **Embedding Generation**: A vector is created for each sentence using the specified ONNX model.
+3. **Similarity Calculation**: Cosine similarity scores are calculated for each sentence pair.
+4. **Chunk Formation**: Sentences are grouped into chunks based on the similarity threshold and max token size.
+5. **Chunk Rebalancing**: Optionally, similar adjacent chunks are combined into larger ones up to the max token size.
+6. **Output**: The final chunks are returned as an array of objects, each containing the properties described above.
 
 ## Installation
 
@@ -82,15 +92,6 @@ The output is an array of chunks, each containing the following properties:
 - `text`: String - The chunked text.
 - `embedding`: Array - The embedding vector (if `returnEmbedding` is `true`).
 - `token_length`: Integer - The token length (if `returnTokenLength` is `true`).
-
-## Semantic Chunking Workflow
-
-1. **Sentence Splitting**: The input text is split into an array of sentences.
-2. **Embedding Generation**: A vector is created for each sentence using the specified ONNX model.
-3. **Similarity Calculation**: Cosine similarity scores are calculated for each sentence pair.
-4. **Chunk Formation**: Sentences are grouped into chunks based on the similarity threshold and max token size.
-5. **Chunk Rebalancing**: Optionally, similar adjacent chunks are combined into larger ones up to the max token size.
-6. **Output**: The final chunks are returned as an array of objects, each containing the properties described above.
 
 ## Examples
 
@@ -219,6 +220,7 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 | Xenova/all-MiniLM-L6-v2                      | true      | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 23 MB   |
 | Xenova/all-MiniLM-L6-v2                      | false     | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 90.4 MB |
 | Xenova/paraphrase-multilingual-MiniLM-L12-v2 | true      | [https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) | 118 MB  |
+| thenlper/gte-base                            | false     | [https://huggingface.co/thenlper/gte-base](https://huggingface.co/thenlper/gte-base)                                                       | 436 MB  |
 | Xenova/all-distilroberta-v1                  | true      | [https://huggingface.co/Xenova/all-distilroberta-v1](https://huggingface.co/Xenova/all-distilroberta-v1)                                   | 82.1 MB |
 | Xenova/all-distilroberta-v1                  | false     | [https://huggingface.co/Xenova/all-distilroberta-v1](https://huggingface.co/Xenova/all-distilroberta-v1)                                   | 326 MB  |
 | BAAI/bge-base-en-v1.5                        | false     | [https://huggingface.co/BAAI/bge-base-en-v1.5](https://huggingface.co/BAAI/bge-base-en-v1.5)                                               | 436 MB  |
@@ -241,8 +243,7 @@ The Semantic Chunking Web UI allows you to experiment with the chunking paramete
 - Example texts for testing
 - Dark mode interface
 
-
-
+![Semantic Chunking Web UI](./img/semantic-chunking_web-ui.gif)
 
 ---
 

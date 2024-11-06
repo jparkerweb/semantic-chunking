@@ -1,6 +1,6 @@
 # 🍱 Semantic Chunking Web UI
 
-A web-based interface for experimenting with and tuning Semantic Chunking settings. This tool provides a visual way to test and configure the `semantic-chunking` library's settings to get optimal results for your specific use case.
+A web-based interface for experimenting with and tuning Semantic Chunking settings. This tool provides a visual way to test and configure the `semantic-chunking` library's settings to get optimal results for your specific use case. Once you've found the best settings, you can generate code to implement them in your project.
 
 ## Features
 
@@ -13,6 +13,8 @@ A web-based interface for experimenting with and tuning Semantic Chunking settin
 - Example texts for testing
 - Dark mode interface
 
+![semantic-chunking_web-ui](../img/semantic-chunking_web-ui.gif)
+
 ## Getting Started
 
 ### Prerequisites
@@ -22,35 +24,29 @@ A web-based interface for experimenting with and tuning Semantic Chunking settin
 ### Installation
 
 1. Clone the repository: 
----bash
+```bash
 git clone https://github.com/jparkerweb/semantic-chunking.git
 ```
 
-
 2. Navigate to the webui directory:
----bash
+```bash
 cd semantic-chunking/webui
 ```
 
-
 3. Install dependencies:
----bash
+```bash
 npm install
 ```
 
 4. Start the server:
----bash
+```bash
 npm start
 ```
 
-
 5. Open your browser and visit:
----bash
+```bash
 http://localhost:3000
 ```
-
----
-
 
 ## Usage
 
@@ -104,3 +100,8 @@ The web UI is built with:
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Appreciation
+
+If you enjoy this package please consider sending me a tip to support my work 😀
+# [🍵 tip me here](https://ko-fi.com/jparkerweb)
