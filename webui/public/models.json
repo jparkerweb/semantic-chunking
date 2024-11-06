@@ -1,0 +1,32 @@
+{
+  "models": [
+    {
+      "value": "nomic-ai/nomic-embed-text-v1.5",
+      "label": "nomic-ai/nomic-embed-text-v1.5"
+    },
+    {
+      "value": "thenlper/gte-base",
+      "label": "thenlper/gte-base"
+    },
+    {
+      "value": "Xenova/all-MiniLM-L6-v2",
+      "label": "Xenova/all-MiniLM-L6-v2"
+    },
+    {
+      "value": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+      "label": "Xenova/paraphrase-multilingual-MiniLM-L12-v2"
+    },
+    {
+      "value": "Xenova/all-distilroberta-v1",
+      "label": "Xenova/all-distilroberta-v1"
+    },
+    {
+      "value": "BAAI/bge-base-en-v1.5",
+      "label": "BAAI/bge-base-en-v1.5"
+    },
+    {
+      "value": "BAAI/bge-small-en-v1.5",
+      "label": "BAAI/bge-small-en-v1.5"
+    }
+  ]
+}

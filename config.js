@@ -14,4 +14,5 @@ export const DEFAULT_CONFIG = {
     RETURN_EMBEDDING: false,
     RETURN_TOKEN_LENGTH: false,
     CHUNK_PREFIX: null,
+    EXCLUDE_CHUNK_PREFIX_IN_RESULTS: false,
 };

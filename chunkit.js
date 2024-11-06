@@ -36,6 +36,7 @@ export async function chunkit(
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
+        excludeChunkPrefixInResults = false,
     } = {}) {
 
     // Input validation
@@ -153,6 +154,12 @@ export async function chunkit(
                 }
             }
 
+            // Remove prefix if requested (after embedding calculation)
+            if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
+                const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
+                result.text = result.text.replace(prefixPattern, '');
+            }
+
             return result;
         }));
     }));
@@ -176,6 +183,7 @@ export async function cramit(
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
+        excludeChunkPrefixInResults = false,
     } = {}) {
 
     // Input validation
@@ -250,6 +258,12 @@ export async function cramit(
                     console.error('Error during tokenization:', error);
                     result.token_length = 0;
                 }
+            }
+
+            // Remove prefix if requested (after embedding calculation)
+            if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
+                const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
+                result.text = result.text.replace(prefixPattern, '');
             }
 
             return result;

@@ -14,13 +14,14 @@ export function createChunks(sentences, similarities, maxTokenSize, similarityTh
     }
 
     for (let i = 1; i < sentences.length; i++) {
-        const currentChunkText = currentChunk.join(" ");
-        const currentChunkSize = tokenizer(currentChunkText).input_ids.size;
         const nextSentence = sentences[i];
-        const nextSentenceTokenCount = tokenizer(nextSentence).input_ids.size;
         
         // For cramit (when similarities is null), only check token size
         if (!similarities) {
+            const currentChunkText = currentChunk.join(" ");
+            const currentChunkSize = tokenizer(currentChunkText).input_ids.size;
+            const nextSentenceTokenCount = tokenizer(nextSentence).input_ids.size;
+            
             if (currentChunkSize + nextSentenceTokenCount <= maxTokenSize) {
                 currentChunk.push(nextSentence);
             } else {
@@ -30,24 +31,28 @@ export function createChunks(sentences, similarities, maxTokenSize, similarityTh
             continue;
         }
 
-        // Regular chunkit logic with similarities
-        if (currentChunkSize + nextSentenceTokenCount > maxTokenSize) {
-            if (logging) console.log('Chunk size limit reached:', currentChunkSize);
-            chunks.push(currentChunkText);
-            currentChunk = [nextSentence];
-            continue;
-        }
-
+        // Check similarity first for chunkit
         if (similarities[i - 1] >= similarityThreshold) {
             if (logging) {
                 console.log(`Adding sentence ${i} with similarity ${similarities[i - 1]}`);
             }
-            currentChunk.push(nextSentence);
+            
+            // Then check token size
+            const currentChunkText = currentChunk.join(" ");
+            const currentChunkSize = tokenizer(currentChunkText).input_ids.size;
+            const nextSentenceTokenCount = tokenizer(nextSentence).input_ids.size;
+            
+            if (currentChunkSize + nextSentenceTokenCount <= maxTokenSize) {
+                currentChunk.push(nextSentence);
+            } else {
+                chunks.push(currentChunkText);
+                currentChunk = [nextSentence];
+            }
         } else {
             if (logging) {
                 console.log(`Starting new chunk at sentence ${i}, similarity was ${similarities[i - 1]}`);
             }
-            chunks.push(currentChunkText);
+            chunks.push(currentChunk.join(" "));
             currentChunk = [nextSentence];
         }
     }

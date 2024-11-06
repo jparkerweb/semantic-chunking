@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍱 Semantic Chunking UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title"><a href="/">🍱 Semantic Chunking UI</a></h1>
+        <div class="subtitle">Sandbox to tune your semantic chunking settings to get the best results for your use case</div>
+        
+        <div class="content-wrapper">
+            <div class="form-wrapper">
+                <form id="chunkForm">
+                    <div class="form-content">
+                        <div class="form-group document-name-group">
+                            <label for="documentName">Document Name:</label>
+                            <div class="input-with-buttons">
+                                <input type="text" id="documentName" name="documentName" value="sample text" required>
+                                <div class="document-buttons">
+                                    <button type="button" class="secondary-button" data-file="similar" data-tooltip="load example text with high semantic similarity">similar.txt</button>
+                                    <button type="button" class="secondary-button" data-file="different" data-tooltip="load example text with low semantic similarity">different.txt</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="documentText">Text to Chunk:</label>
+                            <textarea id="documentText" name="documentText" required></textarea>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Basic Settings</h3>
+                            <div class="form-group">
+                                <label for="maxTokenSize">Max Token Size (50-2500):</label>
+                                <input type="range" id="maxTokenSize" name="maxTokenSize" min="50" max="2500" step="25" value="500">
+                                <span class="value-display"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="similarityThreshold">Similarity Threshold (0.1-1.0):</label>
+                                <input type="range" id="similarityThreshold" name="similarityThreshold" min="0.1" max="1.0" step="0.025" value="0.5">
+                                <span class="value-display"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="numSimilaritySentencesLookahead">Similarity Sentences Lookahead (1-10):</label>
+                                <input type="range" id="numSimilaritySentencesLookahead" name="numSimilaritySentencesLookahead" min="1" max="10" step="1" value="2">
+                                <span class="value-display"></span>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Dynamic Threshold Settings</h3>
+                                <div class="form-group">
+                                    <label for="dynamicThresholdLowerBound">Dynamic Threshold Lower Bound (0.1-1.0):</label>
+                                    <input type="range" id="dynamicThresholdLowerBound" name="dynamicThresholdLowerBound" min="0.1" max="1.0" step="0.025" value="0.4">
+                                    <span class="value-display"></span>
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="dynamicThresholdUpperBound">Dynamic Threshold Upper Bound (0.1-1.0):</label>
+                                    <input type="range" id="dynamicThresholdUpperBound" name="dynamicThresholdUpperBound" min="0.1" max="1.0" step="0.025" value="0.8">
+                                    <span class="value-display"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3>Combine Chunks Settings</h3>
+                                <div class="form-group">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label class="white-space--nowrap" for="combineChunks">Combine Chunks:</label>
+                                            <label class="switch">
+                                                <input type="checkbox" id="combineChunks" name="combineChunks" checked>
+                                                <span class="slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-group depends-on-combine-chunks">
+                                            <label for="combineChunksSimilarityThreshold">Combine Chunks Similarity Threshold (0.1-1.0):</label>
+                                            <input type="range" id="combineChunksSimilarityThreshold" name="combineChunksSimilarityThreshold" min="0.1" max="1.0" step="0.025" value="0.5">
+                                            <span class="value-display"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Model Settings</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="onnxEmbeddingModel">Embedding Model:</label>
+                                    <select id="onnxEmbeddingModel" name="onnxEmbeddingModel">
+                                        <!-- Options will be populated by JavaScript -->
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="onnxEmbeddingModelQuantized">Quantized Model:</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="onnxEmbeddingModelQuantized" name="onnxEmbeddingModelQuantized" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Output Settings</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="returnTokenLength">Return Token Length:</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="returnTokenLength" name="returnTokenLength" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="returnEmbedding">Return Embedding:</label>
+                                    <label class="switch">
+                                        <input type="checkbox" id="returnEmbedding" name="returnEmbedding">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="chunkPrefix">Chunk Prefix:</label>
+                                <label class="sub-label">For embedding models that support task prefixes</label>
+                                <input type="text" id="chunkPrefix" name="chunkPrefix" placeholder="e.g., search_document, search_query, etc.">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="excludeChunkPrefixInResults">Exclude Chunk Prefix in Results:</label>
+                                <label class="switch">
+                                    <input type="checkbox" id="excludeChunkPrefixInResults" name="excludeChunkPrefixInResults">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Hidden inputs -->
+                        <input type="hidden" id="logging" name="logging" value="false">
+                        <input type="hidden" id="localModelPath" name="localModelPath" value="./models">
+                        <input type="hidden" id="modelCacheDir" name="modelCacheDir" value="./models">
+                    </div>
+                    
+                    <div class="form-footer">
+                        <button type="submit">Process Text</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="results-wrapper">
+                <div id="results" class="results-container">
+                    <div class="results-content">
+                        <div class="results-header">
+                            <h2>Results</h2>
+                            <div class="results-stats">
+                                <span id="chunkCount"></span>
+                                <span id="avgTokenLength"></span>
+                                <span id="processingTime"></span>
+                            </div>
+                        </div>
+                        <div id="defaultMessage" class="default-message">
+                            Update the "Text to Chunk" value, modify the settings, and click "Process Text" to view the chunking results here. Feel free to experiment with different settings to see how they affect the results. Once you're satisfied, use the "Get Code" button to view/copy your Chunkit settings Object for use in your own project.
+                        </div>
+                        <pre id="resultsJson"></pre>
+                    </div>
+                    <div class="results-footer">
+                        <div class="button-group">
+                            <button id="downloadButton" disabled>Download JSON Results</button>
+                            <button id="getCodeButton">Get Code</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="codeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Code Example with Your Settings</h2>
+            <pre id="codeExample"></pre>
+            <div class="modal-footer">
+                <div class="button-group">
+                    <button id="copyCode">Copy Code</button>
+                    <button id="closeModal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toastContainer" class="toast-container"></div>
+    <script type="module" src="main.js"></script>
+</body>
+</html> 

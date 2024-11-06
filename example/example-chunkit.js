@@ -5,10 +5,7 @@
 // first we import the chunkit function
 // then we setup the documents array with the text files
 // then we call the chunkit function with the documents array and an options object
-// the options object is optional, but we are using it to set the logging to true
-// and to set the maxTokenSize to 300
-// and to set the onnxEmbeddingModel to "nomic-ai/nomic-embed-text-v1.5"
-// and to set the onnxEmbeddingModelQuantized to true
+// the options object is optional, use it to customize the chunking process
 // -------------------------------------------------------------------------------
 
 import { chunkit } from '../chunkit.js'; // this is typically just "import { chunkit } from 'semantic-chunking';", but this is a local test
@@ -32,14 +29,14 @@ const startTime = performance.now();
 let myTestChunks = await chunkit(
     documents,
     {
-        logging: true,                         // enable to see what's happening
+        logging: true,
         maxTokenSize: 300,
-        similarityThreshold: 0.65,             // increased threshold
-        dynamicThresholdLowerBound: 0.5,       // increased lower bound
-        dynamicThresholdUpperBound: 0.8,       // slightly increased upper bound
+        similarityThreshold: 0.65,        
+        dynamicThresholdLowerBound: 0.5,  
+        dynamicThresholdUpperBound: 0.8,  
         numSimilaritySentencesLookahead: 3,
-        combineChunks: true,                   // enable rebalancing
-        combineChunksSimilarityThreshold: 0.6, // increased threshold
+        combineChunks: true,  // enable rebalancing
+        combineChunksSimilarityThreshold: 0.6,
         onnxEmbeddingModel: "nomic-ai/nomic-embed-text-v1.5",
         onnxEmbeddingModelQuantized: true,
         localModelPath: "../models",
