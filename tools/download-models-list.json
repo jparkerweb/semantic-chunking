@@ -6,8 +6,32 @@
             "quantized": true
         },
         {
+            "modelName": "nomic-ai/nomic-embed-text-v1.5",
+            "quantized": false
+        },
+        {
             "modelName": "Xenova/all-MiniLM-L6-v2",
             "quantized": true
+        },
+        {
+            "modelName": "Xenova/all-MiniLM-L6-v2",
+            "quantized": false
+        },
+        {
+            "modelName": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
+            "quantized": true
+        },
+        {
+            "modelName": "Xenova/all-distilroberta-v1",
+            "quantized": true
+        },
+        {
+            "modelName": "Xenova/all-distilroberta-v1",
+            "quantized": false
+        },
+        {
+            "modelName": "BAAI/bge-base-en-v1.5",
+            "quantized": false
         },
         {
             "modelName": "BAAI/bge-small-en-v1.5",
