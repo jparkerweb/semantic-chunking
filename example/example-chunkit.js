@@ -3,7 +3,7 @@
 // -------------------------------------------------------------------------------
 // this is an example of how to use the chunkit function
 // first we import the chunkit function
-// then we setup the documents array with the text files
+// then we setup the documents array with text files
 // then we call the chunkit function with the documents array and an options object
 // the options object is optional, use it to customize the chunking process
 // -------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ import fs from 'fs';
 
 // initialize documents array
 let documents = [];
-let textFiles = ['./similar.txt'];
+let textFiles = ['./different.txt', './similar.txt'];
 
 // read each text file and add it to the documents array
 for (const textFile of textFiles) {
@@ -29,7 +29,7 @@ const startTime = performance.now();
 let myTestChunks = await chunkit(
     documents,
     {
-        logging: true,
+        logging: false,
         maxTokenSize: 300,
         similarityThreshold: 0.65,        
         dynamicThresholdLowerBound: 0.5,  
