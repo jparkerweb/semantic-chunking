@@ -2,7 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.1.4] - 2024-11-04
+## [2.2.0] - 2024-03-19
+### Added
+- New Web UI tool for experimenting with semantic chunking settings
+  - Interactive form interface for all chunking parameters
+  - Real-time text processing and results display
+  - Visual feedback for similarity thresholds
+  - Model selection and configuration
+  - Results download in JSON format
+  - Code generation for settings
+  - Example texts for testing
+  - Dark mode interface
+- Added `excludeChunkPrefixInResults` option to `chunkit` and `cramit` functions
+  - Allows removal of chunk prefix from final results while maintaining prefix for embedding calculations
+
+### Updated
+- Improved error handling and feedback in chunking functions
+- Enhanced documentation with Web UI usage examples
+- Added more embedding models to supported list
+
+### Fixed
+- Fixed issue with chunk prefix handling in embedding calculations
+- Improved token length calculation reliability
+
+## [2.1.4] - 2024-03-01
 ### Updated
 - Updated README `cramit` example script to use updated document object input format.
 

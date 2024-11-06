@@ -1,9 +1,18 @@
 # 🍱 semantic-chunking
 
-Semantically create chunks from large texts.  
-Useful for workflows involving large language models (LLMs).
+Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).
 
-## Install
+## Features
+
+- Semantic chunking based on sentence similarity
+- Dynamic similarity thresholds
+- Configurable chunk sizes
+- Multiple embedding model options
+- Quantized model support
+- Chunk prefix support for RAG workflows
+- Web UI for experimenting with settings
+
+## Installation
 
 ```bash
 npm install semantic-chunking
@@ -16,9 +25,13 @@ Basic usage:
 ```javascript
 import { chunkit } from 'semantic-chunking';
 
-const text = "some long text...";
+const documents = [
+    { document_name: "document1", document_text: "contents of document 1..." },
+    { document_name: "document2", document_text: "contents of document 2..." },
+    ...
+];
 const chunkitOptions = {};
-const myChunks = await chunkit(text, chunkitOptions);
+const myChunks = await chunkit(documents, chunkitOptions);
 
 ```
 
@@ -41,9 +54,9 @@ const myChunks = await chunkit(text, chunkitOptions);
   
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
   - `maxTokenSize`: Integer (optional, default `500`) - Maximum token size for each chunk.
-  - `similarityThreshold`: Float (optional, default `0.456`) - Threshold to determine if sentences are similar enough to be in the same chunk. A higher value demands higher similarity.
-  - `dynamicThresholdLowerBound`: Float (optional, default `0.2`) - Minimum possible dynamic similarity threshold.
-  - `dynamicThresholdUpperBound`: Float (optional, default `0.8`) - Maximum possible dynamic similarity threshold.
+  - `similarityThreshold`: Float (optional, default `0.5`) - Threshold to determine if sentences are similar enough to be in the same chunk. A higher value demands higher similarity.
+  - `dynamicThresholdLowerBound`: Float (optional, default `0.45`) - Minimum possible dynamic similarity threshold.
+  - `dynamicThresholdUpperBound`: Float (optional, default `0.75`) - Maximum possible dynamic similarity threshold.
   - `numSimilaritySentencesLookahead`: Integer (optional, default `2`) - Number of sentences to look ahead for calculating similarity.
   - `combineChunks`: Boolean (optional, default `true`) - Determines whether to reblance and combine chunks into larger ones up to the max token limit.
   - `combineChunksSimilarityThreshold`: Float (optional, default `0.5`) - Threshold for combining chunks based on similarity during the rebalance and combining phase.
@@ -54,6 +67,7 @@ const myChunks = await chunkit(text, chunkitOptions);
   - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
   - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
   - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
+  - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
 
 ## Output
 
@@ -69,13 +83,14 @@ The output is an array of chunks, each containing the following properties:
 - `embedding`: Array - The embedding vector (if `returnEmbedding` is `true`).
 - `token_length`: Integer - The token length (if `returnTokenLength` is `true`).
 
-## Workflow
+## Semantic Chunking Workflow
 
 1. **Sentence Splitting**: The input text is split into an array of sentences.
 2. **Embedding Generation**: A vector is created for each sentence using the specified ONNX model.
 3. **Similarity Calculation**: Cosine similarity scores are calculated for each sentence pair.
 4. **Chunk Formation**: Sentences are grouped into chunks based on the similarity threshold and max token size.
 5. **Chunk Rebalancing**: Optionally, similar adjacent chunks are combined into larger ones up to the max token size.
+6. **Output**: The final chunks are returned as an array of objects, each containing the properties described above.
 
 ## Examples
 
@@ -92,7 +107,7 @@ async function main() {
             document_text: await fs.promises.readFile('./test.txt', 'utf8') 
         }
     ];
-    let myChunks = await chunkit(documents, { similarityThreshold: 0.3 });
+    let myChunks = await chunkit(documents, { similarityThreshold: 0.4 });
 
     myChunks.forEach((chunk, index) => {
         console.log(`\n-- Chunk ${index + 1} --`);
@@ -210,6 +225,24 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 | BAAI/bge-small-en-v1.5                       | false     | [https://huggingface.co/BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5)                                             | 133 MB  |
 
 Each of these parameters allows you to customize the `chunkit` function to better fit the text size, content complexity, and performance requirements of your application.
+
+---
+
+## Semantic Chunking Web UI
+
+The Semantic Chunking Web UI allows you to experiment with the chunking parameters and see the results in real-time. This tool provides a visual way to test and configure the `semantic-chunking` library's settings to get optimal results for your specific use case. Once you've found the best settings, you can generate code to implement them in your project.
+
+- Interactive controls for all chunking parameters
+- Real-time text processing and results display
+- Visual feedback for similarity thresholds
+- Model selection and configuration
+- Results download in JSON format
+- Code generation with your settings
+- Example texts for testing
+- Dark mode interface
+
+
+
 
 ---
 

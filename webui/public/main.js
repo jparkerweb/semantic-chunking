@@ -351,7 +351,7 @@ closeModalBtn.onclick = () => {
 };
 
 // Update toast functionality
-function showToast(message, type = 'error', duration = 4000) {
+function showToast(message, type = 'error', duration = 7000) {
     const toastContainer = document.getElementById('toastContainer');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -386,3 +386,8 @@ function showToast(message, type = 'error', duration = 4000) {
         clearTimeout(timeoutId);
     }, { once: true });
 }
+
+// Add this with your other event listeners
+document.querySelector('.info-icon').addEventListener('click', () => {
+    showToast('More model choices can be added by updating the "models.json" file in the "webui" directory.', 'info', 7000);
+});

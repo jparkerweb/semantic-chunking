@@ -59,7 +59,7 @@
                                 <h3>Dynamic Threshold Settings</h3>
                                 <div class="form-group">
                                     <label for="dynamicThresholdLowerBound">Dynamic Threshold Lower Bound (0.1-1.0):</label>
-                                    <input type="range" id="dynamicThresholdLowerBound" name="dynamicThresholdLowerBound" min="0.1" max="1.0" step="0.025" value="0.4">
+                                    <input type="range" id="dynamicThresholdLowerBound" name="dynamicThresholdLowerBound" min="0.1" max="1.0" step="0.025" value="0.475">
                                     <span class="value-display"></span>
                                 </div>
     
@@ -84,7 +84,7 @@
                                         
                                         <div class="form-group depends-on-combine-chunks">
                                             <label for="combineChunksSimilarityThreshold">Combine Chunks Similarity Threshold (0.1-1.0):</label>
-                                            <input type="range" id="combineChunksSimilarityThreshold" name="combineChunksSimilarityThreshold" min="0.1" max="1.0" step="0.025" value="0.5">
+                                            <input type="range" id="combineChunksSimilarityThreshold" name="combineChunksSimilarityThreshold" min="0.1" max="1.0" step="0.025" value="0.6">
                                             <span class="value-display"></span>
                                         </div>
                                     </div>
@@ -96,7 +96,10 @@
                             <h3>Model Settings</h3>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label for="onnxEmbeddingModel">Embedding Model:</label>
+                                    <div class="label-with-info">
+                                        <label for="onnxEmbeddingModel">Embedding Model:</label>
+                                        <span class="info-icon" title="Click for more info">ⓘ</span>
+                                    </div>
                                     <select id="onnxEmbeddingModel" name="onnxEmbeddingModel">
                                         <!-- Options will be populated by JavaScript -->
                                     </select>

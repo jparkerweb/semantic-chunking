@@ -82,6 +82,7 @@ form {
     padding: 20px;
     min-height: 0;
     overflow: hidden;
+    user-select: none;
 }
 .form-content {
     overflow-y: auto;
@@ -353,6 +354,27 @@ button:disabled:hover {
     display: none;
 }
 
+
+.label-with-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-icon {
+    cursor: pointer;
+    color: var(--primary-color);
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    font-size: 18px;
+    position: relative;
+    top: -2px;
+}
+
+.info-icon:hover {
+    opacity: 1;
+}
+
 pre {
     margin: 0;
     background-color: var(--pre-bg);
@@ -385,7 +407,7 @@ pre {
     background: #1976D2;
 }
 
-/* Add these spinner styles */
+/* spinner styles */
 .spinner {
     display: none;
     justify-content: center;
@@ -571,6 +593,7 @@ pre {
     display: flex;
     flex-direction: column;
     overflow: hidden; /* Hide overflow for flex container */
+    user-select: none;
 }
 
 .modal-content h2 {
@@ -603,6 +626,7 @@ pre {
     flex: 1; /* Take remaining space */
     min-height: 0; /* Allow flex item to shrink */
     font-family: var(--font-mono);
+    user-select: text;
 }
 
 .modal-footer {
@@ -635,6 +659,7 @@ pre {
 
 #resultsJson {
     display: none; /* Hide by default */
+    user-select: text;
 }
 
 /* Update toast styles */
@@ -678,6 +703,10 @@ pre {
 
 .toast.success {
     border-left: 4px solid #00C851;
+}
+
+.toast.info {
+    border-left: 4px solid var(--primary-color);
 }
 
 @keyframes fadeIn {
