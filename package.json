@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "2.1.4",
+  "version": "2.2.0",
   "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "repository": {
     "type": "git",
@@ -12,13 +12,21 @@
     "semantic",
     "chunking",
     "sentence",
+    "similarity",
+    "cosine",
+    "chunk",
+    "rag",
+    "splitting",
     "transformers",
     "transformers.js",
     "emmbeddings",
     "onnx",
     "xenova",
     "text-processing",
-    "nlp"
+    "nlp",
+    "webui",
+    "ml",
+    "BERT"
   ],
   "author": "jparkerweb@gmail.com",
   "license": "ISC",
