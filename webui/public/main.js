@@ -190,6 +190,9 @@ form.addEventListener('submit', async (e) => {
         resultsJson.appendChild(codeElement);
         hljs.highlightElement(codeElement);
 
+        // Enable download button if we have results
+        downloadButton.disabled = false;
+
         // Calculate and display stats
         if (result.length > 0) {
             const numChunks = result[0].number_of_chunks;
