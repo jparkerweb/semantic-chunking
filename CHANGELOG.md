@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2024-11-07
+### Added
+- Web UI css adjustments for smaller screens
+
 ## [2.2.1] - 2024-11-06
 ### Added
 - Added Highlight.js to Web UI for syntax highlighting of JSON results and code samples

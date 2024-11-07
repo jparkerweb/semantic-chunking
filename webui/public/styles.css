@@ -65,10 +65,39 @@ h1.title {
 
 .content-wrapper {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    flex: 1;
+    gap: 2rem;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    margin: 2rem 0;
     min-height: 0;
+}
+
+/* media query for smaller screens */
+/* stacked layout, hide top links */
+@media screen and (max-width: 800px) {
+    .content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        height: calc(100vh - 20px);
+    }
+    
+    .form-content, .results-content {
+        padding: 15px;
+    }
+    
+    .form-footer, .results-footer {
+        padding: 15px;
+    }
+
+    .top-links {
+        display: none !important;
+    }
 }
 
 .form-wrapper, .results-wrapper {
