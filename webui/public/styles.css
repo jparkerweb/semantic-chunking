@@ -27,6 +27,7 @@ body {
     height: 100vh;
     box-sizing: border-box;
     overflow: hidden;
+    display: grid;
 }
 
 
@@ -41,6 +42,8 @@ body {
     position: relative;
     opacity: 0;
     animation: fadeInContent 0.3s ease-out forwards;
+    width: min(1440px, 100%);
+    justify-self: center;
 }
 @keyframes fadeInContent {
     from {
@@ -78,6 +81,7 @@ h1.title {
         padding: 10px;
         height: 170vh;
         overflow-y: auto;
+        display: block;
     }
     
     .container {

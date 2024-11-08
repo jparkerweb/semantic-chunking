@@ -335,16 +335,14 @@ getCodeBtn.onclick = () => {
     for (let element of formElements) {
         if (element.type === 'checkbox') {
             formData[element.name] = element.checked;
-        } else if (element.name) {  // Only process elements with names
+        } else if (element.name) {
             formData[element.name] = element.value;
         }
     }
     
-    // No need for additional processing in generateCode since we're already
-    // getting the actual boolean values here
     codeExample.textContent = generateCode(formData);
     modal.style.display = "block";
-    // Clear the highlighted state before highlighting again
+    document.body.style.overflow = 'hidden';  // Prevent body scrolling
     delete codeExample.dataset.highlighted;
     hljs.highlightElement(codeExample);
 };
@@ -393,12 +391,14 @@ console.log(myChunks);`;
 // Close Modal button handler
 closeBtn.onclick = () => {
     modal.style.display = "none";
+    document.body.style.overflow = '';  // Restore body scrolling
 };
 
 // Close Modal on click outside
 window.onclick = (event) => {
     if (event.target === modal) {
         modal.style.display = "none";
+        document.body.style.overflow = '';  // Restore body scrolling
     }
 };
 
@@ -422,6 +422,7 @@ copyBtn.onclick = () => {
 const closeModalBtn = document.getElementById('closeModal');
 closeModalBtn.onclick = () => {
     modal.style.display = "none";
+    document.body.style.overflow = '';  // Restore body scrolling
 };
 
 // Toast functionality
