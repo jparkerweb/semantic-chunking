@@ -67,24 +67,35 @@ h1.title {
     display: grid;
     gap: 2rem;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    margin: 2rem 0;
+    margin: 2rem 0 0;
     min-height: 0;
 }
 
 /* media query for smaller screens */
 /* stacked layout, hide top links */
 @media screen and (max-width: 800px) {
-    .content-wrapper {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
     body {
         padding: 10px;
+        height: 170vh;
+        overflow-y: auto;
     }
     
     .container {
-        height: calc(100vh - 20px);
+        height: calc(170vh - 20px);
+    }
+    
+    .content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        /* Take up remaining space and split equally between children */
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .form-wrapper, .results-wrapper {
+        flex: 1; /* Make both containers take equal space */
+        min-height: 0; /* Allow containers to shrink */
     }
     
     .form-content, .results-content {
@@ -97,6 +108,47 @@ h1.title {
 
     .top-links {
         display: none !important;
+    }
+
+    #downloadButton {
+        font-size: 0;  /* Hide the original text */
+    }
+
+    #downloadButton::after {
+        content: 'Download';
+        font-size: 16px;  /* Restore font size for new text */
+    }
+
+    #processingTime {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1115px) {
+    #processingTime, #avgTokenLength {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1115px) and (min-width: 923px) {
+    #downloadButton {
+        font-size: 0;  /* Hide the original text */
+    }
+
+    #downloadButton::after {
+        content: 'Download Results';
+        font-size: 16px;  /* Restore font size for new text */
+    }
+}
+
+@media screen and (max-width: 923px) {
+    #downloadButton {
+        font-size: 0;  /* Hide the original text */
+    }
+
+    #downloadButton::after {
+        content: 'Download';
+        font-size: 16px;  /* Restore font size for new text */
     }
 }
 
@@ -666,6 +718,7 @@ pre {
     min-height: 0; /* Allow flex item to shrink */
     font-family: var(--font-mono);
     user-select: text;
+    white-space: pre;
 }
 
 .modal-footer {

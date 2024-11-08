@@ -133,6 +133,16 @@ const spinner = document.createElement('div');
 spinner.className = 'spinner';
 resultsJson.parentNode.insertBefore(spinner, resultsJson);
 
+// Add this function near the top of the file
+function scrollToResults() {
+    if (window.innerWidth <= 800) {
+        const resultsWrapper = document.querySelector('.results-wrapper');
+        if (resultsWrapper) {
+            resultsWrapper.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+}
+
 // Process form handler
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -147,6 +157,9 @@ form.addEventListener('submit', async (e) => {
         resultsJson.style.display = 'none';
         defaultMessage.style.display = 'none';
         
+        // Scroll to results as soon as we show the spinner
+        scrollToResults();
+
         // Get form data and convert checkbox values to boolean
         const formData = new FormData(form);
         const data = Object.fromEntries(
@@ -254,6 +267,9 @@ form.addEventListener('submit', async (e) => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         };
+        
+        // After results are displayed, scroll to them on mobile
+        scrollToResults();
         
     } catch (error) {
         console.error('Error:', error);

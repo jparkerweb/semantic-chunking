@@ -2,13 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.5] - 2024-11-08
+### Updated
+- Updated Web UI styles for smaller screens
+
 ## [2.2.4] - 2024-11-08
 ### Fixed
-- Fixed issue with Web UI embedding cache not being cleared when a new model is initialized.
+- Fixed issue with Web UI embedding cache not being cleared when a new model is initialized
 
 ## [2.2.3] - 2024-11-07
 ### Added
-- Web UI adjustments for display of truncated JSON results on screen but still allowing download of full results.
+- Web UI adjustments for display of truncated JSON results on screen but still allowing download of full results
 
 ## [2.2.2] - 2024-11-07
 ### Added
