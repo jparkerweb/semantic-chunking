@@ -14,6 +14,9 @@ export async function initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbedding
         quantized: onnxEmbeddingModelQuantized,
     });
 
+    // Clear the embedding cache when initializing with a new model
+    embeddingCache.clear();
+
     return {
         modelName: onnxEmbeddingModel,
         isQuantized: onnxEmbeddingModelQuantized
