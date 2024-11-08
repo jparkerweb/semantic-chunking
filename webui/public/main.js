@@ -185,10 +185,37 @@ form.addEventListener('submit', async (e) => {
         // Create code element and set content safely
         const codeElement = document.createElement('code');
         codeElement.className = 'language-json';
-        codeElement.textContent = JSON.stringify(result, null, 2);
+
+        // Format the JSON string
+        const formattedJson = JSON.stringify(result, null, 2);
+        const lines = formattedJson.split('\n');
+
+        // Store full result for download
+        resultsJson.dataset.fullResult = formattedJson;
+
+        // Truncate if more than 1000 lines
+        if (lines.length > 1000) {
+            const truncatedLines = [
+                ...lines.slice(0, 1000),
+                '\n',
+                '// ...',
+                '// ...',
+                '// ⚠️🚨 Notice: Data Truncated for Display 🚨⚠️',
+                '// The full result is too large to display here.',
+                '// Please use the download button to get the entire result.',
+                '// ...',
+                '// ...',
+            ];
+            codeElement.textContent = truncatedLines.join('\n');
+        } else {
+            codeElement.textContent = formattedJson;
+        }
+
         resultsJson.textContent = ''; // Clear existing content
         resultsJson.appendChild(codeElement);
-        hljs.highlightElement(codeElement);
+        if (!data.returnEmbedding) {
+            hljs.highlightElement(codeElement);
+        }
 
         // Enable download button if we have results
         downloadButton.disabled = false;
@@ -216,7 +243,8 @@ form.addEventListener('submit', async (e) => {
         
         // Enable download
         downloadButton.onclick = () => {
-            const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+            const fullData = resultsJson.dataset.fullResult;
+            const blob = new Blob([fullData], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;

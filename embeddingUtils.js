@@ -24,7 +24,9 @@ export async function initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbedding
 // -- Function to generate embeddings --
 // -------------------------------------
 export async function createEmbedding(text) {
-    if (embeddingCache.has(text)) return embeddingCache.get(text);
+    if (embeddingCache.has(text)) {
+        return embeddingCache.get(text);
+    }
 
     const embeddings = await generateEmbedding(text, { pooling: 'mean', normalize: true });
     embeddingCache.set(text, embeddings.data);

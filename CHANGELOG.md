@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.3] - 2024-11-07
+### Added
+- Web UI adjustments for display of truncated JSON results on screen but still allowing download of full results.
+
 ## [2.2.2] - 2024-11-07
 ### Added
 - Web UI css adjustments for smaller screens
