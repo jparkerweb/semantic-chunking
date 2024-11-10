@@ -198,7 +198,7 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 ### `onnxEmbeddingModel`
 
 - **Type**: String
-- **Default**: `Xenova/paraphrase-multilingual-MiniLM-L12-v2`
+- **Default**: `Xenova/all-MiniLM-L6-v2`
 - **Description**: Specifies the model used to generate sentence embeddings. Different models may yield different qualities of embeddings, affecting the chunking quality, especially in multilingual contexts.
 - **Resource Link**: [ONNX Embedding Models](https://huggingface.co/models?pipeline_tag=feature-extraction&library=onnx&sort=trending)  
   Link to a filtered list of embedding models converted to ONNX library format by Xenova.  
