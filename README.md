@@ -330,7 +330,7 @@ const documents = [
         document_text: largeDocumentText
     }
 ];
-const myDocumentChunks = await chunkit(documents, { chunkPrefix: "search_document" });
+const myDocumentChunks = await chunkit(documents, { chunkPrefix: "search_document", returnEmbedding: true });
 ```
 
 Get your search queries ready like this (use cramit for a quick large chunk):
@@ -338,7 +338,7 @@ Get your search queries ready like this (use cramit for a quick large chunk):
 const documents = [
     { document_text: "What is the capital of France?" } 
 ];
-const mySearchQueryChunk = await chunkit(documents, { chunkPrefix: "search_query" });
+const mySearchQueryChunk = await cramit(documents, { chunkPrefix: "search_query", returnEmbedding: true });
 ```
 
 Now you can use the `myDocumentChunks` and `mySearchQueryChunk` results in your RAG application, feed them to a vector database, or find the closest match using cosine similarity in memory. The possibilities are many!
