@@ -13,7 +13,7 @@ import fs from 'fs';
 
 // initialize documents array
 let documents = [];
-let textFiles = ['./different.txt', './similar.txt'];
+let textFiles = ['./example.txt', './different.txt', './similar.txt'];
 
 // read each text file and add it to the documents array
 for (const textFile of textFiles) {
@@ -55,7 +55,7 @@ let trackedTimeSeconds = (endTime - startTime) / 1000;
 trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
 
 console.log("\n\n\n");
-console.log("myTestChunks:");
-console.log(myTestChunks);
+// console.log("myTestChunks:");
+// console.log(myTestChunks);
 console.log("length: " + myTestChunks.length);
 console.log("trackedTimeSeconds: " + trackedTimeSeconds);
