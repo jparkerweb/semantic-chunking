@@ -276,8 +276,8 @@ form.addEventListener('submit', async (e) => {
         let errorMessage = error.message;
         
         if (errorMessage.includes('Could not locate file:')) {
-            errorMessage += '<br><br>Some models may not have both a quantized & non-quantized version,';
-            errorMessage += '<br>please toggle this option and try again, or choose a different model';
+            errorMessage += '<br><br>Not all models have all precision options available.';
+            errorMessage += '<br>Please try a different precision level and/or model and try again.';
         }
         
         showToast(errorMessage);
@@ -349,7 +349,9 @@ getCodeBtn.onclick = () => {
 
 // Generate Code function
 function generateCode(formData) {
-    // No need to convert checkbox values since they're already booleans
+    const dtypeValues = ['fp32', 'fp16', 'q8', 'q4'];
+    const dtype = dtypeValues[parseInt(formData.dtype)];
+    
     return `// import the semantic-chunking library
 import { chunkit } from 'semantic-chunking';
 
@@ -374,7 +376,7 @@ const myChunks = await chunkit(
         combineChunks: ${formData.combineChunks},
         combineChunksSimilarityThreshold: ${formData.combineChunksSimilarityThreshold},
         onnxEmbeddingModel: "${formData.onnxEmbeddingModel}",
-        onnxEmbeddingModelQuantized: ${formData.onnxEmbeddingModelQuantized},
+        dtype: "${dtype}",
         localModelPath: "./models",
         modelCacheDir: "./models",
         returnEmbedding: ${formData.returnEmbedding},
@@ -494,3 +496,31 @@ resizeToggle.addEventListener('click', () => {
     resultsJson.classList.toggle('wrapped');
     resizeToggle.classList.toggle('wrapped');
 });
+
+// Add this to your existing range input handlers
+const dtypeInput = document.getElementById('dtype');
+const dtypeDisplay = dtypeInput.nextElementSibling;
+
+function updateDtypeDisplay(value) {
+    const dtypeValues = {
+        0: { text: 'fp32 - Full Precision', class: 'precision-full' },
+        1: { text: 'fp16 - Half Precision', class: 'precision-half' },
+        2: { text: 'q8 - 8-bit Quantized', class: 'precision-q8' },
+        3: { text: 'q4 - 4-bit Quantized', class: 'precision-q4' }
+    };
+
+    const dtype = dtypeValues[value];
+    const number = dtypeDisplay.querySelector('.number');
+    const description = dtypeDisplay.querySelector('.description');
+    
+    number.className = `number ${dtype.class}`;
+    number.textContent = value;
+    description.className = `description ${dtype.class}`;
+    description.textContent = dtype.text;
+}
+
+// Initial update
+updateDtypeDisplay(dtypeInput.value);
+
+// Update on change
+dtypeInput.addEventListener('input', (e) => updateDtypeDisplay(e.target.value));

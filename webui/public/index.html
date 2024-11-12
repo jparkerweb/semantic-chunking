@@ -123,13 +123,12 @@
                                         <!-- Options will be populated by JavaScript -->
                                     </select>
                                 </div>
-
+                            </div>
+                            <div class="form-row margin-top-20">
                                 <div class="form-group">
-                                    <label for="onnxEmbeddingModelQuantized">Quantized Model:</label>
-                                    <label class="switch">
-                                        <input type="checkbox" id="onnxEmbeddingModelQuantized" name="onnxEmbeddingModelQuantized" checked>
-                                        <span class="slider"></span>
-                                    </label>
+                                    <label for="dtype">Model Precision:</label>
+                                    <input type="range" id="dtype" name="dtype" min="0" max="3" step="1" value="0">
+                                    <span class="value-display"></span>
                                 </div>
                             </div>
                         </div>

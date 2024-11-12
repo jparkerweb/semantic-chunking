@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2024-11-11
+### Updated
+- Updated `transformers.js` from v2 to v3
+- Migrated quantization option from `onnxEmbeddingModelQuantized` (boolean) to `dtype` ('p32', 'p16', 'q8', 'q4')
+- Updated Web UI to use new `dtype` option
+
 ## [2.2.5] - 2024-11-08
 ### Updated
 - Updated Web UI styles for smaller screens

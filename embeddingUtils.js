@@ -9,7 +9,7 @@ const embeddingCache = new Map();
 // --------------------------------------------
 export async function initializeEmbeddingUtils(
     onnxEmbeddingModel, 
-    onnxEmbeddingModelQuantized,
+    dtype = 'fp32',
     localModelPath = null,
     modelCacheDir = null
 ) {
@@ -20,15 +20,14 @@ export async function initializeEmbeddingUtils(
 
     tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
     generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, {
-        dtype: onnxEmbeddingModelQuantized ? 'q8' : 'fp32',
+        dtype: dtype,
     });
 
-    // Clear the embedding cache when initializing with a new model
     embeddingCache.clear();
 
     return {
         modelName: onnxEmbeddingModel,
-        isQuantized: onnxEmbeddingModelQuantized
+        dtype: dtype
     };
 }
 

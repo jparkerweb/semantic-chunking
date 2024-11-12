@@ -71,7 +71,7 @@ const myChunks = await chunkit(documents, chunkitOptions);
   - `combineChunks`: Boolean (optional, default `true`) - Determines whether to reblance and combine chunks into larger ones up to the max token limit.
   - `combineChunksSimilarityThreshold`: Float (optional, default `0.5`) - Threshold for combining chunks based on similarity during the rebalance and combining phase.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
-  - `onnxEmbeddingModelQuantized`: Boolean (optional, default `true`) - Indicates whether to use a quantized version of the embedding model.
+  - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
   - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
@@ -88,7 +88,7 @@ The output is an array of chunks, each containing the following properties:
 - `number_of_chunks`: Integer - The total number of final chunks returned from the input text.
 - `chunk_number`: Integer - The number of the current chunk.
 - `model_name`: String - The name of the embedding model used.
-- `is_model_quantized`: Boolean - Indicates whether the embedding model is quantized.
+- `dtype`: String - The precision of the embedding model used (options: `fp32`, `fp16`, `q8`, `q4`).
 - `text`: String - The chunked text.
 - `embedding`: Array - The embedding vector (if `returnEmbedding` is `true`).
 - `token_length`: Integer - The token length (if `returnTokenLength` is `true`).
@@ -213,18 +213,16 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 
 #### Curated ONNX Embedding Models
 
-| Model                                        | Quantized | Link                                                                                                                                       | Size    |
-| -------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
-| nomic-ai/nomic-embed-text-v1.5               | true      | [https://huggingface.co/nomic-ai/nomic-embed-text-v1.5](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5)                             | 138 MB  |
-| nomic-ai/nomic-embed-text-v1.5               | false     | [https://huggingface.co/nomic-ai/nomic-embed-text-v1.5](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5)                             | 548 MB  |
-| Xenova/all-MiniLM-L6-v2                      | true      | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 23 MB   |
-| Xenova/all-MiniLM-L6-v2                      | false     | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 90.4 MB |
-| Xenova/paraphrase-multilingual-MiniLM-L12-v2 | true      | [https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) | 118 MB  |
-| thenlper/gte-base                            | false     | [https://huggingface.co/thenlper/gte-base](https://huggingface.co/thenlper/gte-base)                                                       | 436 MB  |
-| Xenova/all-distilroberta-v1                  | true      | [https://huggingface.co/Xenova/all-distilroberta-v1](https://huggingface.co/Xenova/all-distilroberta-v1)                                   | 82.1 MB |
-| Xenova/all-distilroberta-v1                  | false     | [https://huggingface.co/Xenova/all-distilroberta-v1](https://huggingface.co/Xenova/all-distilroberta-v1)                                   | 326 MB  |
-| BAAI/bge-base-en-v1.5                        | false     | [https://huggingface.co/BAAI/bge-base-en-v1.5](https://huggingface.co/BAAI/bge-base-en-v1.5)                                               | 436 MB  |
-| BAAI/bge-small-en-v1.5                       | false     | [https://huggingface.co/BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5)                                             | 133 MB  |
+| Model                                        | Precision      | Link                                                                                                                                       | Size                   |
+| -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| nomic-ai/nomic-embed-text-v1.5               | fp32, q8       | [https://huggingface.co/nomic-ai/nomic-embed-text-v1.5](https://huggingface.co/nomic-ai/nomic-embed-text-v1.5)                             | 548 MB, 138 MB         |
+| thenlper/gte-base                            | fp32           | [https://huggingface.co/thenlper/gte-base](https://huggingface.co/thenlper/gte-base)                                                       | 436 MB                 |
+| Xenova/all-MiniLM-L6-v2                      | fp32, fp16, q8 | [https://huggingface.co/Xenova/all-MiniLM-L6-v2](https://huggingface.co/Xenova/all-MiniLM-L6-v2)                                           | 23 MB, 45 MB, 90 MB    |
+| Xenova/paraphrase-multilingual-MiniLM-L12-v2 | fp32, fp16, q8 | [https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2](https://huggingface.co/Xenova/paraphrase-multilingual-MiniLM-L12-v2) | 470 MB, 235 MB, 118 MB |
+| Xenova/all-distilroberta-v1                  | fp32, fp16, q8 | [https://huggingface.co/Xenova/all-distilroberta-v1](https://huggingface.co/Xenova/all-distilroberta-v1)                                   | 326 MB, 163 MB, 82 MB  |
+| BAAI/bge-base-en-v1.5                        | fp32           | [https://huggingface.co/BAAI/bge-base-en-v1.5](https://huggingface.co/BAAI/bge-base-en-v1.5)                                               | 436 MB                 |
+| BAAI/bge-small-en-v1.5                       | fp32           | [https://huggingface.co/BAAI/bge-small-en-v1.5](https://huggingface.co/BAAI/bge-small-en-v1.5)                                             | 133 MB                 |
+| yashvardhan7/snowflake-arctic-embed-m-onnx   | fp32           | [https://huggingface.co/yashvardhan7/snowflake-arctic-embed-m-onnx](https://huggingface.co/yashvardhan7/snowflake-arctic-embed-m-onnx)     | 436 MB                 |
 
 Each of these parameters allows you to customize the `chunkit` function to better fit the text size, content complexity, and performance requirements of your application.
 

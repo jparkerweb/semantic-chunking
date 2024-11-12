@@ -33,16 +33,21 @@ app.get('/', (req, res) => {
 // Chunking API endpoint
 app.post('/api/chunk', async (req, res) => {
     try {
-        const { documentText, documentName, ...options } = req.body;
+        const { documentText, documentName, dtype, onnxEmbeddingModelQuantized, ...options } = req.body;
+        
+        // Convert dtype value to string mapping
+        const dtypeValues = ['fp32', 'fp16', 'q8', 'q4'];
+        const dtypeString = dtypeValues[parseInt(dtype)] || 'fp32';
 
-        // Input validation
-        if (!documentText) {
-            return res.status(400).json({ error: 'Document text is required' });
-        }
+        // Process the text with new dtype option
+        const documents = [{
+            document_name: documentName || 'sample text',
+            document_text: documentText
+        }];
 
-        // Convert string values to appropriate types
         const processedOptions = {
             ...options,
+            dtype: dtypeString,
             maxTokenSize: parseInt(options.maxTokenSize),
             similarityThreshold: parseFloat(options.similarityThreshold),
             dynamicThresholdLowerBound: parseFloat(options.dynamicThresholdLowerBound),
@@ -50,7 +55,6 @@ app.post('/api/chunk', async (req, res) => {
             numSimilaritySentencesLookahead: parseInt(options.numSimilaritySentencesLookahead),
             combineChunks: options.combineChunks === true,
             combineChunksSimilarityThreshold: parseFloat(options.combineChunksSimilarityThreshold),
-            onnxEmbeddingModelQuantized: options.onnxEmbeddingModelQuantized === true,
             returnEmbedding: options.returnEmbedding === true,
             returnTokenLength: options.returnTokenLength === true,
             logging: options.logging === true,
@@ -58,13 +62,7 @@ app.post('/api/chunk', async (req, res) => {
             modelCacheDir: path.join(__dirname, 'models')
         };
 
-        // Process the text
-        const documents = [{
-            document_name: documentName || 'sample text',
-            document_text: documentText
-        }];
         const result = await chunkit(documents, processedOptions);
-
         res.json(result);
     } catch (error) {
         console.error('Error processing chunk:', error);

@@ -38,7 +38,7 @@ let myTestChunks = await chunkit(
         combineChunks: true,  // enable rebalancing
         combineChunksSimilarityThreshold: 0.6,
         onnxEmbeddingModel: "nomic-ai/nomic-embed-text-v1.5",
-        onnxEmbeddingModelQuantized: true,
+        dtype: "q8",
         localModelPath: "../models",
         modelCacheDir: "../models",
         returnEmbedding: false,

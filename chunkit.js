@@ -29,7 +29,8 @@ export async function chunkit(
         combineChunks = DEFAULT_CONFIG.COMBINE_CHUNKS,
         combineChunksSimilarityThreshold = DEFAULT_CONFIG.COMBINE_CHUNKS_SIMILARITY_THRESHOLD,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        onnxEmbeddingModelQuantized = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL_QUANTIZED,
+        dtype = DEFAULT_CONFIG.DTYPE,
+        onnxEmbeddingModelQuantized,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
@@ -43,10 +44,13 @@ export async function chunkit(
         throw new Error('Input must be an array of document objects');
     }
 
-    // Initialize embedding utilities with paths
-    const { modelName, isQuantized } = await initializeEmbeddingUtils(
+    // if legacy boolean is used (onnxEmbeddingModelQuantized), set dtype (model precision) to 'q8'
+    if (onnxEmbeddingModelQuantized === true) { dtype = 'q8'; }
+
+    // Initialize embedding utilities and set optional paths
+    const { modelName, dtype: usedDtype } = await initializeEmbeddingUtils(
         onnxEmbeddingModel, 
-        onnxEmbeddingModelQuantized,
+        dtype,
         localModelPath,
         modelCacheDir
     );
@@ -96,7 +100,7 @@ export async function chunkit(
                 console.log(`--------------`);
                 console.log(`-- Chunk ${(index + 1)} --`);
                 console.log(`--------------`);
-                console.log(chunk);
+                console.log(chunk.substring(0, 50) + '...');
             });
         }
 
@@ -112,7 +116,7 @@ export async function chunkit(
                     console.log("--------------------");
                     console.log("Chunk " + (index + 1));
                     console.log("--------------------");
-                    console.log(chunk);
+                    console.log(chunk.substring(0, 50) + '...');
                 });
             }
         } else {
@@ -131,7 +135,7 @@ export async function chunkit(
                 number_of_chunks: numberOfChunks,
                 chunk_number: index + 1,
                 model_name: modelName,
-                is_model_quantized: isQuantized,
+                dtype: usedDtype,
                 text: prefixedChunk
             };
 
@@ -177,7 +181,8 @@ export async function cramit(
         logging = DEFAULT_CONFIG.LOGGING,
         maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        onnxEmbeddingModelQuantized = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL_QUANTIZED,
+        onnxEmbeddingModelQuantized,
+        dtype = DEFAULT_CONFIG.DTYPE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
@@ -190,6 +195,9 @@ export async function cramit(
     if (!Array.isArray(documents)) {
         throw new Error('Input must be an array of document objects');
     }
+
+    // if legacy boolean is used (onnxEmbeddingModelQuantized), set dtype (model precision) to 'q8'
+    if (onnxEmbeddingModelQuantized === true) { dtype = 'q8'; }
 
     // Initialize embedding utilities with paths
     const { modelName, isQuantized } = await initializeEmbeddingUtils(
@@ -222,7 +230,7 @@ export async function cramit(
                 console.log(`--------------`);
                 console.log(`-- Chunk ${(index + 1)} --`);
                 console.log(`--------------`);
-                console.log(chunk);
+                console.log(chunk.substring(0, 50) + '...');
             });
         }
 
