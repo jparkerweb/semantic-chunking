@@ -204,11 +204,12 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
   Link to a filtered list of embedding models converted to ONNX library format by Xenova.  
   Refer to the Model table below for a list of suggested models and their sizes (choose a multilingual model if you need to chunk text other than English).  
 
-### `onnxEmbeddingModelQuantized`
+#### `dtype`
 
-- **Type**: Boolean
-- **Default**: `true`
-- **Description**: Indicates whether to use a quantized version of the specified model. Quantized models generally offer faster performance with a slight trade-off in accuracy, which can be beneficial when processing very large datasets.
+- **Type**: String
+- **Default**: `fp32`
+- **Description**: Indicates the precision of the embedding model. Options are `fp32`, `fp16`, `q8`, `q4`.
+`fp32` is the highest precision but also the largest size and slowest to load. `q8` is a good compromise between size and speed if the model supports it. All models support `fp32`, but only some support `fp16`, `q8`, and `q4`.
 
 
 #### Curated ONNX Embedding Models
@@ -299,11 +300,12 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
   Link to a filtered list of embedding models converted to ONNX library format by Xenova.  
   Refer to the Model table below for a list of suggested models and their sizes (choose a multilingual model if you need to chunk text other than English).  
 
-#### `onnxEmbeddingModelQuantized`
+#### `dtype`
 
-- **Type**: Boolean
-- **Default**: `true`
-- **Description**: Indicates whether to use a quantized version of the specified model. Quantized models generally offer faster performance with a slight trade-off in accuracy, which can be beneficial when processing very large datasets.
+- **Type**: String
+- **Default**: `fp32`
+- **Description**: Indicates the precision of the embedding model. Options are `fp32`, `fp16`, `q8`, `q4`.
+`fp32` is the highest precision but also the largest size and slowest to load. `q8` is a good compromise between size and speed if the model supports it. All models support `fp32`, but only some support `fp16`, `q8`, and `q4`.
 
 ---
 
