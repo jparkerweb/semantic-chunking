@@ -2,3 +2,4 @@
 node_modules/
 models/
 .aider*
+.env
