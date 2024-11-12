@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.4] - 2024-11-12
+### Updated
+- Updated Web UI to v1.3.1
+- Updated README with Web UI usage examples
+- Updated default values in both the library and Web UI
+  - Web UI default can be set in `webui/public/default-form-values.js`
+- Misc cleanup and optimizations
+
 ## [2.3.0] - 2024-11-11
 ### Updated
 - Updated `transformers.js` from v2 to v3
