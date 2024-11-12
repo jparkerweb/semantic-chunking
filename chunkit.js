@@ -29,8 +29,8 @@ export async function chunkit(
         combineChunks = DEFAULT_CONFIG.COMBINE_CHUNKS,
         combineChunksSimilarityThreshold = DEFAULT_CONFIG.COMBINE_CHUNKS_SIMILARITY_THRESHOLD,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
+        onnxEmbeddingModelQuantized, // legacy boolean (remove in next major version)
         dtype = DEFAULT_CONFIG.DTYPE,
-        onnxEmbeddingModelQuantized,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
@@ -181,7 +181,7 @@ export async function cramit(
         logging = DEFAULT_CONFIG.LOGGING,
         maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        onnxEmbeddingModelQuantized,
+        onnxEmbeddingModelQuantized, // legacy boolean (remove in next major version)
         dtype = DEFAULT_CONFIG.DTYPE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
@@ -202,7 +202,7 @@ export async function cramit(
     // Initialize embedding utilities with paths
     const { modelName, isQuantized } = await initializeEmbeddingUtils(
         onnxEmbeddingModel, 
-        onnxEmbeddingModelQuantized,
+        dtype,
         localModelPath,
         modelCacheDir
     );
