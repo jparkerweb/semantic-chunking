@@ -311,7 +311,8 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 
 ## 💾 Pre-Downloading Models
 
-Fill out the `tools/download-models.list.json` file with a list of models you want pre-downloaded, and if they are quantized or not (See the Curated ONNX Embedding Models section above for a list of models to try)
+Fill out the `tools/download-models.list.json` file with a list of models you want pre-downloaded, and their precisions (See the Curated ONNX Embedding Models section above for a list of models to try). It is pre-populated with the list above; remove any models you don't want to download.
+Run the `npm run download-models` command to download the models to the `models` directory.
 
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/JItZqsL3umY/0.jpg)](https://www.youtube.com/watch?v=JItZqsL3umY)
 

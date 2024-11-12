@@ -1,4 +1,4 @@
-import { pipeline, env as transformerCache } from "@xenova/transformers"
+import { pipeline, env as transformerCache } from "@huggingface/transformers"
 import cliProgress from "cli-progress"
 import fs from "fs/promises"
 import path from "path"
@@ -25,12 +25,14 @@ const bar = new cliProgress.SingleBar({
 
 let started = false
 
-for (const model of downloadModelsList.models) {
-    console.log(`model: ${model.modelName}, quantized: ${model.quantized}`)
+const flattenedModels = downloadModelsList.models.flatMap(model => model.dtype.map(dtype => ({ ...model, dtype })));
+
+for (const model of flattenedModels) {
+    console.log(`model: ${model.modelName}, dtype: ${model.dtype}`)
     bar.start(100, 0, { model: model.modelName})
     
     await pipeline("feature-extraction", model.modelName, {
-        quantized: model.quantized,
+        dtype: model.dtype,
         progress_callback: (data) => {
             started = started || data.status === "download"
             if (!started) return

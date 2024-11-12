@@ -3,39 +3,35 @@
     "models": [
         {
             "modelName": "nomic-ai/nomic-embed-text-v1.5",
-            "quantized": true
+            "dtype": ["fp32", "q8"]
         },
         {
-            "modelName": "nomic-ai/nomic-embed-text-v1.5",
-            "quantized": false
-        },
-        {
-            "modelName": "Xenova/all-MiniLM-L6-v2",
-            "quantized": true
+            "modelName": "thenlper/gte-base",
+            "dtype": ["fp32"]
         },
         {
             "modelName": "Xenova/all-MiniLM-L6-v2",
-            "quantized": false
+            "dtype": ["fp32", "fp16", "q8"]
         },
         {
             "modelName": "Xenova/paraphrase-multilingual-MiniLM-L12-v2",
-            "quantized": true
+            "dtype": ["fp32", "fp16", "q8"]
         },
         {
             "modelName": "Xenova/all-distilroberta-v1",
-            "quantized": true
-        },
-        {
-            "modelName": "Xenova/all-distilroberta-v1",
-            "quantized": false
+            "dtype": ["fp32", "fp16", "q8"]
         },
         {
             "modelName": "BAAI/bge-base-en-v1.5",
-            "quantized": false
+            "dtype": ["fp32"]
         },
         {
             "modelName": "BAAI/bge-small-en-v1.5",
-            "quantized": false
+            "dtype": ["fp32"]
+        },
+        {
+            "modelName": "yashvardhan7/snowflake-arctic-embed-m-onnx",
+            "dtype": ["fp32"]
         }
     ]
 }
