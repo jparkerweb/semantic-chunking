@@ -1,4 +1,4 @@
-import { env, pipeline, AutoTokenizer } from '@xenova/transformers';
+import { env, pipeline, AutoTokenizer } from '@huggingface/transformers';
 
 let tokenizer;
 let generateEmbedding;
@@ -7,11 +7,20 @@ const embeddingCache = new Map();
 // --------------------------------------------
 // -- Initialize embedding model and tokenizer --
 // --------------------------------------------
-export async function initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized) {
+export async function initializeEmbeddingUtils(
+    onnxEmbeddingModel, 
+    onnxEmbeddingModelQuantized,
+    localModelPath = null,
+    modelCacheDir = null
+) {
+    // Configure environment
     env.allowRemoteModels = true;
+    if (localModelPath) env.localModelPath = localModelPath;
+    if (modelCacheDir) env.cacheDir = modelCacheDir;
+
     tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
     generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, {
-        quantized: onnxEmbeddingModelQuantized,
+        dtype: onnxEmbeddingModelQuantized ? 'q8' : 'fp32',
     });
 
     // Clear the embedding cache when initializing with a new model

@@ -8,7 +8,6 @@
 // == github repo: https://github.com/jparkerweb/semantic-chunking ==
 // ==================================================================
 
-import { env } from '@xenova/transformers';
 import { splitBySentence } from "string-segmenter"
 import { DEFAULT_CONFIG } from './config.js';
 import { initializeEmbeddingUtils, tokenizer, createEmbedding } from './embeddingUtils.js';
@@ -44,12 +43,13 @@ export async function chunkit(
         throw new Error('Input must be an array of document objects');
     }
 
-    // Set env variables if provided
-    if (localModelPath) env.localModelPath = localModelPath;
-    if (modelCacheDir) env.cacheDir = modelCacheDir;
-
-    // Initialize embedding utilities
-    const { modelName, isQuantized } = await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
+    // Initialize embedding utilities with paths
+    const { modelName, isQuantized } = await initializeEmbeddingUtils(
+        onnxEmbeddingModel, 
+        onnxEmbeddingModelQuantized,
+        localModelPath,
+        modelCacheDir
+    );
 
     // Process each document
     const allResults = await Promise.all(documents.map(async (doc) => {
@@ -191,12 +191,13 @@ export async function cramit(
         throw new Error('Input must be an array of document objects');
     }
 
-    // Set env variables if provided
-    if (localModelPath) env.localModelPath = localModelPath;
-    if (modelCacheDir) env.cacheDir = modelCacheDir;
-
-    // Initialize embedding utilities
-    const { modelName, isQuantized } = await initializeEmbeddingUtils(onnxEmbeddingModel, onnxEmbeddingModelQuantized);
+    // Initialize embedding utilities with paths
+    const { modelName, isQuantized } = await initializeEmbeddingUtils(
+        onnxEmbeddingModel, 
+        onnxEmbeddingModelQuantized,
+        localModelPath,
+        modelCacheDir
+    );
 
     // Process each document
     const allResults = await Promise.all(documents.map(async (doc) => {
