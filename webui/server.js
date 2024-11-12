@@ -4,12 +4,18 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { chunkit } from '../chunkit.js';
 import dotenv from 'dotenv';
+import { readFileSync } from 'fs';
 
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Read package.json
+const packageJson = JSON.parse(readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+const VERSION = packageJson.version;
+
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -20,14 +26,14 @@ app.use(express.json({ limit: '50mb' }));
 // Serve static files from public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve node_modules directory (only for highlight.js)
-app.use('/node_modules/highlight.js', express.static(
-  path.join(__dirname, 'node_modules/highlight.js')
-));
-
 // Basic route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Add a new route to serve the version
+app.get('/version', (req, res) => {
+    res.json({ version: VERSION });
 });
 
 // Chunking API endpoint
@@ -58,8 +64,8 @@ app.post('/api/chunk', async (req, res) => {
             returnEmbedding: options.returnEmbedding === true,
             returnTokenLength: options.returnTokenLength === true,
             logging: options.logging === true,
-            localModelPath: path.join(__dirname, 'models'),
-            modelCacheDir: path.join(__dirname, 'models')
+            localModelPath: path.join(__dirname, '../models'),
+            modelCacheDir: path.join(__dirname, '../models')
         };
 
         const result = await chunkit(documents, processedOptions);

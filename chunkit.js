@@ -13,6 +13,16 @@ import { DEFAULT_CONFIG } from './config.js';
 import { initializeEmbeddingUtils, tokenizer, createEmbedding } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
 import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
+import { readFileSync } from 'fs';
+
+const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url)));
+const VERSION = packageJson.version;
+
+export async function printVersion() {
+    const versionText = `-- semantic-chunking v${VERSION} --`;
+    const lineLength = versionText.length;
+    console.log(`\n${'-'.repeat(lineLength)}\n${versionText}\n${'-'.repeat(lineLength)}`);
+}
 
 // ---------------------------
 // -- Main chunkit function --
@@ -38,6 +48,8 @@ export async function chunkit(
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
     } = {}) {
+
+    printVersion();
 
     // Input validation
     if (!Array.isArray(documents)) {
@@ -190,6 +202,8 @@ export async function cramit(
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
     } = {}) {
+
+    printVersion();
 
     // Input validation
     if (!Array.isArray(documents)) {

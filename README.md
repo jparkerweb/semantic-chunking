@@ -65,9 +65,9 @@ const myChunks = await chunkit(documents, chunkitOptions);
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
   - `maxTokenSize`: Integer (optional, default `500`) - Maximum token size for each chunk.
   - `similarityThreshold`: Float (optional, default `0.5`) - Threshold to determine if sentences are similar enough to be in the same chunk. A higher value demands higher similarity.
-  - `dynamicThresholdLowerBound`: Float (optional, default `0.45`) - Minimum possible dynamic similarity threshold.
-  - `dynamicThresholdUpperBound`: Float (optional, default `0.75`) - Maximum possible dynamic similarity threshold.
-  - `numSimilaritySentencesLookahead`: Integer (optional, default `2`) - Number of sentences to look ahead for calculating similarity.
+  - `dynamicThresholdLowerBound`: Float (optional, default `0.4`) - Minimum possible dynamic similarity threshold.
+  - `dynamicThresholdUpperBound`: Float (optional, default `0.8`) - Maximum possible dynamic similarity threshold.
+  - `numSimilaritySentencesLookahead`: Integer (optional, default `3`) - Number of sentences to look ahead for calculating similarity.
   - `combineChunks`: Boolean (optional, default `true`) - Determines whether to reblance and combine chunks into larger ones up to the max token limit.
   - `combineChunksSimilarityThreshold`: Float (optional, default `0.5`) - Threshold for combining chunks based on similarity during the rebalance and combining phase.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
@@ -92,6 +92,11 @@ The output is an array of chunks, each containing the following properties:
 - `text`: String - The chunked text.
 - `embedding`: Array - The embedding vector (if `returnEmbedding` is `true`).
 - `token_length`: Integer - The token length (if `returnTokenLength` is `true`).
+
+## **NOTE** 🚨 Every Embedding Model behaves differently!
+It is important to understand how the model you choose behaves when chunking your text.
+It is highly recommended to tweak all the parameters using the Web UI to get the best results for your use case.
+[Web UI README](webui/README.md)
 
 ## Examples
 

@@ -1,5 +1,45 @@
+// set form default values
+import defaultFormValues from './default-form-values.js';
+
+// Set default values for all form controls
+function setDefaultFormValues() {
+    // Set range inputs
+    document.getElementById('maxTokenSize').value = defaultFormValues.maxTokenSize;
+    document.getElementById('similarityThreshold').value = defaultFormValues.similarityThreshold;
+    document.getElementById('dynamicThresholdLowerBound').value = defaultFormValues.dynamicThresholdLowerBound;
+    document.getElementById('dynamicThresholdUpperBound').value = defaultFormValues.dynamicThresholdUpperBound;
+    document.getElementById('numSimilaritySentencesLookahead').value = defaultFormValues.numSimilaritySentencesLookahead;
+    document.getElementById('combineChunksSimilarityThreshold').value = defaultFormValues.combineChunksSimilarityThreshold;
+
+    // Set checkboxes
+    document.getElementById('combineChunks').checked = defaultFormValues.combineChunks;
+    document.getElementById('returnEmbedding').checked = defaultFormValues.returnEmbedding;
+    document.getElementById('returnTokenLength').checked = defaultFormValues.returnTokenLength;
+    document.getElementById('excludeChunkPrefixInResults').checked = defaultFormValues.excludeChunkPrefixInResults;
+
+    // Set text input
+    const chunkPrefixInput = document.getElementById('chunkPrefix');
+    chunkPrefixInput.value = defaultFormValues.chunkPrefix || '';
+
+    // Set dtype (convert string to number index)
+    const dtypeMap = { 'fp32': 0, 'fp16': 1, 'q8': 2, 'q4': 3 };
+    document.getElementById('dtype').value = dtypeMap[defaultFormValues.dtype] || 0;
+
+    // Trigger update for all range inputs to show their values
+    document.querySelectorAll('input[type="range"]').forEach(input => {
+        const event = new Event('input');
+        input.dispatchEvent(event);
+    });
+
+    // Update dependent controls based on combineChunks
+    updateDependentControls();
+}
+
+// Call setDefaultFormValues after the DOM is loaded
+document.addEventListener('DOMContentLoaded', setDefaultFormValues);
+
 // Load sample text on page load
-fetch('sample.txt')
+fetch('./documents/sample.txt')
     .then(response => response.text())
     .then(text => {
         document.getElementById('documentText').value = text;
@@ -17,6 +57,9 @@ fetch('models.json')
             option.textContent = model.label;
             select.appendChild(option);
         });
+        
+        // Set default model after options are loaded
+        select.value = defaultFormValues.onnxEmbeddingModel;
     })
     .catch(error => console.error('Error loading models:', error));
 
@@ -304,7 +347,7 @@ document.getElementById('downloadButton').disabled = true;
 document.querySelectorAll('.document-buttons button').forEach(button => {
     button.addEventListener('click', async () => {
         const fileType = button.dataset.file;
-        const fileName = `${fileType}.txt`;
+        const fileName = `./documents/${fileType}.txt`;
         
         try {
             const response = await fetch(fileName);
@@ -464,18 +507,16 @@ function showToast(message, type = 'error', duration = 7000) {
     }, { once: true });
 }
 
-// Add this with your other event listeners
+// info icon event listener
 document.querySelector('.info-icon').addEventListener('click', () => {
     showToast('More model choices can be added by updating the "models.json" file in the "webui" directory.', 'info', 7000);
 });
 
-// Add after other initialization code
-const resultsContent = document.querySelector('.results-content');
 
-// Create and add the resize toggle button
+const resultsContent = document.querySelector('.results-content');
 const processingTimeSpan = document.getElementById('processingTime');
 
-// Create and add the resize toggle button
+// resize toggle button
 const resizeToggle = document.createElement('button');
 resizeToggle.className = 'resize-toggle';
 resizeToggle.innerHTML = `
@@ -497,7 +538,7 @@ resizeToggle.addEventListener('click', () => {
     resizeToggle.classList.toggle('wrapped');
 });
 
-// Add this to your existing range input handlers
+// dtype display
 const dtypeInput = document.getElementById('dtype');
 const dtypeDisplay = dtypeInput.nextElementSibling;
 
@@ -524,3 +565,11 @@ updateDtypeDisplay(dtypeInput.value);
 
 // Update on change
 dtypeInput.addEventListener('input', (e) => updateDtypeDisplay(e.target.value));
+
+// version display
+fetch('/version')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('version').textContent = `v${data.version}`;
+    })
+    .catch(error => console.error('Error fetching version:', error));

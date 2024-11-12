@@ -31,19 +31,18 @@ let myTestChunks = await chunkit(
     {
         logging: false,
         maxTokenSize: 300,
-        similarityThreshold: 0.65,        
-        dynamicThresholdLowerBound: 0.5,  
-        dynamicThresholdUpperBound: 0.8,  
+        similarityThreshold: 0.500,        
+        dynamicThresholdLowerBound: 0.400,  
+        dynamicThresholdUpperBound: 0.800,  
         numSimilaritySentencesLookahead: 3,
         combineChunks: true,  // enable rebalancing
-        combineChunksSimilarityThreshold: 0.6,
-        onnxEmbeddingModel: "nomic-ai/nomic-embed-text-v1.5",
+        combineChunksSimilarityThreshold: 0.700,
+        onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
         dtype: "q8",
         localModelPath: "../models",
         modelCacheDir: "../models",
-        returnEmbedding: false,
         returnTokenLength: true,
-        // chunkPrefix: "search_document",
+        returnEmbedding: false,
     }
 );
 
@@ -54,7 +53,7 @@ const endTime = performance.now();
 let trackedTimeSeconds = (endTime - startTime) / 1000;
 trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
 
-console.log("\n\n\n");
+console.log("\n\n");
 // console.log("myTestChunks:");
 // console.log(myTestChunks);
 console.log("length: " + myTestChunks.length);
