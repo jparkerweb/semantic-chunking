@@ -49,7 +49,7 @@ export async function chunkit(
         excludeChunkPrefixInResults = false,
     } = {}) {
 
-    printVersion();
+    if(logging) { printVersion(); }
 
     // Input validation
     if (!Array.isArray(documents)) {
@@ -203,7 +203,7 @@ export async function cramit(
         excludeChunkPrefixInResults = false,
     } = {}) {
 
-    printVersion();
+    if(logging) { printVersion(); }
 
     // Input validation
     if (!Array.isArray(documents)) {
