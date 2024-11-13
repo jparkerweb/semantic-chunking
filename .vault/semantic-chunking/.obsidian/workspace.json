@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "🍱 Semantic Chunking.md",
-                "mode": "preview",
+                "file": "releases/v2.3.0 - 📦 Transformers.js v3.md",
+                "mode": "source",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "🍱 Semantic Chunking"
+              "title": "v2.3.0 - 📦 Transformers.js v3"
             }
           }
         ]
@@ -154,7 +154,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 1406.5
+    "width": 667.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -166,8 +166,8 @@
   },
   "active": "79f31c3962671964",
   "lastOpenFiles": [
-    "releases/v2.3.0 - 📦 Transformers.js v3.md",
     "🍱 Semantic Chunking.md",
+    "releases/v2.3.0 - 📦 Transformers.js v3.md",
     "images/model-precision.gif",
     "images/releases/v2.3.0.jpg",
     "images/releases",
