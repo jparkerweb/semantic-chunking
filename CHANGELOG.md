@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.5] - 2024-11-13
+### Updated
+- Only print version if logging is enabled (default is false)
+  - was adding console noise to upstream applications
+
 ## [2.3.4] - 2024-11-12
 ### Updated
 - Updated Web UI to v1.3.1

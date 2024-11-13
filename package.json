@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "2.3.4",
+  "version": "2.3.5",
   "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "repository": {
     "type": "git",
