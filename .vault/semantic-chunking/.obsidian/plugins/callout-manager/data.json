@@ -1,0 +1,35 @@
+{
+  "callouts": {
+    "custom": [
+      "code"
+    ],
+    "settings": {
+      "code": [
+        {
+          "changes": {
+            "icon": "lucide-code-2"
+          }
+        },
+        {
+          "condition": {
+            "colorScheme": "light"
+          },
+          "changes": {}
+        },
+        {
+          "condition": {
+            "colorScheme": "dark"
+          },
+          "changes": {
+            "color": "245, 143, 0"
+          }
+        }
+      ]
+    }
+  },
+  "calloutDetection": {
+    "obsidian": true,
+    "theme": true,
+    "snippet": true
+  }
+}
