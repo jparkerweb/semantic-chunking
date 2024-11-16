@@ -4,7 +4,15 @@
   "debug": false,
   "editorMenu": [],
   "fileMenu": [],
-  "leftRibbon": [],
+  "leftRibbon": [
+    {
+      "id": "app:reload",
+      "icon": "lucide-power",
+      "name": "Reload app without saving",
+      "mode": "868021c1eed45f3e",
+      "color": "#ffdd00"
+    }
+  ],
   "rightRibbon": [],
   "titleBar": [],
   "statusBar": [],

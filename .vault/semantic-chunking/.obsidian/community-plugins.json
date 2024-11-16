@@ -10,5 +10,6 @@
   "obsidian-languagetool-plugin",
   "obsidian-plugin-update-tracker",
   "obsidian-remember-file-state",
-  "url-into-selection"
+  "url-into-selection",
+  "obsidian-custom-frames"
 ]
