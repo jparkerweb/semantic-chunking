@@ -119,6 +119,10 @@ h1.title > a > #version {
         padding: 15px;
     }
 
+    .equillabs-logo {
+        display: none;
+    }
+
     .top-links {
         display: none !important;
     }
@@ -834,6 +838,14 @@ pre {
     }
 }
 
+.equillabs-logo {
+    position: absolute;
+    top: 25px;
+    left: 20px;
+}
+.equillabs-logo img {
+    height: 20px;
+}
 
 .top-links {
     position: absolute;
