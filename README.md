@@ -2,6 +2,11 @@
 
 NPM Package for Semantically creating chunks from large texts. Useful for workflows involving large language models (LLMs).
 
+### Maintained by
+<a href="https://www.equilllabs.com">
+  <img src="https://raw.githubusercontent.com/jparkerweb/eQuill-Labs/refs/heads/main/src/static/images/logo-text-outline.png" alt="eQuill Labs" height="40">
+</a>
+
 ## Features
 
 - Semantic chunking based on sentence similarity
