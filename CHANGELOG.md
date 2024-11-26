@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.7] - 2024-11-25
+### 📦 Updated
+- Update `string-segmenter` patch version
+
 ## [2.3.6] - 2024-11-18
 ### 📦 Updated
 - Update `string-segmenter` patch version
