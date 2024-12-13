@@ -26,13 +26,29 @@
             "id": "510fdaee883cfc12",
             "type": "leaf",
             "state": {
+              "type": "markdown",
+              "state": {
+                "file": "releases/v2.4.0 - ✂️ Clean Split.md",
+                "mode": "preview",
+                "backlinks": false,
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "v2.4.0 - ✂️ Clean Split"
+            }
+          },
+          {
+            "id": "80393faf3fd7f3a9",
+            "type": "leaf",
+            "state": {
               "type": "custom-frames-📄-release-notes",
               "state": {},
               "icon": "lucide-notebook-pen",
               "title": "📄 release notes"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -163,6 +179,16 @@
             "id": "722b7bdf2ca2699d",
             "type": "leaf",
             "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          },
+          {
+            "id": "aaa433e4ec8743d3",
+            "type": "leaf",
+            "state": {
               "type": "Saved Queries View",
               "state": {},
               "icon": "feather-mouse-pointer",
@@ -170,7 +196,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 6
       }
     ],
     "direction": "horizontal",
@@ -187,8 +213,11 @@
       "callout-manager:Insert Callout": true
     }
   },
-  "active": "ee8a45d3d15647ea",
+  "active": "80393faf3fd7f3a9",
   "lastOpenFiles": [
+    "releases/v2.4.0 - ✂️ Clean Split.md",
+    "pixel-banner-images/cut-in-pieces.png",
+    "pixel-banner-images",
     "releases/v2.3.0 - 📦 Transformers.js v3.md",
     "🍱 Semantic Chunking.md",
     "images/model-precision.gif",
