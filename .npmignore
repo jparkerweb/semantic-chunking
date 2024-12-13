@@ -1,5 +1,6 @@
 .git/
 .github/
 .vault/
+.cursorignore
 **/models/
 **/node_modules/
