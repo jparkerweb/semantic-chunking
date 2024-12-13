@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "2.3.8",
+  "version": "2.3.9",
   "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "homepage": "https://www.equilllabs.com/projects/semantic-chunking",
   "repository": {
@@ -41,7 +41,7 @@
     "download-models": "node ./tools/download-models.js"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.0.2",
+    "@huggingface/transformers": "^3.1.2",
     "cli-progress": "^3.12.0",
     "fs": "^0.0.1-security",
     "string-segmenter": "^1.2.0"
