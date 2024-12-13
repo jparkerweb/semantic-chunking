@@ -333,7 +333,9 @@ export async function sentenceit(
         // Split the text into sentences
         const chunks = [];
         for (const { segment } of splitBySentence(doc.document_text)) {
-            chunks.push(segment.trim());
+            if (segment.trim().length > 0) {
+                chunks.push(segment.trim());
+            }
         }
         
         if (logging) {
