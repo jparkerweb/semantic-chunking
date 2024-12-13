@@ -31,6 +31,10 @@
     {
       "value": "yashvardhan7/snowflake-arctic-embed-m-onnx",
       "label": "yashvardhan7/snowflake-arctic-embed-m-onnx"
+    },
+    {
+      "value": "Snowflake/snowflake-arctic-embed-m-v2.0",
+      "label": "Snowflake/snowflake-arctic-embed-m-v2.0"
     }
   ]
 }
