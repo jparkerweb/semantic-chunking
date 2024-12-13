@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0] - 2024-12-13
+### ✨ Added
+- Added `sentenceit` function.
+
 ## [2.3.7] - 2024-11-25
 ### 📦 Updated
 - Update `string-segmenter` patch version

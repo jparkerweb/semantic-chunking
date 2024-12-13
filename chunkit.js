@@ -39,7 +39,6 @@ export async function chunkit(
         combineChunks = DEFAULT_CONFIG.COMBINE_CHUNKS,
         combineChunksSimilarityThreshold = DEFAULT_CONFIG.COMBINE_CHUNKS_SIMILARITY_THRESHOLD,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        onnxEmbeddingModelQuantized, // legacy boolean (remove in next major version)
         dtype = DEFAULT_CONFIG.DTYPE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
@@ -55,9 +54,6 @@ export async function chunkit(
     if (!Array.isArray(documents)) {
         throw new Error('Input must be an array of document objects');
     }
-
-    // if legacy boolean is used (onnxEmbeddingModelQuantized), set dtype (model precision) to 'q8'
-    if (onnxEmbeddingModelQuantized === true) { dtype = 'q8'; }
 
     // Initialize embedding utilities and set optional paths
     const { modelName, dtype: usedDtype } = await initializeEmbeddingUtils(
@@ -193,7 +189,6 @@ export async function cramit(
         logging = DEFAULT_CONFIG.LOGGING,
         maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        onnxEmbeddingModelQuantized, // legacy boolean (remove in next major version)
         dtype = DEFAULT_CONFIG.DTYPE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
@@ -210,11 +205,8 @@ export async function cramit(
         throw new Error('Input must be an array of document objects');
     }
 
-    // if legacy boolean is used (onnxEmbeddingModelQuantized), set dtype (model precision) to 'q8'
-    if (onnxEmbeddingModelQuantized === true) { dtype = 'q8'; }
-
     // Initialize embedding utilities with paths
-    const { modelName, isQuantized } = await initializeEmbeddingUtils(
+    await initializeEmbeddingUtils(
         onnxEmbeddingModel, 
         dtype,
         localModelPath,
@@ -259,8 +251,8 @@ export async function cramit(
                 document_name: documentName,
                 number_of_chunks: numberOfChunks,
                 chunk_number: index + 1,
-                model_name: modelName,
-                is_model_quantized: isQuantized,
+                model_name: onnxEmbeddingModel,
+                dtype: dtype,
                 text: prefixedChunk
             };
 
@@ -287,6 +279,114 @@ export async function cramit(
             if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
                 const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
                 result.text = result.text.replace(prefixPattern, '');
+            }
+
+            return result;
+        }));
+    }));
+
+    // Flatten the results array since we're processing multiple documents
+    return allResults.flat();
+}
+
+
+// ------------------------------
+// -- Main sentenceit function --
+// ------------------------------
+export async function sentenceit(
+    documents,
+    {
+        logging = DEFAULT_CONFIG.LOGGING,
+        onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
+        dtype = DEFAULT_CONFIG.DTYPE,
+        localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
+        modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
+        returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
+        returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
+        chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
+        excludeChunkPrefixInResults = false,
+    } = {}) {
+
+    if(logging) { printVersion(); }
+
+    // Input validation
+    if (!Array.isArray(documents)) {
+        throw new Error('Input must be an array of document objects');
+    }
+
+    if (returnEmbedding) {
+        // Initialize embedding utilities with paths
+        await initializeEmbeddingUtils(
+            onnxEmbeddingModel, 
+            dtype,
+            localModelPath,
+            modelCacheDir
+        );
+    }
+
+    // Process each document
+    const allResults = await Promise.all(documents.map(async (doc) => {
+        if (!doc.document_text) {
+            throw new Error('Each document must have a document_text property');
+        }
+
+        // Split the text into sentences
+        const chunks = [];
+        for (const { segment } of splitBySentence(doc.document_text)) {
+            chunks.push(segment.trim());
+        }
+        
+        if (logging) {
+            console.log('\nSENTENCEIT');
+            console.log('=============\nSentences\n=============');
+            chunks.forEach((chunk, index) => {
+                console.log("\n");
+                console.log(`--------------`);
+                console.log(`-- Sentence ${(index + 1)} --`);
+                console.log(`--------------`);
+                console.log(chunk.substring(0, 50) + '...');
+            });
+        }
+
+        const documentName = doc.document_name || ""; // Normalize document_name
+        const documentId = Date.now();
+        const numberOfChunks = chunks.length;
+
+        return Promise.all(chunks.map(async (chunk, index) => {
+            const prefixedChunk = chunkPrefix ? applyPrefixToChunk(chunkPrefix, chunk) : chunk;
+            const result = {
+                document_id: documentId,
+                document_name: documentName,
+                number_of_sentences: numberOfChunks,
+                sentence_number: index + 1,
+                text: prefixedChunk
+            };
+
+            if (returnEmbedding) {
+                result.model_name = onnxEmbeddingModel;
+                result.dtype = dtype;
+                result.embedding = await createEmbedding(prefixedChunk);
+    
+                if (returnTokenLength) {
+                    try {
+                        const encoded = await tokenizer(prefixedChunk, { padding: true });
+                        if (encoded && encoded.input_ids) {
+                            result.token_length = encoded.input_ids.size;
+                        } else {
+                            console.error('Tokenizer returned unexpected format:', encoded);
+                            result.token_length = 0;
+                        }
+                    } catch (error) {
+                        console.error('Error during tokenization:', error);
+                        result.token_length = 0;
+                    }
+                }
+
+                // Remove prefix if requested (after embedding calculation)
+                if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
+                    const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
+                    result.text = result.text.replace(prefixPattern, '');
+                }
             }
 
             return result;

@@ -54,7 +54,7 @@ let trackedTimeSeconds = (endTime - startTime) / 1000;
 trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
 
 console.log("\n\n");
-// console.log("myTestChunks:");
-// console.log(myTestChunks);
+console.log("myTestChunks:");
+console.log(myTestChunks);
 console.log("length: " + myTestChunks.length);
 console.log("trackedTimeSeconds: " + trackedTimeSeconds);

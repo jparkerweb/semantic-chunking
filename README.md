@@ -4,7 +4,7 @@ NPM Package for Semantically creating chunks from large texts. Useful for workfl
 
 ### Maintained by
 <a href="https://www.equilllabs.com">
-  <img src="https://raw.githubusercontent.com/jparkerweb/eQuill-Labs/refs/heads/main/src/static/images/logo-text-outline.png" alt="eQuill Labs" height="40">
+  <img src="https://raw.githubusercontent.com/jparkerweb/eQuill-Labs/refs/heads/main/src/static/images/logo-text-outline.png" alt="eQuill Labs" height="32">
 </a>
 
 ## Features
@@ -260,6 +260,33 @@ The Semantic Chunking Web UI allows you to experiment with the chunking paramete
 
 There is an additional function you can import to just "cram" sentences together till they meet your target token size for when you just need quick, high desity chunks.
 
+
+## Parameters
+
+`cramit` accepts an array of document objects and an optional configuration object. Here are the details for each parameter:
+
+- `documents`: array of documents. each document is an object containing `document_name` and `document_text`.
+  ```
+  documents = [
+    { document_name: "document1", document_text: "..." },
+    { document_name: "document2", document_text: "..." },
+    ...
+  ]
+  ```
+
+- **Cramit Options Object:**
+  
+  - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
+  - `maxTokenSize`: Integer (optional, default `500`) - Maximum token size for each chunk.
+  - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
+  - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
+  - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
+  - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
+  - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
+  - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
+  - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
+
 Basic usage:
 
 ```javascript
@@ -285,37 +312,62 @@ main();
 
 Look at the `example\example-cramit.js` file in the root of this project for a more complex example of using all the optional parameters.
 
-### Tuning
+---
 
-The behavior of the `chunkit` function can be finely tuned using several optional parameters in the options object. Understanding how each parameter affects the function can help you optimize the chunking process for your specific requirements.
+## `sentenceit` - ✂️ When you just need a Clean Split
 
-#### `logging`
+There is an additional function you can import to just split sentences.
 
-- **Type**: Boolean
-- **Default**: `false`
-- **Description**: Enables detailed debug output during the chunking process. Turning this on can help in diagnosing how chunks are formed or why certain chunks are combined.
 
-#### `maxTokenSize`
+## Parameters
 
-- **Type**: Integer
-- **Default**: `500`
-- **Description**: Sets the maximum number of tokens allowed in a single chunk. Smaller values result in smaller, more numerous chunks, while larger values can create fewer, larger chunks. It’s crucial for maintaining manageable chunk sizes when processing large texts.
+`sentenceit` accepts an array of document objects and an optional configuration object. Here are the details for each parameter:
 
-#### `onnxEmbeddingModel`
+- `documents`: array of documents. each document is an object containing `document_name` and `document_text`.
+  ```
+  documents = [
+    { document_name: "document1", document_text: "..." },
+    { document_name: "document2", document_text: "..." },
+    ...
+  ]
+  ```
 
-- **Type**: String
-- **Default**: `Xenova/paraphrase-multilingual-MiniLM-L12-v2`
-- **Description**: Specifies the model used to generate sentence embeddings. Different models may yield different qualities of embeddings, affecting the chunking quality, especially in multilingual contexts.
-- **Resource Link**: [ONNX Embedding Models](https://huggingface.co/models?pipeline_tag=feature-extraction&library=onnx&sort=trending)  
-  Link to a filtered list of embedding models converted to ONNX library format by Xenova.  
-  Refer to the Model table below for a list of suggested models and their sizes (choose a multilingual model if you need to chunk text other than English).  
+- **Sentenceit Options Object:**
+  
+  - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
+  - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
+  - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
+  - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
+  - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
+  - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
+  - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
+  - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
 
-#### `dtype`
+Basic usage:
 
-- **Type**: String
-- **Default**: `fp32`
-- **Description**: Indicates the precision of the embedding model. Options are `fp32`, `fp16`, `q8`, `q4`.
-`fp32` is the highest precision but also the largest size and slowest to load. `q8` is a good compromise between size and speed if the model supports it. All models support `fp32`, but only some support `fp16`, `q8`, and `q4`.
+```javascript
+import { sentenceit } from 'semantic-chunking';
+
+let duckText = "A duck waddles into a bakery and quacks to the baker, \"I'll have a loaf of bread, please.\" The baker, amused, quickly wraps the loaf and hands it over. The duck takes a nibble, looks around, and then asks, \"Do you have any seeds to go with this?\" The baker, chuckling, replies, \"Sorry, we're all out of seeds today.\" The duck nods and continues nibbling on its bread, clearly unfazed by the lack of seed toppings. Just another day in the life of a bread-loving waterfowl! 🦆🍞";
+
+// initialize documents array and add the duck text to it
+let documents = [];
+documents.push({
+    document_name: "duck document",
+    document_text: duckText
+});
+
+// call the sentenceit function passing in the documents array and the options object
+async function main() {
+    let myDuckChunks = await sentenceit(documents, { returnEmbedding: true });
+    console.log("myDuckChunks", myDuckChunks);
+}
+main();
+
+```
+
+Look at the `example\example-sentenceit.js` file in the root of this project for a more complex example of using all the optional parameters.
 
 ---
 
