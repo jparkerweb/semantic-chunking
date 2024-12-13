@@ -13,13 +13,13 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "releases/v2.3.0 - 📦 Transformers.js v3.md",
+                "file": "🍱 Semantic Chunking.md",
                 "mode": "preview",
                 "backlinks": false,
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "v2.3.0 - 📦 Transformers.js v3"
+              "title": "🍱 Semantic Chunking"
             }
           },
           {
@@ -32,8 +32,7 @@
               "title": "📄 release notes"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -154,6 +153,16 @@
             "id": "fad0b7f42335ee60",
             "type": "leaf",
             "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          },
+          {
+            "id": "722b7bdf2ca2699d",
+            "type": "leaf",
+            "state": {
               "type": "Saved Queries View",
               "state": {},
               "icon": "feather-mouse-pointer",
@@ -161,11 +170,12 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 667.5
+    "width": 667.5,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -177,7 +187,7 @@
       "callout-manager:Insert Callout": true
     }
   },
-  "active": "510fdaee883cfc12",
+  "active": "ee8a45d3d15647ea",
   "lastOpenFiles": [
     "releases/v2.3.0 - 📦 Transformers.js v3.md",
     "🍱 Semantic Chunking.md",

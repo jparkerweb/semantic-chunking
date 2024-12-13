@@ -12,5 +12,15 @@
   "linkColor": "var(--link-color)",
   "linkBackgroundColor": "var(--tag-background)",
   "linkBorderColor": "rgba(255, 255, 255, 0.204)",
-  "lastVersion": "1.6.0"
+  "customCreatedDateProp": "",
+  "customModifiedDateProp": "",
+  "dateDisplayFormat": "mmmm dd, yyyy",
+  "showBacklinks": true,
+  "showOutlinks": true,
+  "showDates": true,
+  "combineLinks": false,
+  "updateDelay": 3000,
+  "excludedParentSelectors": [],
+  "frontmatterExclusionField": "",
+  "lastVersion": "1.10.2"
 }
