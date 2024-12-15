@@ -23,21 +23,6 @@
             }
           },
           {
-            "id": "510fdaee883cfc12",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "releases/v2.4.0 - ✂️ Clean Split.md",
-                "mode": "preview",
-                "backlinks": false,
-                "source": true
-              },
-              "icon": "lucide-file",
-              "title": "v2.4.0 - ✂️ Clean Split"
-            }
-          },
-          {
             "id": "80393faf3fd7f3a9",
             "type": "leaf",
             "state": {
@@ -47,8 +32,7 @@
               "title": "📄 release notes"
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -213,13 +197,13 @@
       "callout-manager:Insert Callout": true
     }
   },
-  "active": "80393faf3fd7f3a9",
+  "active": "ee8a45d3d15647ea",
   "lastOpenFiles": [
+    "🍱 Semantic Chunking.md",
     "releases/v2.4.0 - ✂️ Clean Split.md",
     "pixel-banner-images/cut-in-pieces.png",
     "pixel-banner-images",
     "releases/v2.3.0 - 📦 Transformers.js v3.md",
-    "🍱 Semantic Chunking.md",
     "images/model-precision.gif",
     "images/releases/v2.3.0.jpg",
     "images/releases",
