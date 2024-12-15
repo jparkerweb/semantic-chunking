@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.1] - 2024-12-15
+### 📦 Updated
+- Updated sentence splitter to use `@stdlib/nlp-sentencize`
+- Updated embedding cache to use `lru-cache`
+
 ## [2.4.0] - 2024-12-13
 ### ✨ Added
 - Added `sentenceit` function (split by sentence and return embeddings)
