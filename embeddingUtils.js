@@ -1,8 +1,16 @@
 import { env, pipeline, AutoTokenizer } from '@huggingface/transformers';
+import { LRUCache } from 'lru-cache';
 
 let tokenizer;
 let generateEmbedding;
-const embeddingCache = new Map();
+const embeddingCache = new LRUCache({
+    max: 500,
+    maxSize: 50_000_000,
+    sizeCalculation: (value, key) => {
+        return (value.length * 4) + key.length;
+    },
+    ttl: 1000 * 60 * 60,
+});
 
 // --------------------------------------------
 // -- Initialize embedding model and tokenizer --
@@ -35,8 +43,9 @@ export async function initializeEmbeddingUtils(
 // -- Function to generate embeddings --
 // -------------------------------------
 export async function createEmbedding(text) {
-    if (embeddingCache.has(text)) {
-        return embeddingCache.get(text);
+    const cached = embeddingCache.get(text);
+    if (cached) {
+        return cached;
     }
 
     const embeddings = await generateEmbedding(text, { pooling: 'mean', normalize: true });

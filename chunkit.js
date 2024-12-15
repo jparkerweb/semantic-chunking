@@ -8,7 +8,7 @@
 // == github repo: https://github.com/jparkerweb/semantic-chunking ==
 // ==================================================================
 
-import { splitBySentence } from "string-segmenter"
+import sentencize from '@stdlib/nlp-sentencize';
 import { DEFAULT_CONFIG } from './config.js';
 import { initializeEmbeddingUtils, tokenizer, createEmbedding } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
@@ -77,10 +77,7 @@ export async function chunkit(
         doc.document_text = normalizedText;
 
         // Split the text into sentences
-        const sentences = [];
-        for (const { segment } of splitBySentence(doc.document_text)) {
-            sentences.push(segment.trim());
-        }
+        const sentences = sentencize(doc.document_text);
 
         // Compute similarities and create chunks
         const { similarities, average, variance } = await computeAdvancedSimilarities(
@@ -220,10 +217,7 @@ export async function cramit(
         }
 
         // Split the text into sentences
-        const sentences = [];
-        for (const { segment } of splitBySentence(doc.document_text)) {
-            sentences.push(segment.trim());
-        }
+        const sentences = sentencize(doc.document_text);
         
         // Create chunks without considering similarities
         const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
@@ -331,12 +325,7 @@ export async function sentenceit(
         }
 
         // Split the text into sentences
-        const chunks = [];
-        for (const { segment } of splitBySentence(doc.document_text)) {
-            if (segment.trim().length > 0) {
-                chunks.push(segment.trim());
-            }
-        }
+        const chunks = sentencize(doc.document_text);
         
         if (logging) {
             console.log('\nSENTENCEIT');
