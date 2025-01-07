@@ -8,28 +8,18 @@
         "type": "tabs",
         "children": [
           {
-            "id": "ee8a45d3d15647ea",
+            "id": "e56abe90850f0fa0",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "🍱 Semantic Chunking.md",
-                "mode": "preview",
-                "backlinks": false,
-                "source": true
+                "mode": "source",
+                "source": true,
+                "backlinks": false
               },
               "icon": "lucide-file",
               "title": "🍱 Semantic Chunking"
-            }
-          },
-          {
-            "id": "80393faf3fd7f3a9",
-            "type": "leaf",
-            "state": {
-              "type": "custom-frames-📄-release-notes",
-              "state": {},
-              "icon": "lucide-notebook-pen",
-              "title": "📄 release notes"
             }
           }
         ]
@@ -173,6 +163,26 @@
             "id": "aaa433e4ec8743d3",
             "type": "leaf",
             "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          },
+          {
+            "id": "9b6e7fd237760e0e",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          },
+          {
+            "id": "6a07aba4b37b555c",
+            "type": "leaf",
+            "state": {
               "type": "Saved Queries View",
               "state": {},
               "icon": "feather-mouse-pointer",
@@ -180,7 +190,7 @@
             }
           }
         ],
-        "currentTab": 6
+        "currentTab": 8
       }
     ],
     "direction": "horizontal",
@@ -197,15 +207,16 @@
       "callout-manager:Insert Callout": true
     }
   },
-  "active": "ee8a45d3d15647ea",
+  "active": "e56abe90850f0fa0",
   "lastOpenFiles": [
+    "images/model-precision.gif",
+    "images/releases/v2.3.0.jpg",
     "🍱 Semantic Chunking.md",
+    "pixel-banner-images/bento-box.png",
     "releases/v2.4.0 - ✂️ Clean Split.md",
     "pixel-banner-images/cut-in-pieces.png",
     "pixel-banner-images",
     "releases/v2.3.0 - 📦 Transformers.js v3.md",
-    "images/model-precision.gif",
-    "images/releases/v2.3.0.jpg",
     "images/releases",
     "images/New folder",
     "releases",
