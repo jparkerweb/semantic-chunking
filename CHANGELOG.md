@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.2] - 2025-01-06
+### 📦 Updated
+- Updated sentence splitter to use `sentence-parse`
+
 ## [2.4.1] - 2024-12-15
 ### 📦 Updated
 - Updated sentence splitter to use `@stdlib/nlp-sentencize`
