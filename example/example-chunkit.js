@@ -10,10 +10,18 @@
 
 import { chunkit } from '../chunkit.js'; // this is typically just "import { chunkit } from 'semantic-chunking';", but this is a local test
 import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+
+// Get current file's directory
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // initialize documents array
 let documents = [];
-let textFiles = ['./example.txt', './different.txt', './similar.txt'];
+let textFiles = ['example.txt', 'different.txt', 'similar.txt'].map(file => 
+    resolve(__dirname, file)
+);
 
 // read each text file and add it to the documents array
 for (const textFile of textFiles) {
