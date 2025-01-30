@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.3] - 2025-01-30
+### 📦 Updated
+- Updated `sentence-parse` to v1.3.1 (wont crash on null inputs)
+
 ## [2.4.2] - 2025-01-06
 ### 📦 Updated
 - Updated sentence splitter to use `sentence-parse`
