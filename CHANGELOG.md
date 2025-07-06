@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.4] - 2025-07-05
+### ✨ Added
+- New config option `device` to specify device to use for embedding calculations (e.g., 'cpu' [default], 'webgpu')
+- Web UI now supports `device` option
+
 ## [2.4.3] - 2025-01-30
 ### 📦 Updated
 - Updated `sentence-parse` to v1.3.1 (wont crash on null inputs)

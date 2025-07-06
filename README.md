@@ -77,6 +77,7 @@ const myChunks = await chunkit(documents, chunkitOptions);
   - `combineChunksSimilarityThreshold`: Float (optional, default `0.5`) - Threshold for combining chunks based on similarity during the rebalance and combining phase.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
   - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `device`: String (optional, default `cpu`) - The execution provider to use for the model (options: `cpu`, `webgpu`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
   - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
@@ -214,6 +215,12 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
   Link to a filtered list of embedding models converted to ONNX library format by Xenova.  
   Refer to the Model table below for a list of suggested models and their sizes (choose a multilingual model if you need to chunk text other than English).  
 
+### `device`
+
+- **Type**: String
+- **Default**: `cpu`
+- **Description**: Specifies the execution provider for the model. Options are `cpu` and `webgpu`. Use `webgpu` to leverage GPU acceleration for faster processing. Note that WebGPU support may vary by environment.
+
 #### `dtype`
 
 - **Type**: String
@@ -280,6 +287,7 @@ There is an additional function you can import to just "cram" sentences together
   - `maxTokenSize`: Integer (optional, default `500`) - Maximum token size for each chunk.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
   - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `device`: String (optional, default `cpu`) - The execution provider to use for the model (options: `cpu`, `webgpu`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
   - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
@@ -337,6 +345,7 @@ There is an additional function you can import to just split sentences.
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
   - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `device`: String (optional, default `cpu`) - The execution provider to use for the model (options: `cpu`, `webgpu`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
   - `returnEmbedding`: Boolean (optional, default `false`) - If set to `true`, each chunk will include an embedding vector. This is useful for applications that require semantic understanding of the chunks. The embedding model will be the same as the one specified in `onnxEmbeddingModel`.
