@@ -40,6 +40,7 @@ export async function chunkit(
         combineChunksSimilarityThreshold = DEFAULT_CONFIG.COMBINE_CHUNKS_SIMILARITY_THRESHOLD,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
         dtype = DEFAULT_CONFIG.DTYPE,
+        device = DEFAULT_CONFIG.DEVICE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
@@ -59,6 +60,7 @@ export async function chunkit(
     const { modelName, dtype: usedDtype } = await initializeEmbeddingUtils(
         onnxEmbeddingModel, 
         dtype,
+        device,
         localModelPath,
         modelCacheDir
     );
@@ -187,6 +189,7 @@ export async function cramit(
         maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
         dtype = DEFAULT_CONFIG.DTYPE,
+        device = DEFAULT_CONFIG.DEVICE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
@@ -206,6 +209,7 @@ export async function cramit(
     await initializeEmbeddingUtils(
         onnxEmbeddingModel, 
         dtype,
+        device,
         localModelPath,
         modelCacheDir
     );
@@ -293,6 +297,7 @@ export async function sentenceit(
         logging = DEFAULT_CONFIG.LOGGING,
         onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
         dtype = DEFAULT_CONFIG.DTYPE,
+        device = DEFAULT_CONFIG.DEVICE,
         localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
         modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
         returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
@@ -313,6 +318,7 @@ export async function sentenceit(
         await initializeEmbeddingUtils(
             onnxEmbeddingModel, 
             dtype,
+            device,
             localModelPath,
             modelCacheDir
         );

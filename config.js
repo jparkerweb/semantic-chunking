@@ -9,6 +9,7 @@ export const DEFAULT_CONFIG = {
     COMBINE_CHUNKS_SIMILARITY_THRESHOLD: 0.5,
     ONNX_EMBEDDING_MODEL: "Xenova/all-MiniLM-L6-v2",
     DTYPE: 'q8',
+    DEVICE: 'cpu', // webgpu
     LOCAL_MODEL_PATH: "./models",
     MODEL_CACHE_DIR: "./models",
     RETURN_EMBEDDING: false,

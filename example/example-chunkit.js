@@ -31,6 +31,9 @@ for (const textFile of textFiles) {
     });
 }
 
+// Get device from command line arguments, default to 'cpu'
+const device = process.argv[2] || 'cpu';
+
 // start timing
 const startTime = performance.now();
 
@@ -47,6 +50,7 @@ let myTestChunks = await chunkit(
         combineChunksSimilarityThreshold: 0.700,
         onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
         dtype: "q8",
+        device: device, // Pass the device to chunkit
         localModelPath: "../models",
         modelCacheDir: "../models",
         returnTokenLength: true,
@@ -61,8 +65,8 @@ const endTime = performance.now();
 let trackedTimeSeconds = (endTime - startTime) / 1000;
 trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
 
-console.log("\n\n");
 console.log("myTestChunks:");
 console.log(myTestChunks);
+console.log(`device: ${device}`);
 console.log("length: " + myTestChunks.length);
 console.log("trackedTimeSeconds: " + trackedTimeSeconds);

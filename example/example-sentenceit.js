@@ -34,6 +34,9 @@ for (const textFile of textFiles) {
     });
 }
 
+// Get device from command line arguments, default to 'cpu'
+const device = process.argv[2] || 'cpu';
+
 // start timing
 const startTime = performance.now();
 
@@ -43,6 +46,7 @@ let myTestSentences = await sentenceit(
         logging: false,
         onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
         dtype: 'fp32',
+        device: device,
         localModelPath: "../models",
         modelCacheDir: "../models",
         returnEmbedding: true,
@@ -59,5 +63,6 @@ trackedTimeSeconds =  parseFloat(trackedTimeSeconds.toFixed(2));
 console.log("\n\n\n");
 console.log("myTestSentences:");
 console.log(myTestSentences);
+console.log(`device: ${device}`);
 console.log("length: " + myTestSentences.length);
 console.log("trackedTimeSeconds: " + trackedTimeSeconds);

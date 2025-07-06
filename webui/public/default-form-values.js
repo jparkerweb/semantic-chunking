@@ -8,6 +8,7 @@ const defaultFormValues = {
     combineChunksSimilarityThreshold: 0.5,
     onnxEmbeddingModel: "Xenova/all-MiniLM-L6-v2",
     dtype: 'q8',
+    device: 'cpu',
     returnEmbedding: false,
     returnTokenLength: true,
     chunkPrefix: null,

@@ -18,6 +18,7 @@ const embeddingCache = new LRUCache({
 export async function initializeEmbeddingUtils(
     onnxEmbeddingModel, 
     dtype = 'fp32',
+    device = 'cpu',
     localModelPath = null,
     modelCacheDir = null
 ) {
@@ -27,15 +28,22 @@ export async function initializeEmbeddingUtils(
     if (modelCacheDir) env.cacheDir = modelCacheDir;
 
     tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
-    generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, {
+    const pipelineOptions = {
         dtype: dtype,
-    });
+    };
+
+    if (device !== 'webgpu') {
+        pipelineOptions.device = device;
+    }
+
+    generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, pipelineOptions);
 
     embeddingCache.clear();
 
     return {
         modelName: onnxEmbeddingModel,
-        dtype: dtype
+        dtype: dtype,
+        device: device,
     };
 }
 

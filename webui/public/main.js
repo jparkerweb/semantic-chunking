@@ -25,6 +25,9 @@ function setDefaultFormValues() {
     const dtypeMap = { 'fp32': 0, 'fp16': 1, 'q8': 2, 'q4': 3 };
     document.getElementById('dtype').value = dtypeMap[defaultFormValues.dtype] || 0;
 
+    // Set device
+    document.getElementById('device').value = defaultFormValues.device || 'cpu';
+
     // Trigger update for all range inputs to show their values
     document.querySelectorAll('input[type="range"]').forEach(input => {
         const event = new Event('input');
@@ -420,6 +423,7 @@ const myChunks = await chunkit(
         combineChunksSimilarityThreshold: ${formData.combineChunksSimilarityThreshold},
         onnxEmbeddingModel: "${formData.onnxEmbeddingModel}",
         dtype: "${dtype}",
+        device: "${formData.device}",
         localModelPath: "./models",
         modelCacheDir: "./models",
         returnEmbedding: ${formData.returnEmbedding},

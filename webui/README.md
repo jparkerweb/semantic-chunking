@@ -69,7 +69,8 @@ http://localhost:3000
 ### Model Settings
 
 - **Embedding Model**: Choose from various supported embedding models
-- **Quantized Model**: Toggle model quantization for reduced memory usage
+- **DType**: Select the data type for the model, affecting precision and performance (e.g., `fp32`, `fp16`, `q8`).
+- **Device**: Choose the processing device (`cpu` or `webgpu`).
 
 ### Output Settings
 
