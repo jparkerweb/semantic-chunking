@@ -3,3 +3,5 @@ node_modules/
 models/
 .aider*
 .env
+memory.json
+.gemini
