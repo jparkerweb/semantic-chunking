@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  semantic-chunking:
+    build: .
+    image: semantic-chunking:latest
+    container_name: semantic-chunking
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist downloaded models between container restarts
+      - ./models:/app/models
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

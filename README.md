@@ -33,6 +33,63 @@ _how it works_
 npm install semantic-chunking
 ```
 
+## Docker Usage
+
+The easiest way to run semantic-chunking is using Docker Compose:
+
+### Docker Compose (Recommended)
+
+```bash
+# Start the Web UI server
+npm run docker:compose:up
+
+# Access the Web UI at http://localhost:3000
+
+# Stop the server
+npm run docker:compose:down
+```
+
+The `docker-compose.yml` configuration includes:
+- Port mapping: `3000:3000` for the Web UI
+- Volume mapping: `./models` directory is mounted to persist downloaded embedding models between container restarts
+- Health checks and auto-restart policies
+
+### Alternative Docker Commands
+
+```bash
+# Build the Docker image
+npm run docker:build
+
+# Run the container with models volume
+npm run docker:run
+
+# Or use docker-compose directly
+docker-compose up -d
+```
+
+### Using the Library in Docker
+
+To use the chunking functions directly (not just the Web UI):
+
+```bash
+# Execute chunkit example inside the container
+docker-compose exec semantic-chunking node example/example-chunkit.js
+
+# Execute cramit example
+docker-compose exec semantic-chunking node example/example-cramit.js
+
+# Execute sentenceit example
+docker-compose exec semantic-chunking node example/example-sentenceit.js
+```
+
+### About the Models Volume
+
+The `./models` directory is mounted as a volume to persist downloaded ONNX embedding models. Models are automatically downloaded on first use and can range from 23MB to 548MB depending on which model you choose. Persisting this directory means:
+- Models are downloaded only once
+- Faster container restarts
+- Models survive container updates
+- You can pre-download models using `npm run download-models` before running Docker
+
 ## Usage
 
 Basic usage:

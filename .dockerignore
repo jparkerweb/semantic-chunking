@@ -1,0 +1,40 @@
+# Dependencies
+node_modules
+webui/node_modules
+
+# Models (mounted as volume)
+models
+
+# Git
+.git
+.gitignore
+.github
+
+# IDE
+.vscode
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist
+build
+
+# Other
+.aider*
+memory.json
+.gemini
