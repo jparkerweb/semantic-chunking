@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.0] - 2025-01-30
+### ✨ Added
+- **Docker Support**: Complete containerization with multi-stage Dockerfile and Docker Compose
+- **API Microservice**: Standalone REST API server with endpoints for all chunking methods
+  - **Authentication**: Optional Bearer token auth via `API_AUTH_TOKEN`
+- **Docker Compose Profiles**: API-only or API + Web UI deployment modes
+
+
 ## [2.4.4] - 2025-07-05
 ### ✨ Added
 - New config option `device` to specify device to use for embedding calculations (e.g., 'cpu' [default], 'webgpu')

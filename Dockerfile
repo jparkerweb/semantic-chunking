@@ -10,8 +10,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY webui/package*.json ./webui/
 
-# Install dependencies
-RUN npm ci --omit=dev && \
+# Install ALL dependencies (including devDependencies for api-server)
+RUN npm ci && \
     cd webui && \
     npm ci --omit=dev
 
@@ -42,8 +42,9 @@ RUN mkdir -p models && \
 # Switch to non-root user
 USER node
 
-# Expose port for Web UI
-EXPOSE 3000
+# Expose ports for API server (3001) and Web UI (3000)
+EXPOSE 3001 3000
 
-# Default command runs the Web UI server
-CMD ["node", "webui/server.js"]
+# Default command runs the API microservice
+# Override with: docker run ... semantic-chunking node webui/server.js
+CMD ["node", "api-server.js"]

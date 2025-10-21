@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking-webui",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "type": "module",
   "description": "Web UI for semantic-chunking library",
   "main": "server.js",
@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^17.0.1",
+    "dotenv": "^17.2.3",
     "express": "^4.21.2"
   }
 }

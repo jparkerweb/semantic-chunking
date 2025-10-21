@@ -1,14 +1,38 @@
 version: '3.8'
 
 services:
-  semantic-chunking:
+  # API Microservice (default service)
+  semantic-chunking-api:
     build: .
     image: semantic-chunking:latest
-    container_name: semantic-chunking
+    container_name: semantic-chunking-api
+    ports:
+      - "3001:3001"
+    volumes:
+      # Persist downloaded models between container restarts
+      - ./models:/app/models
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      # Uncomment to enable Bearer token authentication
+      # - API_AUTH_TOKEN=your-secret-token-here
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Web UI (optional, start with --profile webui)
+  semantic-chunking-webui:
+    build: .
+    image: semantic-chunking:latest
+    container_name: semantic-chunking-webui
+    command: node webui/server.js
     ports:
       - "3000:3000"
     volumes:
-      # Persist downloaded models between container restarts
       - ./models:/app/models
     environment:
       - NODE_ENV=production
@@ -20,3 +44,5 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    profiles:
+      - webui

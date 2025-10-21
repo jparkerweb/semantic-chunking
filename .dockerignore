@@ -38,3 +38,4 @@ build
 .aider*
 memory.json
 .gemini
+.vault

@@ -90,6 +90,96 @@ The `./models` directory is mounted as a volume to persist downloaded ONNX embed
 - Models survive container updates
 - You can pre-download models using `npm run download-models` before running Docker
 
+---
+
+## API Server Usage
+
+Run semantic-chunking as a **microservice API** for integration into your applications.
+
+### Quick Start
+
+**Start the API server:**
+```bash
+# Using Docker Compose (recommended)
+npm run docker:compose:up
+
+# Or run locally
+npm run api-server
+```
+
+The API will be available at `http://localhost:3001` with a terminal-styled landing page showing usage instructions.
+
+### API Endpoints
+
+- `POST /api/chunkit` - Semantic chunking based on similarity
+- `POST /api/cramit` - Dense packing without similarity analysis
+- `POST /api/sentenceit` - Split text into sentences
+- `GET /api/health` - Health check
+- `GET /api/version` - API version
+
+### Example API Request
+
+```bash
+curl -X POST http://localhost:3001/api/chunkit \
+  -H "Content-Type: application/json" \
+  -d '{
+    "documents": [
+      {
+        "document_name": "test",
+        "document_text": "Your text here..."
+      }
+    ],
+    "options": {
+      "maxTokenSize": 500,
+      "similarityThreshold": 0.5
+    }
+  }'
+```
+
+### Authentication (Optional)
+
+Enable Bearer token authentication by setting the `API_AUTH_TOKEN` environment variable:
+
+```bash
+# In .env file
+API_AUTH_TOKEN=your-secret-token-here
+
+# Or in docker-compose.yml
+environment:
+  - API_AUTH_TOKEN=your-secret-token-here
+```
+
+When enabled, include the token in requests:
+```bash
+curl -X POST http://localhost:3001/api/chunkit \
+  -H "Authorization: Bearer your-secret-token-here" \
+  -H "Content-Type: application/json" \
+  -d '...'
+```
+
+### Docker Services
+
+The docker-compose configuration includes two services:
+
+**API Server (default):**
+```bash
+docker-compose up -d
+# Available at http://localhost:3001
+```
+
+**API Server + Web UI:**
+```bash
+docker-compose --profile webui up -d
+# API: http://localhost:3001
+# Web UI: http://localhost:3000
+```
+
+### Complete Documentation
+
+For full API documentation including all endpoints, request/response formats, error handling, and production deployment guides, see [API.md](API.md).
+
+---
+
 ## Usage
 
 Basic usage:

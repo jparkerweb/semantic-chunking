@@ -1,6 +1,31 @@
+# Git and GitHub
 .git/
 .github/
 .vault/
 .cursorignore
+
+# Docker/API microservice files (not needed for library users)
+api-server.js
+Dockerfile
+.dockerignore
+docker-compose.yml
+API.md
+.env
+.env.example
+
+# Web UI (separate app)
+webui/
+
+# Examples (optional - users can view on GitHub)
+example/
+
+# Development tools
+tools/
+
+# Models and dependencies
 **/models/
 **/node_modules/
+
+# Development files
+*.log
+.DS_Store
