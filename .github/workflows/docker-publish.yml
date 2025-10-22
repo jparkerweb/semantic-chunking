@@ -1,9 +1,6 @@
 name: Build and Push Docker Image
 
 on:
-  # Trigger on pushes to main branch
-  push:
-    branches: [ main, master ]
   # Trigger on new releases/tags
   release:
     types: [ published ]
