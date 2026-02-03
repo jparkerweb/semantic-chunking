@@ -105,6 +105,33 @@ function _getMergeCandidate(node, nextNode, maxTokens, similarityThreshold) {
   };
 }
 
+/**
+ * Collects all valid merge candidates from the linked list
+ * @param {Object} head - Head node of linked list
+ * @param {number} maxTokens - Maximum tokens per chunk
+ * @param {number} similarityThreshold - Minimum similarity to merge
+ * @returns {Object[]} Array of merge candidate objects
+ */
+function collectMergeCandidates(head, maxTokens, similarityThreshold) {
+  const candidates = [];
+  let current = head;
+
+  while (current && current.next) {
+    const candidate = _getMergeCandidate(
+      current,
+      current.next,
+      maxTokens,
+      similarityThreshold
+    );
+    if (candidate) {
+      candidates.push(candidate);
+    }
+    current = current.next;
+  }
+
+  return candidates;
+}
+
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
