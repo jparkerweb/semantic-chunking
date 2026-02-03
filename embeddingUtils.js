@@ -96,6 +96,28 @@ export function wrapCallbackWithCache(embedCallback, cache) {
 }
 
 // ------------------------------------------------
+// -- Validate callback return value shape --
+// ------------------------------------------------
+export function validateEmbeddingResult(texts, embeddings) {
+    if (!Array.isArray(embeddings) || embeddings.length !== texts.length) {
+        throw new Error(`embedCallback must return an array of embeddings matching input length. Expected ${texts.length}, got ${embeddings?.length}`);
+    }
+    for (let i = 0; i < embeddings.length; i++) {
+        const embedding = embeddings[i];
+        if (!Array.isArray(embedding) && !(embedding instanceof Float32Array) && !(embedding instanceof Float64Array)) {
+            throw new Error(`embedCallback must return an array of embeddings. Item at index ${i} is not an array.`);
+        }
+        // Check if elements are numbers (sample first few for performance)
+        const checkCount = Math.min(embedding.length, 3);
+        for (let j = 0; j < checkCount; j++) {
+            if (typeof embedding[j] !== 'number' || Number.isNaN(embedding[j])) {
+                throw new Error(`embedCallback embeddings must contain numbers. Found invalid value at index ${i}[${j}].`);
+            }
+        }
+    }
+}
+
+// ------------------------------------------------
 // -- Function to generate embeddings in batches --
 // ------------------------------------------------
 export async function createEmbeddingBatch(texts, pipelineInstance = null, tokenizerInstance = null, options = {}) {
