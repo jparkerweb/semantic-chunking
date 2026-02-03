@@ -302,14 +302,45 @@ export async function cramit(
         throw new Error('Input must be an array of document objects');
     }
 
-    // Initialize embedding utilities with paths
-    await initializeEmbeddingUtils(
-        onnxEmbeddingModel, 
-        dtype,
-        device,
-        localModelPath,
-        modelCacheDir
-    );
+    // Create unified embedding interface - either user callback or ONNX
+    let embedBatch;
+    let modelName;
+    let usedDtype;
+
+    if (embedCallback) {
+        // Use user-provided callback - skip ONNX initialization
+        modelName = 'custom-embedding';
+        usedDtype = 'custom';
+        const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
+        embedBatch = async (texts) => {
+            try {
+                const embeddings = await cachedCallback(texts);
+                validateEmbeddingResult(texts, embeddings);
+                return embeddings;
+            } catch (error) {
+                throw new Error(`Embedding failed: ${error.message}`);
+            }
+        };
+    } else {
+        // Initialize embedding utilities with paths (existing ONNX behavior)
+        const initResult = await initializeEmbeddingUtils(
+            onnxEmbeddingModel,
+            dtype,
+            device,
+            localModelPath,
+            modelCacheDir
+        );
+        modelName = initResult.modelName;
+        usedDtype = initResult.dtype;
+        // Create unified embedBatch using ONNX pipeline
+        embedBatch = async (texts) => {
+            try {
+                return await createEmbeddingBatch(texts);
+            } catch (error) {
+                throw new Error(`Embedding failed: ${error.message}`);
+            }
+        };
+    }
 
     // Process each document
     const allResults = await Promise.all(documents.map(async (doc) => {
@@ -319,10 +350,10 @@ export async function cramit(
 
         // Split the text into sentences
         const sentences = await parseSentences(doc.document_text);
-        
+
         // Create chunks without considering similarities
         const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
-        
+
         if (logging) {
             console.log('\nCRAMIT');
             console.log('=============\nChunks\n=============');
@@ -346,8 +377,8 @@ export async function cramit(
                 document_name: documentName,
                 number_of_chunks: numberOfChunks,
                 chunk_number: index + 1,
-                model_name: onnxEmbeddingModel,
-                dtype: dtype,
+                model_name: modelName,
+                dtype: usedDtype,
                 text: prefixedChunk
             };
 
