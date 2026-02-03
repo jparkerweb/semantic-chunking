@@ -163,6 +163,24 @@ function executeMerge(candidate) {
   return node;
 }
 
+/**
+ * Recomputes embeddings for merged nodes and resets processed flags
+ * @param {Object[]} mergedNodes - Array of nodes that were merged this pass
+ * @param {Function} embedBatch - Batch embedding function
+ * @returns {Promise<void>}
+ */
+async function refreshMergedEmbeddings(mergedNodes, embedBatch) {
+  if (mergedNodes.length === 0) return;
+
+  const texts = mergedNodes.map(node => node.text);
+  const embeddings = await embedBatch(texts);
+
+  mergedNodes.forEach((node, index) => {
+    node.embedding = embeddings[index];
+    node.processed = false; // Reset for next pass
+  });
+}
+
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
