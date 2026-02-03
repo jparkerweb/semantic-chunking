@@ -528,7 +528,11 @@ export async function sentenceit(
         let sentenceEmbeddings = null;
         if (returnEmbedding) {
             const prefixedChunks = chunks.map(chunk => chunkPrefix ? applyPrefixToChunk(chunkPrefix, chunk) : chunk);
-            sentenceEmbeddings = await embedBatch(prefixedChunks);
+            try {
+                sentenceEmbeddings = await embedBatch(prefixedChunks);
+            } catch (error) {
+                throw new Error(`sentenceit embedding failed: ${error.message}`);
+            }
         }
 
         return Promise.all(chunks.map(async (chunk, index) => {
