@@ -27,6 +27,12 @@ export async function printVersion() {
 // ---------------------------
 // -- Main chunkit function --
 // ---------------------------
+/**
+ * @param {Array} documents - Array of document objects with document_text property
+ * @param {Object} options - Configuration options
+ * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
+ *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
+ */
 export async function chunkit(
     documents,
     {
@@ -47,6 +53,7 @@ export async function chunkit(
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
+        embedCallback = null,
     } = {}) {
 
     if(logging) { printVersion(); }
