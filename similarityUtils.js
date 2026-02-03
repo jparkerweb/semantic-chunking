@@ -27,7 +27,14 @@ export function cosineSimilarity(vecA, vecB) {
 // ---------------------------------------------------------------
 // -- Function to compute advanced similarities with statistics --
 // ---------------------------------------------------------------
-export async function computeAdvancedSimilarities(sentences, { numSimilaritySentencesLookahead = 2, logging = false } = {}) {
+/**
+ * @param {string[]} sentences - Array of sentences to compute similarities for
+ * @param {object} options - Options for similarity computation
+ * @param {number} [options.numSimilaritySentencesLookahead=2] - Number of sentences to look ahead for similarity comparison
+ * @param {boolean} [options.logging=false] - Whether to log debug information
+ * @param {function(string[]): Promise<number[][]>} embedBatch - Function to compute embeddings for array of texts
+ */
+export async function computeAdvancedSimilarities(sentences, { numSimilaritySentencesLookahead = 2, logging = false } = {}, embedBatch) {
     if (logging) console.log('numSimilaritySentencesLookahead', numSimilaritySentencesLookahead);
 
     const embeddings = await Promise.all(sentences.map(sentence => createEmbedding(sentence)));
