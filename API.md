@@ -127,7 +127,11 @@ Semantically chunk text based on sentence similarity using cosine similarity sco
     "returnEmbedding": false,
     "returnTokenLength": true,
     "chunkPrefix": null,
-    "excludeChunkPrefixInResults": false
+    "excludeChunkPrefixInResults": false,
+    "maxMergesPerPass": 500,
+    "maxUncappedPasses": 100,
+    "maxMergesPerPassPercentage": 40,
+    "uncappedCandidateMerges": 12
   }
 }
 ```
@@ -168,6 +172,19 @@ curl -X POST http://localhost:3001/api/chunkit \
     }
   }'
 ```
+
+**Merge Optimization Parameters:**
+
+The following parameters control the multi-pass chunk merging algorithm:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `maxMergesPerPass` | 500 | Maximum number of chunk merges per optimization pass |
+| `maxUncappedPasses` | 100 | Maximum optimization iterations |
+| `maxMergesPerPassPercentage` | 40 | Percentage of merge candidates to process per pass |
+| `uncappedCandidateMerges` | 12 | When candidate count is below this, all are merged |
+
+**Note:** The `embedCallback` parameter is only available when using the library directly via JavaScript/TypeScript, not via the REST API. The REST API always uses the ONNX embedding model.
 
 ---
 
@@ -224,6 +241,8 @@ curl -X POST http://localhost:3001/api/cramit \
     }
   }'
 ```
+
+**Note:** The `embedCallback` parameter is only available when using the library directly via JavaScript/TypeScript, not via the REST API.
 
 ---
 
@@ -288,6 +307,8 @@ curl -X POST http://localhost:3001/api/sentenceit \
     "options": {}
   }'
 ```
+
+**Note:** The `embedCallback` parameter is only available when using the library directly via JavaScript/TypeScript, not via the REST API.
 
 ---
 
