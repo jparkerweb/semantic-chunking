@@ -1,5 +1,3 @@
-import { createEmbedding } from './embeddingUtils.js';
-
 // -----------------------------------------------------
 // -- Calculate cosine similarity between two vectors --
 // -----------------------------------------------------
@@ -37,7 +35,7 @@ export function cosineSimilarity(vecA, vecB) {
 export async function computeAdvancedSimilarities(sentences, { numSimilaritySentencesLookahead = 2, logging = false } = {}, embedBatch) {
     if (logging) console.log('numSimilaritySentencesLookahead', numSimilaritySentencesLookahead);
 
-    const embeddings = await Promise.all(sentences.map(sentence => createEmbedding(sentence)));
+    const embeddings = await embedBatch(sentences);
     let similarities = [];
     let similaritySum = 0;
 
