@@ -32,6 +32,10 @@ export async function printVersion() {
  * @param {Object} options - Configuration options
  * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
  *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
+ * @param {number} [options.maxMergesPerPass=500] - Maximum number of chunk merges allowed per pass in multi-pass merge algorithm.
+ * @param {number} [options.maxUncappedPasses=100] - Maximum number of uncapped merge passes before throttling kicks in.
+ * @param {number} [options.maxMergesPerPassPercentage=40] - Percentage of total chunks that can be merged per pass (0-100).
+ * @param {number} [options.uncappedCandidateMerges=12] - Number of top candidate merges to consider when uncapped.
  */
 export async function chunkit(
     documents,
@@ -54,6 +58,10 @@ export async function chunkit(
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
         embedCallback = null,
+        maxMergesPerPass = DEFAULT_CONFIG.MAX_MERGES_PER_PASS,
+        maxUncappedPasses = DEFAULT_CONFIG.MAX_UNCAPPED_PASSES,
+        maxMergesPerPassPercentage = DEFAULT_CONFIG.MAX_MERGES_PER_PASS_PERCENTAGE,
+        uncappedCandidateMerges = DEFAULT_CONFIG.UNCAPPED_CANDIDATE_MERGES,
     } = {}) {
 
     if(logging) { printVersion(); }
