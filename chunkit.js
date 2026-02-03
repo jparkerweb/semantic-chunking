@@ -174,6 +174,19 @@ export async function chunkit(
                 tokenCount: tokenizer(chunkText).input_ids.size
             }));
 
+            // Ensure embeddings exist for chunks not in sentenceEmbeddings
+            // (chunks may be composed of multiple sentences)
+            const chunksNeedingEmbeddings = chunkObjects.filter(
+                chunk => !sentenceEmbeddings.has(chunk.text)
+            );
+            if (chunksNeedingEmbeddings.length > 0) {
+                const textsToEmbed = chunksNeedingEmbeddings.map(c => c.text);
+                const newEmbeddings = await embedBatch(textsToEmbed);
+                chunksNeedingEmbeddings.forEach((chunk, i) => {
+                    sentenceEmbeddings.set(chunk.text, newEmbeddings[i]);
+                });
+            }
+
             const mergeOptions = {
                 maxMergesPerPass,
                 maxUncappedPasses,
