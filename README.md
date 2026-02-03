@@ -252,6 +252,55 @@ It is important to understand how the model you choose behaves when chunking you
 It is highly recommended to tweak all the parameters using the Web UI to get the best results for your use case.
 [Web UI README](webui/README.md)
 
+## Custom Embedding Providers
+
+Use `embedCallback` to integrate any embedding provider instead of the built-in ONNX models:
+
+### OpenAI Example
+
+```javascript
+import { chunkit } from 'semantic-chunking';
+import OpenAI from 'openai';
+
+const openai = new OpenAI();
+
+const embedCallback = async (texts) => {
+  const response = await openai.embeddings.create({
+    input: texts,
+    model: 'text-embedding-3-small'
+  });
+  return response.data.map(d => d.embedding);
+};
+
+const documents = [
+  { document_name: 'doc1', document_text: 'Your document text here...' }
+];
+
+const chunks = await chunkit(documents, { embedCallback });
+```
+
+### Cohere Example
+
+```javascript
+import { chunkit } from 'semantic-chunking';
+import { CohereClient } from 'cohere-ai';
+
+const cohere = new CohereClient();
+
+const embedCallback = async (texts) => {
+  const response = await cohere.embed({
+    texts,
+    model: 'embed-english-v3.0',
+    inputType: 'search_document'
+  });
+  return response.embeddings;
+};
+
+const chunks = await chunkit(documents, { embedCallback });
+```
+
+When `embedCallback` is provided, the ONNX embedding model is not initialized, reducing startup time and memory usage.
+
 ## Examples
 
 Example 1: Basic usage with custom similarity threshold:
