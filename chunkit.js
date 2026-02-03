@@ -71,14 +71,28 @@ export async function chunkit(
         throw new Error('Input must be an array of document objects');
     }
 
-    // Initialize embedding utilities and set optional paths
-    const { modelName, dtype: usedDtype } = await initializeEmbeddingUtils(
-        onnxEmbeddingModel, 
-        dtype,
-        device,
-        localModelPath,
-        modelCacheDir
-    );
+    // Create unified embedding interface - either user callback or ONNX
+    let embedBatch;
+    let modelName;
+    let usedDtype;
+
+    if (embedCallback) {
+        // Use user-provided callback (Phase 1.8)
+        // Skip ONNX initialization when callback is provided
+        modelName = 'custom-embedding';
+        usedDtype = 'custom';
+    } else {
+        // Initialize embedding utilities and set optional paths (existing ONNX behavior)
+        const initResult = await initializeEmbeddingUtils(
+            onnxEmbeddingModel,
+            dtype,
+            device,
+            localModelPath,
+            modelCacheDir
+        );
+        modelName = initResult.modelName;
+        usedDtype = initResult.dtype;
+    }
 
     // Process each document
     const allResults = await Promise.all(documents.map(async (doc) => {
