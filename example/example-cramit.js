@@ -43,7 +43,7 @@ let myTestChunks = await cramit(
         logging: false,
         maxTokenSize: 300,
         onnxEmbeddingModel: "nomic-ai/nomic-embed-text-v1.5",
-        onnxEmbeddingModelQuantized: true,
+        dtype: 'q8',
         localModelPath: "../models",
         modelCacheDir: "../models",
         returnEmbedding: false,
