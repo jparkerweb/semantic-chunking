@@ -37,6 +37,9 @@ export async function computeAdvancedSimilarities(sentences, { numSimilaritySent
     if (typeof embedBatch !== 'function') {
         throw new Error('embedBatch must be a function');
     }
+    if (!sentences || sentences.length === 0) {
+        return { similarities: [], average: 0, variance: 0, embeddings: [] };
+    }
     if (logging) console.log('numSimilaritySentencesLookahead', numSimilaritySentencesLookahead);
 
     const embeddings = await embedBatch(sentences);
