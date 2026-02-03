@@ -82,9 +82,13 @@ export async function chunkit(
         usedDtype = 'custom';
         const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
         embedBatch = async (texts) => {
-            const embeddings = await cachedCallback(texts);
-            validateEmbeddingResult(texts, embeddings);
-            return embeddings;
+            try {
+                const embeddings = await cachedCallback(texts);
+                validateEmbeddingResult(texts, embeddings);
+                return embeddings;
+            } catch (error) {
+                throw new Error(`Embedding failed: ${error.message}`);
+            }
         };
     } else {
         // Initialize embedding utilities and set optional paths (existing ONNX behavior)
@@ -98,7 +102,13 @@ export async function chunkit(
         modelName = initResult.modelName;
         usedDtype = initResult.dtype;
         // Create unified embedBatch using ONNX pipeline
-        embedBatch = async (texts) => createEmbeddingBatch(texts);
+        embedBatch = async (texts) => {
+            try {
+                return await createEmbeddingBatch(texts);
+            } catch (error) {
+                throw new Error(`Embedding failed: ${error.message}`);
+            }
+        };
     }
 
     // Process each document
