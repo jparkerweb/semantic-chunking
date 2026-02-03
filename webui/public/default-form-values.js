@@ -13,6 +13,10 @@ const defaultFormValues = {
     returnTokenLength: true,
     chunkPrefix: null,
     excludeChunkPrefixInResults: false,
+    maxMergesPerPass: 500,
+    maxUncappedPasses: 100,
+    maxMergesPerPassPercentage: 40,
+    uncappedCandidateMerges: 12,
 };
 
 export default defaultFormValues;
