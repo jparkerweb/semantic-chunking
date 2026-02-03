@@ -61,4 +61,38 @@ export async function createEmbedding(text) {
     return embeddings.data;
 }
 
+// ------------------------------------------------
+// -- Function to generate embeddings in batches --
+// ------------------------------------------------
+export async function createEmbeddingBatch(texts, pipelineInstance = null, tokenizerInstance = null, options = {}) {
+    const pipe = pipelineInstance || generateEmbedding;
+    const results = new Array(texts.length);
+    const uncachedIndices = [];
+    const uncachedTexts = [];
+
+    // Check cache for each text
+    for (let i = 0; i < texts.length; i++) {
+        const cached = embeddingCache.get(texts[i]);
+        if (cached) {
+            results[i] = cached;
+        } else {
+            uncachedIndices.push(i);
+            uncachedTexts.push(texts[i]);
+        }
+    }
+
+    // Process uncached texts in batch
+    if (uncachedTexts.length > 0) {
+        for (let j = 0; j < uncachedTexts.length; j++) {
+            const text = uncachedTexts[j];
+            const embeddings = await pipe(text, { pooling: 'mean', normalize: true });
+            const embeddingData = embeddings.data;
+            embeddingCache.set(text, embeddingData);
+            results[uncachedIndices[j]] = embeddingData;
+        }
+    }
+
+    return results;
+}
+
 export { tokenizer };
