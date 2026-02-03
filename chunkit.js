@@ -10,7 +10,7 @@
 
 import { parseSentences } from 'sentence-parse';
 import { DEFAULT_CONFIG } from './config.js';
-import { initializeEmbeddingUtils, tokenizer, createEmbedding } from './embeddingUtils.js';
+import { initializeEmbeddingUtils, tokenizer, createEmbedding, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
 import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
 import { readFileSync } from 'fs';
@@ -77,10 +77,15 @@ export async function chunkit(
     let usedDtype;
 
     if (embedCallback) {
-        // Use user-provided callback (Phase 1.8)
-        // Skip ONNX initialization when callback is provided
+        // Use user-provided callback - skip ONNX initialization
         modelName = 'custom-embedding';
         usedDtype = 'custom';
+        const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
+        embedBatch = async (texts) => {
+            const embeddings = await cachedCallback(texts);
+            validateEmbeddingResult(texts, embeddings);
+            return embeddings;
+        };
     } else {
         // Initialize embedding utilities and set optional paths (existing ONNX behavior)
         const initResult = await initializeEmbeddingUtils(

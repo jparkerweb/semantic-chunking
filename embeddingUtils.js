@@ -151,4 +151,4 @@ export async function createEmbeddingBatch(texts, pipelineInstance = null, token
     return results;
 }
 
-export { tokenizer };
+export { tokenizer, embeddingCache };
