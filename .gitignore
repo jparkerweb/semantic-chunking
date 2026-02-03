@@ -4,3 +4,6 @@ models/
 .aider*
 memory.json
 .gemini
+specs/
+specs--completed/
+nul
