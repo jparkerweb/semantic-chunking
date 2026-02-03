@@ -54,6 +54,27 @@ function buildLinkedList(chunks, embeddingsMap) {
   return head;
 }
 
+/**
+ * Converts a linked list back to an array of chunk objects
+ * @param {Object|null} head - Head node of linked list
+ * @returns {Object[]} Array of chunk objects with text, tokenCount, embedding
+ */
+function linkedListToChunks(head) {
+  const chunks = [];
+  let current = head;
+
+  while (current) {
+    chunks.push({
+      text: current.text,
+      tokenCount: current.tokenCount,
+      embedding: current.embedding
+    });
+    current = current.next;
+  }
+
+  return chunks;
+}
+
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
