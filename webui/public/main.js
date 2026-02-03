@@ -17,6 +17,12 @@ function setDefaultFormValues() {
     document.getElementById('returnTokenLength').checked = defaultFormValues.returnTokenLength;
     document.getElementById('excludeChunkPrefixInResults').checked = defaultFormValues.excludeChunkPrefixInResults;
 
+    // Set advanced merge params
+    document.getElementById('maxMergesPerPass').value = defaultFormValues.maxMergesPerPass;
+    document.getElementById('maxUncappedPasses').value = defaultFormValues.maxUncappedPasses;
+    document.getElementById('maxMergesPerPassPercentage').value = defaultFormValues.maxMergesPerPassPercentage;
+    document.getElementById('uncappedCandidateMerges').value = defaultFormValues.uncappedCandidateMerges;
+
     // Set text input
     const chunkPrefixInput = document.getElementById('chunkPrefix');
     chunkPrefixInput.value = defaultFormValues.chunkPrefix || '';
@@ -40,6 +46,16 @@ function setDefaultFormValues() {
 
 // Call setDefaultFormValues after the DOM is loaded
 document.addEventListener('DOMContentLoaded', setDefaultFormValues);
+
+// Get advanced merge parameters from form
+function getAdvancedMergeParams() {
+    return {
+        maxMergesPerPass: parseInt(document.getElementById('maxMergesPerPass').value),
+        maxUncappedPasses: parseInt(document.getElementById('maxUncappedPasses').value),
+        maxMergesPerPassPercentage: parseInt(document.getElementById('maxMergesPerPassPercentage').value),
+        uncappedCandidateMerges: parseInt(document.getElementById('uncappedCandidateMerges').value)
+    };
+}
 
 // Load sample text on page load
 fetch('./documents/sample.txt')
