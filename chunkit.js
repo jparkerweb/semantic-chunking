@@ -142,7 +142,6 @@ export async function chunkit(
         sentences.forEach((sentence, index) => {
             sentenceEmbeddings.set(sentence, embeddings[index]);
         });
-        // TODO Phase 3: Pass sentenceEmbeddings to optimizeAndRebalanceChunks()
 
         // Dynamically adjust the similarity threshold based on variance and average
         let dynamicThreshold = similarityThreshold;
@@ -169,7 +168,31 @@ export async function chunkit(
 
         // Combine similar chunks and balance sizes if requested
         if (combineChunks) {
-            finalChunks = await optimizeAndRebalanceChunks(initialChunks, tokenizer, maxTokenSize, combineChunksSimilarityThreshold);
+            // Convert initialChunks (strings) to chunk objects with text and tokenCount
+            const chunkObjects = initialChunks.map(chunkText => ({
+                text: chunkText,
+                tokenCount: tokenizer(chunkText).input_ids.size
+            }));
+
+            const mergeOptions = {
+                maxMergesPerPass,
+                maxUncappedPasses,
+                maxMergesPerPassPercentage,
+                uncappedCandidateMerges
+            };
+
+            const optimizedChunks = await optimizeAndRebalanceChunks(
+                chunkObjects,
+                sentenceEmbeddings,
+                maxTokenSize,
+                combineChunksSimilarityThreshold,
+                mergeOptions,
+                embedBatch
+            );
+
+            // Extract text from chunk objects for downstream processing
+            finalChunks = optimizedChunks.map(chunk => chunk.text);
+
             if (logging) {
                 console.log('\n\n=============\ncombinedChunks\n=============');
                 finalChunks.forEach((chunk, index) => {
