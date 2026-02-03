@@ -181,7 +181,12 @@
                         <details class="advanced-section">
                             <summary>Advanced Merge Settings</summary>
                             <div class="form-group">
-                                <!-- merge param inputs go here -->
+                                <label for="maxMergesPerPass">
+                                    Max Merges Per Pass
+                                    <span class="tooltip" title="Maximum number of chunk merges per optimization pass (absolute limit)">?</span>
+                                </label>
+                                <input type="number" id="maxMergesPerPass" name="maxMergesPerPass"
+                                       min="1" max="10000" step="1" value="500">
                             </div>
                         </details>
 
