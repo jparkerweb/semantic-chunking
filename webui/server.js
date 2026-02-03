@@ -65,7 +65,11 @@ app.post('/api/chunk', async (req, res) => {
             returnTokenLength: options.returnTokenLength === true,
             logging: options.logging === true,
             localModelPath: path.join(__dirname, '../models'),
-            modelCacheDir: path.join(__dirname, '../models')
+            modelCacheDir: path.join(__dirname, '../models'),
+            maxMergesPerPass: parseInt(options.maxMergesPerPass),
+            maxUncappedPasses: parseInt(options.maxUncappedPasses),
+            maxMergesPerPassPercentage: parseInt(options.maxMergesPerPassPercentage),
+            uncappedCandidateMerges: parseInt(options.uncappedCandidateMerges)
         };
 
         const result = await chunkit(documents, processedOptions);
