@@ -360,8 +360,18 @@ export async function optimizeAndRebalanceChunks(
 
     passCount++;
 
+    // Debug logging every 10 passes to track progress
+    if (passCount > 0 && passCount % 10 === 0) {
+      console.debug(`Merge pass ${passCount}: ${mergeCount} merges performed`);
+    }
+
     // Stop if no merges occurred (converged)
     if (mergeCount === 0) break;
+  }
+
+  // Warning if hitting maxUncappedPasses limit (potential infinite loop protection)
+  if (passCount >= maxUncappedPasses) {
+    console.warn(`Merge algorithm reached maximum passes (${maxUncappedPasses})`);
   }
 
   // Convert back to chunks array
