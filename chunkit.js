@@ -459,15 +459,44 @@ export async function sentenceit(
         throw new Error('Input must be an array of document objects');
     }
 
-    if (returnEmbedding) {
-        // Initialize embedding utilities with paths
-        await initializeEmbeddingUtils(
-            onnxEmbeddingModel, 
+    // Create unified embedding interface - either user callback or ONNX
+    let embedBatch;
+    let modelName;
+    let usedDtype;
+
+    if (embedCallback) {
+        // Use user-provided callback - skip ONNX initialization
+        modelName = 'custom-embedding';
+        usedDtype = 'custom';
+        const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
+        embedBatch = async (texts) => {
+            try {
+                const embeddings = await cachedCallback(texts);
+                validateEmbeddingResult(texts, embeddings);
+                return embeddings;
+            } catch (error) {
+                throw new Error(`Embedding failed: ${error.message}`);
+            }
+        };
+    } else if (returnEmbedding) {
+        // Initialize embedding utilities with paths (existing ONNX behavior)
+        const initResult = await initializeEmbeddingUtils(
+            onnxEmbeddingModel,
             dtype,
             device,
             localModelPath,
             modelCacheDir
         );
+        modelName = initResult.modelName;
+        usedDtype = initResult.dtype;
+        // Create unified embedBatch using ONNX pipeline
+        embedBatch = async (texts) => {
+            try {
+                return await createEmbeddingBatch(texts);
+            } catch (error) {
+                throw new Error(`Embedding failed: ${error.message}`);
+            }
+        };
     }
 
     // Process each document
@@ -478,7 +507,7 @@ export async function sentenceit(
 
         // Split the text into sentences
         const chunks = await parseSentences(doc.document_text);
-        
+
         if (logging) {
             console.log('\nSENTENCEIT');
             console.log('=============\nSentences\n=============');
