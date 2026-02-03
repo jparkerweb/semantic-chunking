@@ -34,6 +34,9 @@ export function cosineSimilarity(vecA, vecB) {
  * @returns {{similarities: number[], average: number, variance: number, embeddings: number[][]}} Object containing similarity scores, statistics, and embeddings
  */
 export async function computeAdvancedSimilarities(sentences, { numSimilaritySentencesLookahead = 2, logging = false } = {}, embedBatch) {
+    if (typeof embedBatch !== 'function') {
+        throw new Error('embedBatch must be a function');
+    }
     if (logging) console.log('numSimilaritySentencesLookahead', numSimilaritySentencesLookahead);
 
     const embeddings = await embedBatch(sentences);
