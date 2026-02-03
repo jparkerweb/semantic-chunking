@@ -181,6 +181,34 @@ async function refreshMergedEmbeddings(mergedNodes, embedBatch) {
   });
 }
 
+/**
+ * Determines how many merges to perform in a single pass
+ * @param {number} candidateCount - Number of available merge candidates
+ * @param {Object} options - Merge throttling options
+ * @param {number} options.maxMergesPerPass - Absolute maximum merges per pass
+ * @param {number} options.maxMergesPerPassPercentage - Percentage of candidates to merge
+ * @param {number} options.uncappedCandidateMerges - Below this count, allow all merges
+ * @returns {number} Number of merges to perform this pass
+ */
+function calculateMergeLimit(candidateCount, options) {
+  const {
+    maxMergesPerPass,
+    maxMergesPerPassPercentage,
+    uncappedCandidateMerges
+  } = options;
+
+  // Soft minimum: if few candidates, allow all
+  if (candidateCount <= uncappedCandidateMerges) {
+    return candidateCount;
+  }
+
+  // Percentage cap
+  const percentageLimit = Math.floor(candidateCount * maxMergesPerPassPercentage / 100);
+
+  // Absolute cap
+  return Math.min(percentageLimit, maxMergesPerPass);
+}
+
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
