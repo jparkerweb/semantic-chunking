@@ -272,6 +272,12 @@ export async function chunkit(
 // --------------------------
 // -- Main cramit function --
 // --------------------------
+/**
+ * @param {Array} documents - Array of document objects with document_text property
+ * @param {Object} options - Configuration options
+ * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
+ *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
+ */
 export async function cramit(
     documents,
     {
@@ -286,6 +292,7 @@ export async function cramit(
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
+        embedCallback = null,
     } = {}) {
 
     if(logging) { printVersion(); }
