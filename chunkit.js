@@ -524,6 +524,13 @@ export async function sentenceit(
         const documentId = Date.now();
         const numberOfChunks = chunks.length;
 
+        // Pre-compute embeddings for all sentences if needed (batched for efficiency)
+        let sentenceEmbeddings = null;
+        if (returnEmbedding) {
+            const prefixedChunks = chunks.map(chunk => chunkPrefix ? applyPrefixToChunk(chunkPrefix, chunk) : chunk);
+            sentenceEmbeddings = await embedBatch(prefixedChunks);
+        }
+
         return Promise.all(chunks.map(async (chunk, index) => {
             const prefixedChunk = chunkPrefix ? applyPrefixToChunk(chunkPrefix, chunk) : chunk;
             const result = {
@@ -535,9 +542,9 @@ export async function sentenceit(
             };
 
             if (returnEmbedding) {
-                result.model_name = onnxEmbeddingModel;
-                result.dtype = dtype;
-                result.embedding = await createEmbedding(prefixedChunk);
+                result.model_name = modelName;
+                result.dtype = usedDtype;
+                result.embedding = sentenceEmbeddings[index];
     
                 if (returnTokenLength) {
                     try {
