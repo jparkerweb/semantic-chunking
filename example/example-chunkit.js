@@ -55,6 +55,8 @@ let myTestChunks = await chunkit(
         modelCacheDir: "../models",
         returnTokenLength: true,
         returnEmbedding: false,
+        // Optional: Use custom embedding provider instead of ONNX
+        // embedCallback: async (texts) => yourEmbeddingAPI(texts),
     }
 );
 
