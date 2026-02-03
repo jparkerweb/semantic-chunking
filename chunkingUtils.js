@@ -209,6 +209,48 @@ function calculateMergeLimit(candidateCount, options) {
   return Math.min(percentageLimit, maxMergesPerPass);
 }
 
+/**
+ * Executes one merge pass over the linked list
+ * @param {Object} head - Head node of linked list
+ * @param {number} maxTokens - Maximum tokens per chunk
+ * @param {number} similarityThreshold - Minimum similarity to merge
+ * @param {Object} options - Merge throttling options
+ * @param {Function} embedBatch - Batch embedding function
+ * @returns {Promise<{head: Object, mergeCount: number}>} Updated head and number of merges performed
+ */
+async function executeMergePass(head, maxTokens, similarityThreshold, options, embedBatch) {
+  // Collect all candidates
+  const candidates = collectMergeCandidates(head, maxTokens, similarityThreshold);
+
+  if (candidates.length === 0) {
+    return { head, mergeCount: 0 };
+  }
+
+  // Sort by similarity (highest first)
+  candidates.sort((a, b) => b.similarity - a.similarity);
+
+  // Determine how many to merge this pass
+  const mergeLimit = calculateMergeLimit(candidates.length, options);
+
+  // Execute merges (skip if either node already processed this pass)
+  const mergedNodes = [];
+  let mergeCount = 0;
+
+  for (const candidate of candidates) {
+    if (mergeCount >= mergeLimit) break;
+    if (candidate.node.processed || candidate.nextNode.processed) continue;
+
+    const mergedNode = executeMerge(candidate);
+    mergedNodes.push(mergedNode);
+    mergeCount++;
+  }
+
+  // Refresh embeddings for merged nodes
+  await refreshMergedEmbeddings(mergedNodes, embedBatch);
+
+  return { head, mergeCount };
+}
+
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
