@@ -61,6 +61,40 @@ export async function createEmbedding(text) {
     return embeddings.data;
 }
 
+// ---------------------------------------------------
+// -- Wrap user callback with cache for efficiency --
+// ---------------------------------------------------
+export function wrapCallbackWithCache(embedCallback, cache) {
+    return async function cachedCallback(texts) {
+        const results = new Array(texts.length);
+        const uncachedIndices = [];
+        const uncachedTexts = [];
+
+        // Check cache for each text
+        for (let i = 0; i < texts.length; i++) {
+            const cached = cache.get(texts[i]);
+            if (cached) {
+                results[i] = cached;
+            } else {
+                uncachedIndices.push(i);
+                uncachedTexts.push(texts[i]);
+            }
+        }
+
+        // Call original callback only for uncached texts
+        if (uncachedTexts.length > 0) {
+            const embeddings = await embedCallback(uncachedTexts);
+            for (let j = 0; j < uncachedTexts.length; j++) {
+                const embedding = embeddings[j];
+                cache.set(uncachedTexts[j], embedding);
+                results[uncachedIndices[j]] = embedding;
+            }
+        }
+
+        return results;
+    };
+}
+
 // ------------------------------------------------
 // -- Function to generate embeddings in batches --
 // ------------------------------------------------
