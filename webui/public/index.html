@@ -204,6 +204,14 @@
                                 <input type="number" id="maxMergesPerPassPercentage" name="maxMergesPerPassPercentage"
                                        min="1" max="100" step="1" value="40">
                             </div>
+                            <div class="form-group">
+                                <label for="uncappedCandidateMerges">
+                                    Uncapped Candidate Threshold
+                                    <span class="tooltip" title="When candidate count is below this, all candidates are merged (soft minimum)">?</span>
+                                </label>
+                                <input type="number" id="uncappedCandidateMerges" name="uncappedCandidateMerges"
+                                       min="1" max="100" step="1" value="12">
+                            </div>
                         </details>
 
                         <!-- Hidden inputs -->
