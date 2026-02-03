@@ -118,6 +118,7 @@ export async function chunkit(
         const sentences = await parseSentences(doc.document_text);
 
         // Compute similarities and create chunks
+        // TODO Phase 2: Pass embedBatch to computeAdvancedSimilarities()
         const { similarities, average, variance } = await computeAdvancedSimilarities(
             sentences,
             {
