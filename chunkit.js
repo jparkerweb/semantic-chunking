@@ -370,6 +370,13 @@ export async function cramit(
         const documentId = Date.now();
         const numberOfChunks = chunks.length;
 
+        // Pre-compute embeddings for all chunks if needed (batched for efficiency)
+        let chunkEmbeddings = null;
+        if (returnEmbedding) {
+            const prefixedChunks = chunks.map(chunk => applyPrefixToChunk(chunkPrefix, chunk));
+            chunkEmbeddings = await embedBatch(prefixedChunks);
+        }
+
         return Promise.all(chunks.map(async (chunk, index) => {
             const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
             const result = {
@@ -383,7 +390,7 @@ export async function cramit(
             };
 
             if (returnEmbedding) {
-                result.embedding = await createEmbedding(prefixedChunk);
+                result.embedding = chunkEmbeddings[index];
             }
 
             if (returnTokenLength) {
