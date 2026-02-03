@@ -1,6 +1,5 @@
 import { tokenizer } from './embeddingUtils.js';
 import { cosineSimilarity } from './similarityUtils.js';
-import { createEmbedding } from './embeddingUtils.js';
 
 // -----------------------------------------------------------
 // -- Linked List Node for Multi-Pass Merge Algorithm --
@@ -314,39 +313,56 @@ export function createChunks(sentences, similarities, maxTokenSize, similarityTh
 }
 
 // --------------------------------------------------------------
-// -- Optimize and Rebalance Chunks (optionally use Similarity) --
+// -- Optimize and Rebalance Chunks (Multi-Pass Merge Algorithm) --
 // --------------------------------------------------------------
-export async function optimizeAndRebalanceChunks(combinedChunks, tokenizer, maxTokenSize, combineChunksSimilarityThreshold = 0.5) {
-    let optimizedChunks = [];
-    let currentChunkText = "";
-    let currentChunkTokenCount = 0;
-    let currentEmbedding = null;
+/**
+ * Optimizes and rebalances chunks using multi-pass merge algorithm
+ * @param {Object[]} chunks - Array of chunk objects with text and tokenCount
+ * @param {Map} embeddingsMap - Map of text to embedding vectors
+ * @param {number} maxTokens - Maximum tokens per chunk
+ * @param {number} similarityThreshold - Minimum similarity to merge
+ * @param {Object} mergeOptions - Merge throttling options
+ * @param {number} mergeOptions.maxMergesPerPass - Absolute maximum merges per pass
+ * @param {number} mergeOptions.maxUncappedPasses - Maximum passes before stopping
+ * @param {number} mergeOptions.maxMergesPerPassPercentage - Percentage of candidates to merge
+ * @param {number} mergeOptions.uncappedCandidateMerges - Below this count, allow all merges
+ * @param {Function} embedBatch - Batch embedding function
+ * @returns {Promise<Object[]>} Optimized array of chunk objects
+ */
+export async function optimizeAndRebalanceChunks(
+  chunks,
+  embeddingsMap,
+  maxTokens,
+  similarityThreshold,
+  mergeOptions,
+  embedBatch
+) {
+  if (!chunks || chunks.length <= 1) return chunks || [];
 
-    for (let index = 0; index < combinedChunks.length; index++) {
-        const chunk = combinedChunks[index];
-        const chunkTokenCount = tokenizer(chunk).input_ids.size;
+  const { maxUncappedPasses } = mergeOptions;
 
-        if (currentChunkText && (currentChunkTokenCount + chunkTokenCount <= maxTokenSize)) {
-            const nextEmbedding = await createEmbedding(chunk);
-            const similarity = currentEmbedding ? cosineSimilarity(currentEmbedding, nextEmbedding) : 0;
+  // Build linked list from chunks
+  let head = buildLinkedList(chunks, embeddingsMap);
 
-            if (similarity >= combineChunksSimilarityThreshold) {
-                currentChunkText += " " + chunk;
-                currentChunkTokenCount += chunkTokenCount;
-                currentEmbedding = nextEmbedding;
-                continue;
-            }
-        }
+  // Multi-pass merge loop
+  let passCount = 0;
+  while (passCount < maxUncappedPasses) {
+    const { mergeCount } = await executeMergePass(
+      head,
+      maxTokens,
+      similarityThreshold,
+      mergeOptions,
+      embedBatch
+    );
 
-        if (currentChunkText) optimizedChunks.push(currentChunkText);
-        currentChunkText = chunk;
-        currentChunkTokenCount = chunkTokenCount;
-        currentEmbedding = await createEmbedding(chunk);
-    }
+    passCount++;
 
-    if (currentChunkText) optimizedChunks.push(currentChunkText);
+    // Stop if no merges occurred (converged)
+    if (mergeCount === 0) break;
+  }
 
-    return optimizedChunks.filter(chunk => chunk);
+  // Convert back to chunks array
+  return linkedListToChunks(head);
 }
 
 
