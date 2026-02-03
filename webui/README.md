@@ -79,6 +79,17 @@ http://localhost:3000
 - **Chunk Prefix**: Add prefix to chunks (useful for RAG applications)
 - **Exclude Chunk Prefix in Results**: Remove prefix from final results
 
+### Advanced Merge Settings
+
+The Advanced Merge Settings section (collapsed by default) provides fine-grained control over the chunk optimization algorithm:
+
+- **Max Merges Per Pass**: Absolute limit on merges per iteration (default: 500)
+- **Max Optimization Passes**: Maximum iterations before stopping (default: 100)
+- **Merges Per Pass (%)**: Percentage of candidates to process per pass (default: 40)
+- **Uncapped Candidate Threshold**: Below this count, all candidates merge (default: 12)
+
+These settings are for advanced users tuning chunk quality. The algorithm sorts merge candidates by similarity and processes them in priority order across multiple passes for better global optimization.
+
 ### Example Texts
 
 Use the provided example texts to test different scenarios:
