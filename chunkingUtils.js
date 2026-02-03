@@ -3,6 +3,28 @@ import { cosineSimilarity } from './similarityUtils.js';
 import { createEmbedding } from './embeddingUtils.js';
 
 // -----------------------------------------------------------
+// -- Linked List Node for Multi-Pass Merge Algorithm --
+// -----------------------------------------------------------
+
+/**
+ * Creates a linked list node for merge algorithm
+ * @param {string} text - Chunk text content
+ * @param {number[]} embedding - Embedding vector (or null if not yet computed)
+ * @param {number} tokenCount - Token count for this chunk
+ * @returns {Object} Linked list node
+ */
+function createMergeNode(text, embedding, tokenCount) {
+  return {
+    text,
+    embedding,
+    tokenCount,
+    prev: null,
+    next: null,
+    processed: false
+  };
+}
+
+// -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
 export function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
