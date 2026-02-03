@@ -137,6 +137,13 @@ export async function chunkit(
             embedBatch
         );
 
+        // Store embeddings indexed by sentence for merge phase
+        const sentenceEmbeddings = new Map();
+        sentences.forEach((sentence, index) => {
+            sentenceEmbeddings.set(sentence, embeddings[index]);
+        });
+        // TODO Phase 3: Pass sentenceEmbeddings to optimizeAndRebalanceChunks()
+
         // Dynamically adjust the similarity threshold based on variance and average
         let dynamicThreshold = similarityThreshold;
         if (average != null && variance != null) {
