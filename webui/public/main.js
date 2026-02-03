@@ -413,7 +413,29 @@ getCodeBtn.onclick = () => {
 function generateCode(formData) {
     const dtypeValues = ['fp32', 'fp16', 'q8', 'q4'];
     const dtype = dtypeValues[parseInt(formData.dtype)];
-    
+
+    // Build optional merge params (only include when different from defaults)
+    const mergeOptions = [];
+    const maxMergesPerPass = parseInt(formData.maxMergesPerPass);
+    const maxUncappedPasses = parseInt(formData.maxUncappedPasses);
+    const maxMergesPerPassPercentage = parseInt(formData.maxMergesPerPassPercentage);
+    const uncappedCandidateMerges = parseInt(formData.uncappedCandidateMerges);
+
+    if (maxMergesPerPass !== defaultFormValues.maxMergesPerPass) {
+        mergeOptions.push(`        maxMergesPerPass: ${maxMergesPerPass},`);
+    }
+    if (maxUncappedPasses !== defaultFormValues.maxUncappedPasses) {
+        mergeOptions.push(`        maxUncappedPasses: ${maxUncappedPasses},`);
+    }
+    if (maxMergesPerPassPercentage !== defaultFormValues.maxMergesPerPassPercentage) {
+        mergeOptions.push(`        maxMergesPerPassPercentage: ${maxMergesPerPassPercentage},`);
+    }
+    if (uncappedCandidateMerges !== defaultFormValues.uncappedCandidateMerges) {
+        mergeOptions.push(`        uncappedCandidateMerges: ${uncappedCandidateMerges},`);
+    }
+
+    const mergeOptionsStr = mergeOptions.length > 0 ? '\n' + mergeOptions.join('\n') : '';
+
     return `// import the semantic-chunking library
 import { chunkit } from 'semantic-chunking';
 
@@ -445,7 +467,7 @@ const myChunks = await chunkit(
         returnEmbedding: ${formData.returnEmbedding},
         returnTokenLength: ${formData.returnTokenLength},
         chunkPrefix: "${formData.chunkPrefix}",
-        excludeChunkPrefixInResults: ${formData.excludeChunkPrefixInResults},
+        excludeChunkPrefixInResults: ${formData.excludeChunkPrefixInResults},${mergeOptionsStr}
     }
 );
 
