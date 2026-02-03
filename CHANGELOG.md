@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.0] - 2026-02-03
+
+### ✨ Added
+- `embedCallback` parameter for custom embedding providers (OpenAI, Cohere, etc.)
+  - Allows using any embedding API instead of local ONNX models
+  - Available on `chunkit`, `cramit`, and `sentenceit` functions
+- Multi-pass merge optimization algorithm for higher quality chunks
+  - Linked list data structure for O(1) merge operations
+  - Global priority-based merging (highest similarity first)
+- Merge throttling parameters for fine-tuning optimization:
+  - `maxMergesPerPass`: Maximum merges per optimization pass (default: 500)
+  - `maxUncappedPasses`: Maximum optimization iterations (default: 100)
+  - `maxMergesPerPassPercentage`: Percentage of candidates to merge per pass (default: 40)
+  - `uncappedCandidateMerges`: Soft minimum - when candidates below this, all are merged (default: 12)
+- Advanced Merge Settings section in WebUI (collapsed by default)
+- New example: `example/example-embedCallback.js`
+
+### 📦 Updated
+- `optimizeAndRebalanceChunks()` rewritten with linked list for efficient multi-pass merging
+- `computeAdvancedSimilarities()` now accepts `embedBatch` parameter and returns embeddings for reuse
+- `createEmbeddingBatch()` added to embeddingUtils.js for batch embedding with caching
+- `wrapCallbackWithCache()` added to embeddingUtils.js for caching custom callbacks
+
+### 🐛 Fixed
+- Deprecated `onnxEmbeddingModelQuantized` in example-cramit.js replaced with `dtype`
+
 ## [2.5.0] - 2025-01-30
 ### ✨ Added
 - **Docker Support**: Complete containerization with multi-stage Dockerfile and Docker Compose
