@@ -84,10 +84,13 @@ function linkedListToChunks(head) {
  * @param {Object} nextNode - Second node (node.next)
  * @param {number} maxTokens - Maximum tokens per chunk
  * @param {number} similarityThreshold - Minimum similarity to merge
- * @returns {Object|null} Merge candidate or null if not mergeable
+ * @returns {Object|null} Merge candidate or null if not mergeable (including when embeddings are missing)
  */
 function _getMergeCandidate(node, nextNode, maxTokens, similarityThreshold) {
   if (!node || !nextNode) return null;
+
+  // Skip if either node is missing embedding (cannot compute similarity)
+  if (!node.embedding || !nextNode.embedding) return null;
 
   const combinedSize = node.tokenCount + nextNode.tokenCount;
   if (combinedSize > maxTokens) return null;
