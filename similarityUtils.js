@@ -31,6 +31,7 @@ export function cosineSimilarity(vecA, vecB) {
  * @param {number} [options.numSimilaritySentencesLookahead=2] - Number of sentences to look ahead for similarity comparison
  * @param {boolean} [options.logging=false] - Whether to log debug information
  * @param {function(string[]): Promise<number[][]>} embedBatch - Function to compute embeddings for array of texts
+ * @returns {{similarities: number[], average: number, variance: number, embeddings: number[][]}} Object containing similarity scores, statistics, and embeddings
  */
 export async function computeAdvancedSimilarities(sentences, { numSimilaritySentencesLookahead = 2, logging = false } = {}, embedBatch) {
     if (logging) console.log('numSimilaritySentencesLookahead', numSimilaritySentencesLookahead);
@@ -62,7 +63,7 @@ export async function computeAdvancedSimilarities(sentences, { numSimilaritySent
     const average = similaritySum / similarities.length;
     const variance = similarities.reduce((acc, sim) => acc + (sim - average) ** 2, 0) / similarities.length;
 
-    return { similarities, average, variance };
+    return { similarities, average, variance, embeddings };
 }
 
 // -----------------------------------------------------------
