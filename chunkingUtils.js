@@ -133,6 +133,37 @@ function collectMergeCandidates(head, maxTokens, similarityThreshold) {
 }
 
 // -----------------------------------------------------------
+// -- Multi-Pass Merge Algorithm Core --
+// -----------------------------------------------------------
+
+/**
+ * Executes a single merge operation between two adjacent nodes
+ * @param {Object} candidate - Merge candidate with node, nextNode, combinedSize
+ * @returns {Object} The merged node
+ */
+function executeMerge(candidate) {
+  const { node, nextNode } = candidate;
+
+  // Combine text
+  node.text = node.text + ' ' + nextNode.text;
+  node.tokenCount = candidate.combinedSize;
+
+  // Clear embedding (will be recomputed if needed)
+  node.embedding = null;
+
+  // Update linked list pointers
+  node.next = nextNode.next;
+  if (nextNode.next) {
+    nextNode.next.prev = node;
+  }
+
+  // Mark as processed this pass
+  node.processed = true;
+
+  return node;
+}
+
+// -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
 export function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
