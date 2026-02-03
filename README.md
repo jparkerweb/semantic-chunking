@@ -441,6 +441,24 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 
 Each of these parameters allows you to customize the `chunkit` function to better fit the text size, content complexity, and performance requirements of your application.
 
+### Merge Optimization Parameters
+
+These parameters control the multi-pass chunk merging algorithm that runs when `combineChunks` is enabled:
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `maxMergesPerPass` | 500 | Maximum merges per optimization pass (absolute limit) |
+| `maxUncappedPasses` | 100 | Maximum optimization iterations before stopping |
+| `maxMergesPerPassPercentage` | 40 | Percentage of candidates to merge per pass |
+| `uncappedCandidateMerges` | 12 | When candidates below this count, all are merged |
+
+The algorithm sorts merge candidates by similarity and processes them in priority order across multiple passes. This produces higher quality chunks than a single-pass greedy approach by considering global similarity relationships.
+
+**When to adjust these parameters:**
+- **Large documents with many chunks**: Increase `maxMergesPerPass` and `maxUncappedPasses` for more aggressive merging
+- **Performance-critical applications**: Decrease `maxMergesPerPass` or `maxMergesPerPassPercentage` to limit computation time
+- **Small documents**: Default values work well; the `uncappedCandidateMerges` threshold ensures small documents merge efficiently
+
 ---
 
 ## Semantic Chunking Web UI
