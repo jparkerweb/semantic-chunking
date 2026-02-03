@@ -213,7 +213,8 @@ const myChunks = await chunkit(documents, chunkitOptions);
   ```
 
 - **Chunkit Options Object:**
-  
+
+  - `embedCallback`: Function (optional, default `null`) - Optional async function for custom embeddings. When provided, the built-in ONNX model is not initialized, allowing you to use any embedding provider (OpenAI, Cohere, etc.). The function receives an array of texts and must return an array of embedding vectors. Type signature: `(texts: string[]) => Promise<number[][]>`
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
   - `maxTokenSize`: Integer (optional, default `500`) - Maximum token size for each chunk.
   - `similarityThreshold`: Float (optional, default `0.5`) - Threshold to determine if sentences are similar enough to be in the same chunk. A higher value demands higher similarity.
