@@ -24,6 +24,36 @@ function createMergeNode(text, embedding, tokenCount) {
   };
 }
 
+/**
+ * Builds a doubly-linked list from an array of chunks
+ * @param {Object[]} chunks - Array of chunk objects with text and tokenCount
+ * @param {Map} embeddingsMap - Map of text to embedding vectors
+ * @returns {Object|null} Head node of linked list, or null if empty
+ */
+function buildLinkedList(chunks, embeddingsMap) {
+  if (!chunks || chunks.length === 0) return null;
+
+  let head = null;
+  let prev = null;
+
+  for (const chunk of chunks) {
+    const node = createMergeNode(
+      chunk.text,
+      embeddingsMap?.get(chunk.text) || null,
+      chunk.tokenCount
+    );
+
+    if (!head) head = node;
+    if (prev) {
+      prev.next = node;
+      node.prev = prev;
+    }
+    prev = node;
+  }
+
+  return head;
+}
+
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
