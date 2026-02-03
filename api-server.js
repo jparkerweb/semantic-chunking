@@ -184,9 +184,14 @@ app.get('/', (req, res) => {
       "maxTokenSize": 500,
       "similarityThreshold": 0.5,
       "onnxEmbeddingModel": "Xenova/all-MiniLM-L6-v2",
-      "dtype": "q8"
+      "dtype": "q8",
+      "maxMergesPerPass": 500,
+      "maxUncappedPasses": 100,
+      "maxMergesPerPassPercentage": 40,
+      "uncappedCandidateMerges": 12
     }
   }'</code></pre>
+            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">Merge optimization params: <code>maxMergesPerPass</code>, <code>maxUncappedPasses</code>, <code>maxMergesPerPassPercentage</code>, <code>uncappedCandidateMerges</code></p>
         </div>
 
         <div class="endpoint">
