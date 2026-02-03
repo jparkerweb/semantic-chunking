@@ -10,7 +10,7 @@
 
 import { parseSentences } from 'sentence-parse';
 import { DEFAULT_CONFIG } from './config.js';
-import { initializeEmbeddingUtils, tokenizer, createEmbedding, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
+import { initializeEmbeddingUtils, tokenizer, createEmbedding, createEmbeddingBatch, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
 import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
 import { readFileSync } from 'fs';
@@ -97,6 +97,8 @@ export async function chunkit(
         );
         modelName = initResult.modelName;
         usedDtype = initResult.dtype;
+        // Create unified embedBatch using ONNX pipeline
+        embedBatch = async (texts) => createEmbeddingBatch(texts);
     }
 
     // Process each document
