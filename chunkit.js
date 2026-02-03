@@ -374,7 +374,11 @@ export async function cramit(
         let chunkEmbeddings = null;
         if (returnEmbedding) {
             const prefixedChunks = chunks.map(chunk => applyPrefixToChunk(chunkPrefix, chunk));
-            chunkEmbeddings = await embedBatch(prefixedChunks);
+            try {
+                chunkEmbeddings = await embedBatch(prefixedChunks);
+            } catch (error) {
+                throw new Error(`cramit embedding failed: ${error.message}`);
+            }
         }
 
         return Promise.all(chunks.map(async (chunk, index) => {
