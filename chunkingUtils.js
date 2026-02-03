@@ -76,6 +76,36 @@ function linkedListToChunks(head) {
 }
 
 // -----------------------------------------------------------
+// -- Merge Candidate Logic --
+// -----------------------------------------------------------
+
+/**
+ * Evaluates if two adjacent nodes can be merged
+ * @param {Object} node - First node
+ * @param {Object} nextNode - Second node (node.next)
+ * @param {number} maxTokens - Maximum tokens per chunk
+ * @param {number} similarityThreshold - Minimum similarity to merge
+ * @returns {Object|null} Merge candidate or null if not mergeable
+ */
+function _getMergeCandidate(node, nextNode, maxTokens, similarityThreshold) {
+  if (!node || !nextNode) return null;
+
+  const combinedSize = node.tokenCount + nextNode.tokenCount;
+  if (combinedSize > maxTokens) return null;
+
+  // Compute similarity between adjacent chunks
+  const similarity = cosineSimilarity(node.embedding, nextNode.embedding);
+  if (similarity < similarityThreshold) return null;
+
+  return {
+    node,
+    nextNode,
+    similarity,
+    combinedSize
+  };
+}
+
+// -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
 export function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
