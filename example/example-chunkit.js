@@ -57,6 +57,11 @@ let myTestChunks = await chunkit(
         returnEmbedding: false,
         // Optional: Use custom embedding provider instead of ONNX
         // embedCallback: async (texts) => yourEmbeddingAPI(texts),
+        // Advanced merge optimization (optional):
+        // maxMergesPerPass: 500,
+        // maxUncappedPasses: 100,
+        // maxMergesPerPassPercentage: 40,
+        // uncappedCandidateMerges: 12
     }
 );
 
