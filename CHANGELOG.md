@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.6.0] - 2026-02-03
+## [2.6.0] - 2026-04-10
 
 ### ✨ Added
 - `embedCallback` parameter for custom embedding providers (OpenAI, Cohere, etc.)
@@ -16,10 +16,18 @@ All notable changes to this project will be documented in this file.
   - `maxUncappedPasses`: Maximum optimization iterations (default: 100)
   - `maxMergesPerPassPercentage`: Percentage of candidates to merge per pass (default: 40)
   - `uncappedCandidateMerges`: Soft minimum - when candidates below this, all are merged (default: 12)
-- Advanced Merge Settings section in WebUI (collapsed by default)
-- New example: `example/example-embedCallback.js`
+- Advanced Merge Settings section in WebUI (collapsed by default) with field descriptions
+- New examples for custom embedding providers:
+  - `example/example-embedCallback.js` (OpenAI)
+  - `example/example-embedCallback-huggingface.js` (Hugging Face - free)
+  - `example/example-embedCallback-ollama.js` (Ollama - local/private)
+  - `example/example-embedCallback-mock.js` (Mock - for testing)
+  - `example/test-new-features.js` (comprehensive test suite)
+  - `example/README-EXAMPLES.md` (examples guide)
+- New npm scripts: `example-embedCallback-*`, `test-new-features`
 
 ### 📦 Updated
+- `@huggingface/transformers` upgraded from v3.8.1 to v4.0.1 (~4x speedup for BERT-based embedding models)
 - `optimizeAndRebalanceChunks()` rewritten with linked list for efficient multi-pass merging
 - `computeAdvancedSimilarities()` now accepts `embedBatch` parameter and returns embeddings for reuse
 - `createEmbeddingBatch()` added to embeddingUtils.js for batch embedding with caching
@@ -27,6 +35,8 @@ All notable changes to this project will be documented in this file.
 
 ### 🐛 Fixed
 - Deprecated `onnxEmbeddingModelQuantized` in example-cramit.js replaced with `dtype`
+- Tokenizer now initializes correctly when using `embedCallback` (was causing "tokenizer is not a function" error)
+- Added `initializeTokenizer()` function to embeddingUtils.js for tokenizer-only initialization
 
 ## [2.5.0] - 2025-01-30
 ### ✨ Added

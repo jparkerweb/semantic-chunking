@@ -224,7 +224,7 @@ const myChunks = await chunkit(documents, chunkitOptions);
   - `combineChunks`: Boolean (optional, default `true`) - Determines whether to reblance and combine chunks into larger ones up to the max token limit.
   - `combineChunksSimilarityThreshold`: Float (optional, default `0.5`) - Threshold for combining chunks based on similarity during the rebalance and combining phase.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
-  - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `dtype`: String (optional, default `q8`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
   - `device`: String (optional, default `cpu`) - The execution provider to use for the model (options: `cpu`, `webgpu`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
@@ -370,13 +370,13 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 ### `similarityThreshold`
 
 - **Type**: Float
-- **Default**: `0.456`
+- **Default**: `0.5`
 - **Description**: Determines the minimum cosine similarity required for two sentences to be included in the same chunk. Higher thresholds demand greater similarity, potentially leading to more but smaller chunks, whereas lower values might result in fewer, larger chunks.
 
 ### `dynamicThresholdLowerBound`
 
 - **Type**: Float
-- **Default**: `0.2`
+- **Default**: `0.4`
 - **Description**: The minimum limit for dynamically adjusted similarity thresholds during chunk formation. This ensures that the dynamic threshold does not fall below a certain level, maintaining a baseline similarity among sentences in a chunk.
 
 ### `dynamicThresholdUpperBound`
@@ -388,7 +388,7 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 ### `numSimilaritySentencesLookahead`
 
 - **Type**: Integer
-- **Default**: `2`
+- **Default**: `3`
 - **Description**: Controls how many subsequent sentences are considered for calculating the maximum similarity to the current sentence during chunk formation. A higher value increases the chance of finding a suitable sentence to extend the current chunk but at the cost of increased computational overhead.
 
 ### `combineChunks`
@@ -400,7 +400,7 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 ### `combineChunksSimilarityThreshold`
 
 - **Type**: Float
-- **Default**: `0.4`
+- **Default**: `0.5`
 - **Description**: Used in the second pass of chunk combination to decide if adjacent chunks should be merged, based on their similarity. Similar to `similarityThreshold`, but specifically for rebalancing existing chunks. Adjusting this parameter can help in fine-tuning the granularity of the final chunks.
 
 ### `onnxEmbeddingModel`
@@ -421,7 +421,7 @@ The behavior of the `chunkit` function can be finely tuned using several optiona
 #### `dtype`
 
 - **Type**: String
-- **Default**: `fp32`
+- **Default**: `q8`
 - **Description**: Indicates the precision of the embedding model. Options are `fp32`, `fp16`, `q8`, `q4`.
 `fp32` is the highest precision but also the largest size and slowest to load. `q8` is a good compromise between size and speed if the model supports it. All models support `fp32`, but only some support `fp16`, `q8`, and `q4`.
 
@@ -501,7 +501,7 @@ There is an additional function you can import to just "cram" sentences together
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
   - `maxTokenSize`: Integer (optional, default `500`) - Maximum token size for each chunk.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
-  - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `dtype`: String (optional, default `q8`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
   - `device`: String (optional, default `cpu`) - The execution provider to use for the model (options: `cpu`, `webgpu`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).
@@ -559,7 +559,7 @@ There is an additional function you can import to just split sentences.
   
   - `logging`: Boolean (optional, default `false`) - Enables logging of detailed processing steps.
   - `onnxEmbeddingModel`: String (optional, default `Xenova/all-MiniLM-L6-v2`) - ONNX model used for creating embeddings.
-  - `dtype`: String (optional, default `fp32`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
+  - `dtype`: String (optional, default `q8`) - Precision of the embedding model (options: `fp32`, `fp16`, `q8`, `q4`).
   - `device`: String (optional, default `cpu`) - The execution provider to use for the model (options: `cpu`, `webgpu`).
   - `localModelPath`: String (optional, default `null`) - Local path to save and load models (example: `./models`).
   - `modelCacheDir`: String (optional, default `null`) - Directory to cache downloaded models (example: `./models`).

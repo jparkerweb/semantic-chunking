@@ -185,6 +185,7 @@
                                     Max Merges Per Pass
                                     <span class="tooltip" title="Maximum number of chunk merges per optimization pass (absolute limit)">?</span>
                                 </label>
+                                <label class="sub-label">Absolute limit on merges per optimization pass</label>
                                 <input type="number" id="maxMergesPerPass" name="maxMergesPerPass"
                                        min="1" max="10000" step="1" value="500">
                             </div>
@@ -193,6 +194,7 @@
                                     Max Optimization Passes
                                     <span class="tooltip" title="Maximum number of merge optimization iterations">?</span>
                                 </label>
+                                <label class="sub-label">Maximum iterations before the algorithm stops</label>
                                 <input type="number" id="maxUncappedPasses" name="maxUncappedPasses"
                                        min="1" max="1000" step="1" value="100">
                             </div>
@@ -201,6 +203,7 @@
                                     Merges Per Pass (%)
                                     <span class="tooltip" title="Percentage of merge candidates to process per pass">?</span>
                                 </label>
+                                <label class="sub-label">Percentage of candidates to merge each pass</label>
                                 <input type="number" id="maxMergesPerPassPercentage" name="maxMergesPerPassPercentage"
                                        min="1" max="100" step="1" value="40">
                             </div>
@@ -209,6 +212,7 @@
                                     Uncapped Candidate Threshold
                                     <span class="tooltip" title="When candidate count is below this, all candidates are merged (soft minimum)">?</span>
                                 </label>
+                                <label class="sub-label">Below this count, all candidates merge (speeds up small batches)</label>
                                 <input type="number" id="uncappedCandidateMerges" name="uncappedCandidateMerges"
                                        min="1" max="100" step="1" value="12">
                             </div>

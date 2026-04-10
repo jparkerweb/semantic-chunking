@@ -1,6 +1,6 @@
 {
   "name": "semantic-chunking",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Semantically create chunks from large texts. Useful for workflows involving large language models (LLMs).",
   "homepage": "https://www.equilllabs.com/projects/semantic-chunking",
   "repository": {
@@ -46,6 +46,11 @@
     "example-sentenceit": "node ./example/example-sentenceit.js",
     "example-cramit": "node ./example/example-cramit.js",
     "example-api": "node ./example/example-api.js",
+    "example-embedCallback-openai": "node ./example/example-embedCallback-openai.js",
+    "example-embedCallback-huggingface": "node ./example/example-embedCallback-huggingface.js",
+    "example-embedCallback-ollama": "node ./example/example-embedCallback-ollama.js",
+    "example-embedCallback-mock": "node ./example/example-embedCallback-mock.js",
+    "test-new-features": "node ./example/test-new-features.js",
     "api-server": "node api-server.js",
     "docker:build": "docker build -t semantic-chunking:latest .",
     "docker:run": "npm run docker:run:api && npm run docker:run:webui",
@@ -58,14 +63,14 @@
     "docker:compose:all": "docker-compose --profile webui up -d"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.7.4",
+    "@huggingface/transformers": "^4.0.1",
     "cli-progress": "^3.12.0",
-    "lru-cache": "^11.2.2",
+    "lru-cache": "^11.3.3",
     "sentence-parse": "^1.3.1"
   },
   "devDependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^4.21.2"
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^4.22.1"
   }
 }

@@ -10,7 +10,7 @@
 
 import { parseSentences } from 'sentence-parse';
 import { DEFAULT_CONFIG } from './config.js';
-import { initializeEmbeddingUtils, tokenizer, createEmbedding, createEmbeddingBatch, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
+import { initializeEmbeddingUtils, initializeTokenizer, tokenizer, createEmbedding, createEmbeddingBatch, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
 import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
 import { readFileSync } from 'fs';
@@ -77,9 +77,17 @@ export async function chunkit(
     let usedDtype;
 
     if (embedCallback) {
-        // Use user-provided callback - skip ONNX initialization
+        // Use user-provided callback - initialize only tokenizer for token counting
         modelName = 'custom-embedding';
         usedDtype = 'custom';
+
+        // Initialize tokenizer only (not the full embedding pipeline)
+        await initializeTokenizer(
+            onnxEmbeddingModel,
+            localModelPath,
+            modelCacheDir
+        );
+
         const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
         embedBatch = async (texts) => {
             try {
@@ -308,9 +316,17 @@ export async function cramit(
     let usedDtype;
 
     if (embedCallback) {
-        // Use user-provided callback - skip ONNX initialization
+        // Use user-provided callback - initialize only tokenizer for token counting
         modelName = 'custom-embedding';
         usedDtype = 'custom';
+
+        // Initialize tokenizer only (not the full embedding pipeline)
+        await initializeTokenizer(
+            onnxEmbeddingModel,
+            localModelPath,
+            modelCacheDir
+        );
+
         const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
         embedBatch = async (texts) => {
             try {
@@ -318,7 +334,7 @@ export async function cramit(
                 validateEmbeddingResult(texts, embeddings);
                 return embeddings;
             } catch (error) {
-                throw new Error(`Embedding failed: ${error.message}`);
+                throw new Error(`cramit embedding failed: ${error.message}`);
             }
         };
     } else {
@@ -337,7 +353,7 @@ export async function cramit(
             try {
                 return await createEmbeddingBatch(texts);
             } catch (error) {
-                throw new Error(`Embedding failed: ${error.message}`);
+                throw new Error(`cramit embedding failed: ${error.message}`);
             }
         };
     }
@@ -465,9 +481,17 @@ export async function sentenceit(
     let usedDtype;
 
     if (embedCallback) {
-        // Use user-provided callback - skip ONNX initialization
+        // Use user-provided callback - initialize only tokenizer for token counting
         modelName = 'custom-embedding';
         usedDtype = 'custom';
+
+        // Initialize tokenizer only (not the full embedding pipeline)
+        await initializeTokenizer(
+            onnxEmbeddingModel,
+            localModelPath,
+            modelCacheDir
+        );
+
         const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
         embedBatch = async (texts) => {
             try {
@@ -475,7 +499,7 @@ export async function sentenceit(
                 validateEmbeddingResult(texts, embeddings);
                 return embeddings;
             } catch (error) {
-                throw new Error(`Embedding failed: ${error.message}`);
+                throw new Error(`sentenceit embedding failed: ${error.message}`);
             }
         };
     } else if (returnEmbedding) {
@@ -494,9 +518,18 @@ export async function sentenceit(
             try {
                 return await createEmbeddingBatch(texts);
             } catch (error) {
-                throw new Error(`Embedding failed: ${error.message}`);
+                throw new Error(`sentenceit embedding failed: ${error.message}`);
             }
         };
+    } else if (returnTokenLength) {
+        // Initialize tokenizer only for token counting
+        await initializeTokenizer(
+            onnxEmbeddingModel,
+            localModelPath,
+            modelCacheDir
+        );
+        modelName = onnxEmbeddingModel;
+        usedDtype = dtype;
     }
 
     // Process each document

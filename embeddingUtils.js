@@ -13,10 +13,31 @@ const embeddingCache = new LRUCache({
 });
 
 // --------------------------------------------
+// -- Initialize tokenizer only (for embedCallback use) --
+// --------------------------------------------
+export async function initializeTokenizer(
+    onnxEmbeddingModel,
+    localModelPath = null,
+    modelCacheDir = null
+) {
+    // Configure environment
+    env.allowRemoteModels = true;
+    if (localModelPath) env.localModelPath = localModelPath;
+    if (modelCacheDir) env.cacheDir = modelCacheDir;
+
+    // Only initialize tokenizer, not the embedding pipeline
+    tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
+
+    return {
+        modelName: onnxEmbeddingModel,
+    };
+}
+
+// --------------------------------------------
 // -- Initialize embedding model and tokenizer --
 // --------------------------------------------
 export async function initializeEmbeddingUtils(
-    onnxEmbeddingModel, 
+    onnxEmbeddingModel,
     dtype = 'fp32',
     device = 'cpu',
     localModelPath = null,
