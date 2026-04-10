@@ -29,3 +29,7 @@ tools/
 # Development files
 *.log
 .DS_Store
+specs/
+specs--completed/
+AGENTS.md
+.agents-docs/
