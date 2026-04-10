@@ -18,7 +18,7 @@ All notable changes to this project will be documented in this file.
   - `uncappedCandidateMerges`: Soft minimum - when candidates below this, all are merged (default: 12)
 - Advanced Merge Settings section in WebUI (collapsed by default) with field descriptions
 - New examples for custom embedding providers:
-  - `example/example-embedCallback.js` (OpenAI)
+  - `example/example-embedCallback-openai.js` (OpenAI)
   - `example/example-embedCallback-huggingface.js` (Hugging Face - free)
   - `example/example-embedCallback-ollama.js` (Ollama - local/private)
   - `example/example-embedCallback-mock.js` (Mock - for testing)

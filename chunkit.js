@@ -245,7 +245,8 @@ export async function chunkit(
             };
 
             if (returnEmbedding) {
-                result.embedding = await createEmbedding(prefixedChunk);
+                const [embedding] = await embedBatch([prefixedChunk]);
+                result.embedding = embedding;
             }
 
             if (returnTokenLength) {
@@ -582,27 +583,27 @@ export async function sentenceit(
                 result.model_name = modelName;
                 result.dtype = usedDtype;
                 result.embedding = sentenceEmbeddings[index];
-    
-                if (returnTokenLength) {
-                    try {
-                        const encoded = await tokenizer(prefixedChunk, { padding: true });
-                        if (encoded && encoded.input_ids) {
-                            result.token_length = encoded.input_ids.size;
-                        } else {
-                            console.error('Tokenizer returned unexpected format:', encoded);
-                            result.token_length = 0;
-                        }
-                    } catch (error) {
-                        console.error('Error during tokenization:', error);
+            }
+
+            if (returnTokenLength) {
+                try {
+                    const encoded = await tokenizer(prefixedChunk, { padding: true });
+                    if (encoded && encoded.input_ids) {
+                        result.token_length = encoded.input_ids.size;
+                    } else {
+                        console.error('Tokenizer returned unexpected format:', encoded);
                         result.token_length = 0;
                     }
+                } catch (error) {
+                    console.error('Error during tokenization:', error);
+                    result.token_length = 0;
                 }
+            }
 
-                // Remove prefix if requested (after embedding calculation)
-                if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
-                    const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
-                    result.text = result.text.replace(prefixPattern, '');
-                }
+            // Remove prefix if requested (after embedding calculation)
+            if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
+                const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
+                result.text = result.text.replace(prefixPattern, '');
             }
 
             return result;

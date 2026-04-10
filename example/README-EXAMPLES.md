@@ -85,12 +85,12 @@ npm run example-embedCallback-mock
 ### 💳 Paid Options (Requires API Key)
 
 #### 4. OpenAI
-**File:** `example-embedCallback.js`
+**File:** `example-embedCallback-openai.js`
 
 ```bash
 # Requires OpenAI API key (paid)
 export OPENAI_API_KEY=your_key_here
-npm run example-embedCallback
+npm run example-embedCallback-openai
 ```
 
 **Pros:**
@@ -149,7 +149,7 @@ TEST: embedCallback with chunkit()
 → Use `example-embedCallback-ollama.js` (requires local install)
 
 **Want production-grade embeddings and have budget?**
-→ Use `example-embedCallback.js` (OpenAI, requires paid API key)
+→ Use `example-embedCallback-openai.js` (OpenAI, requires paid API key)
 
 **Want to test all new features at once?**
 → Run `test-new-features.js`
@@ -187,5 +187,5 @@ OLLAMA_BASE_URL=http://localhost:11434
 ## Need Help?
 
 - **Documentation:** See main [README.md](../README.md)
-- **API Reference:** See [API.md](../API.md)
+- **API Reference:** See [README.md](../README.md)
 - **Issues:** https://github.com/jparkerweb/semantic-chunking/issues

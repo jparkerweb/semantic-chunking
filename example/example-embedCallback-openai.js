@@ -1,5 +1,5 @@
 // ------------------------------
-// -- example-embedCallback.js --
+// -- example-embedCallback-openai.js --
 // -------------------------------------------------------------------------------
 // Example: Using custom embedding provider (OpenAI)
 //
