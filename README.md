@@ -1,5 +1,7 @@
 # 🍱 semantic-chunking
 
+<img src="https://github.com/jparkerweb/semantic-chunking/blob/main/semantic-chunking.jpg?raw=true" alt="banner">
+
 NPM Package for Semantically creating chunks from large texts. Useful for workflows involving large language models (LLMs).
 
 ### Maintained by
