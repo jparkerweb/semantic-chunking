@@ -29,6 +29,8 @@ _how it works_
 5. **Chunk Rebalancing**: Optionally, similar adjacent chunks are combined into larger ones up to the max token size.
 6. **Output**: The final chunks are returned as an array of objects, each containing the properties described above.
 
+#### Online Demo ⇢ <a href="https://semantic-chunking.equilllabs.com/" data-tag="demo">https://semantic-chunking.equilllabs.com</a>
+
 ## Installation
 
 ```bash
@@ -55,19 +57,6 @@ The `docker-compose.yml` configuration includes:
 - Port mapping: `3000:3000` for the Web UI
 - Volume mapping: `./models` directory is mounted to persist downloaded embedding models between container restarts
 - Health checks and auto-restart policies
-
-### Alternative Docker Commands
-
-```bash
-# Build the Docker image
-npm run docker:build
-
-# Run the container with models volume
-npm run docker:run
-
-# Or use docker-compose directly
-docker-compose up -d
-```
 
 ### Using the Library in Docker
 
