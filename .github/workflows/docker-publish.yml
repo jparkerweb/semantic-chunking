@@ -12,6 +12,12 @@ env:
   DOCKERHUB_REGISTRY: docker.io
   IMAGE_NAME: ${{ github.repository }}
 
+# Prevent overlapping builds (e.g. a release publish + a manual dispatch) from
+# racing each other and pushing tags out of order.
+concurrency:
+  group: docker-publish-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -42,22 +48,32 @@ jobs:
       uses: docker/metadata-action@v5
       with:
         images: ${{ env.GHCR_REGISTRY }}/${{ env.IMAGE_NAME }}
+        # Disable auto "latest" handling; the explicit raw rule below is the single source of truth.
+        flavor: |
+          latest=false
         tags: |
-          # set latest tag for main/master branch only
-          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
-          # set full version tag for releases (1.0.0, 1.0.1, etc.)
+          # Version tags derived from the release's git tag (e.g. 2.7.0 and 2.7).
+          # Only emitted when a semver tag is present (release events), no-op otherwise.
           type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          # "latest" on every release publish, and on manual dispatch from the default branch.
+          type=raw,value=latest,enable=${{ github.event_name == 'release' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
 
     - name: Extract metadata for Docker Hub
       id: meta-dockerhub
       uses: docker/metadata-action@v5
       with:
         images: ${{ github.repository }}
+        # Disable auto "latest" handling; the explicit raw rule below is the single source of truth.
+        flavor: |
+          latest=false
         tags: |
-          # set latest tag for main/master branch only
-          type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
-          # set full version tag for releases (1.0.0, 1.0.1, etc.)
+          # Version tags derived from the release's git tag (e.g. 2.7.0 and 2.7).
+          # Only emitted when a semver tag is present (release events), no-op otherwise.
           type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          # "latest" on every release publish, and on manual dispatch from the default branch.
+          type=raw,value=latest,enable=${{ github.event_name == 'release' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
 
     - name: Build and push to both registries
       uses: docker/build-push-action@v5
