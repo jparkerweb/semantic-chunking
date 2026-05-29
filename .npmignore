@@ -33,3 +33,6 @@ specs/
 specs--completed/
 AGENTS.md
 .agents-docs/
+
+# Tests and fixtures (not needed for library users)
+tests/
