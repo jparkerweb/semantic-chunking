@@ -1,0 +1,15 @@
+{
+  "count": 1,
+  "items": [
+    {
+      "chunk_number": 1,
+      "number_of_chunks": 1,
+      "text": "A duck waddles into a bakery and quacks to the baker, \"I'll have a loaf of bread, please.\" The baker, amused, quickly wraps the loaf and hands it over. The duck takes a nibble, looks around, and then asks, \"Do you have any seeds to go with this?\" The baker, chuckling, replies, \"Sorry, we're all out of seeds today.\" The duck nods and continues nibbling on its bread, clearly unfazed by the lack of seed toppings. Just another day in the life of a bread-loving waterfowl! 🦆🍞",
+      "boundary": {
+        "start": 0,
+        "end": 476
+      },
+      "token_length": 131
+    }
+  ]
+}

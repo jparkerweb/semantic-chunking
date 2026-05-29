@@ -1,0 +1,35 @@
+{
+  "count": 3,
+  "items": [
+    {
+      "chunk_number": 1,
+      "number_of_chunks": 3,
+      "text": "A frog hops into a deli and croaks to the cashier, \"I'll have a sandwich, please.\" The cashier, surprised, quickly makes the sandwich and hands it over. The frog takes a big bite, looks around, and then asks, \"Do you have any flies to go with this?\" The cashier, taken aback, replies, \"Sorry, we're all out of flies today.\" The frog shrugs and continues munching on its sandwich, clearly unfazed by the lack of fly toppings.",
+      "boundary": {
+        "start": 0,
+        "end": 424
+      },
+      "token_length": 117
+    },
+    {
+      "chunk_number": 2,
+      "number_of_chunks": 3,
+      "text": "Just another day in the life of a sandwich-loving amphibian!",
+      "boundary": {
+        "start": 424,
+        "end": 484
+      },
+      "token_length": 17
+    },
+    {
+      "chunk_number": 3,
+      "number_of_chunks": 3,
+      "text": "🐸🥪",
+      "boundary": {
+        "start": 484,
+        "end": 488
+      },
+      "token_length": 3
+    }
+  ]
+}

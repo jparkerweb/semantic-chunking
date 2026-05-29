@@ -36,6 +36,7 @@
   "author": "jparkerweb@gmail.com",
   "license": "ISC",
   "scripts": {
+    "test": "node --test",
     "setup": "npm run setup:main && npm run setup:webui",
     "setup:main": "npx rimraf node_modules package-lock.json && npm install",
     "setup:webui": "cd webui && npx rimraf node_modules package-lock.json && npm install",
@@ -63,8 +64,9 @@
     "docker:compose:all": "docker-compose --profile webui up -d"
   },
   "dependencies": {
-    "@huggingface/transformers": "^4.0.1",
+    "@huggingface/transformers": "^4.2.0",
     "cli-progress": "^3.12.0",
+    "embedding-utils": "^0.5.0",
     "lru-cache": "^11.3.3",
     "sentence-parse": "^1.3.1"
   },

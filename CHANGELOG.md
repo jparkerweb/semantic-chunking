@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.1] - 2026-05-28
+### 📦 Updated
+- Internal embedding/tokenizer/similarity layer now delegates to the `embedding-utils` package
+  - Local ONNX embedding generation routes through eu's `createLocalProvider`
+  - Token counting routes through eu's `createTokenizer` (via new internal `countTokens`/`countTokensBatch` helpers)
+  - `cosineSimilarity` is now sourced from `embedding-utils` (the hand-rolled implementation was removed)
+- `@huggingface/transformers` bumped from `^4.0.1` to `^4.2.0`
+- Added `embedding-utils` as a dependency
+
+### ✅ Unchanged
+- No public API change to `chunkit`, `cramit`, or `sentenceit` (option names, defaults, and result shape are identical)
+- The byte-bounded per-text `lru-cache` for embeddings is retained
+- The custom-provider `embedCallback` path (including `wrapCallbackWithCache` and `validateEmbeddingResult`) is retained
+- `returnEmbedding` continues to emit typed-array embeddings
+
 ## [2.6.0] - 2026-04-10
 
 ### ✨ Added

@@ -1,4 +1,4 @@
-import { tokenizer } from './embeddingUtils.js';
+import { countTokens } from './embeddingUtils.js';
 import { cosineSimilarity } from './similarityUtils.js';
 
 // -----------------------------------------------------------
@@ -270,9 +270,9 @@ export function createChunks(sentences, similarities, maxTokenSize, similarityTh
         // For cramit (when similarities is null), only check token size
         if (!similarities) {
             const currentChunkText = currentChunk.join(" ");
-            const currentChunkSize = tokenizer(currentChunkText).input_ids.size;
-            const nextSentenceTokenCount = tokenizer(nextSentence).input_ids.size;
-            
+            const currentChunkSize = countTokens(currentChunkText);
+            const nextSentenceTokenCount = countTokens(nextSentence);
+
             if (currentChunkSize + nextSentenceTokenCount <= maxTokenSize) {
                 currentChunk.push(nextSentence);
             } else {
@@ -290,9 +290,9 @@ export function createChunks(sentences, similarities, maxTokenSize, similarityTh
             
             // Then check token size
             const currentChunkText = currentChunk.join(" ");
-            const currentChunkSize = tokenizer(currentChunkText).input_ids.size;
-            const nextSentenceTokenCount = tokenizer(nextSentence).input_ids.size;
-            
+            const currentChunkSize = countTokens(currentChunkText);
+            const nextSentenceTokenCount = countTokens(nextSentence);
+
             if (currentChunkSize + nextSentenceTokenCount <= maxTokenSize) {
                 currentChunk.push(nextSentence);
             } else {

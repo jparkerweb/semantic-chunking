@@ -1,0 +1,85 @@
+{
+  "count": 8,
+  "items": [
+    {
+      "chunk_number": 1,
+      "number_of_chunks": 8,
+      "text": "The water cycle describes the continuous movement of water on, above, and below the surface of the Earth. Water evaporates from oceans and lakes, rising into the atmosphere as vapor. As the vapor cools, it condenses into clouds. Eventually the water returns to the surface as precipitation such as rain or snow.",
+      "boundary": {
+        "start": 0,
+        "end": 311
+      },
+      "token_length": 67
+    },
+    {
+      "chunk_number": 2,
+      "number_of_chunks": 8,
+      "text": "Photosynthesis is the process by which green plants convert sunlight into chemical energy. Chlorophyll in the leaves absorbs light, which drives the conversion of carbon dioxide and water into glucose.",
+      "boundary": {
+        "start": 311,
+        "end": 512
+      },
+      "token_length": 42
+    },
+    {
+      "chunk_number": 3,
+      "number_of_chunks": 8,
+      "text": "Oxygen is released as a byproduct of this reaction.",
+      "boundary": {
+        "start": 512,
+        "end": 563
+      },
+      "token_length": 15
+    },
+    {
+      "chunk_number": 4,
+      "number_of_chunks": 8,
+      "text": "Without photosynthesis, most life on Earth could not exist.",
+      "boundary": {
+        "start": 563,
+        "end": 622
+      },
+      "token_length": 15
+    },
+    {
+      "chunk_number": 5,
+      "number_of_chunks": 8,
+      "text": "The history of computing stretches back thousands of years. Early mechanical devices like the abacus helped people perform arithmetic. In the twentieth century, electronic computers transformed science and industry. Today, computers fit in our pockets and connect billions of people across the globe.",
+      "boundary": {
+        "start": 622,
+        "end": 922
+      },
+      "token_length": 52
+    },
+    {
+      "chunk_number": 6,
+      "number_of_chunks": 8,
+      "text": "Coffee is one of the most widely consumed beverages in the world. The beans are harvested from coffee plants, then roasted to develop their flavor.",
+      "boundary": {
+        "start": 922,
+        "end": 1069
+      },
+      "token_length": 30
+    },
+    {
+      "chunk_number": 7,
+      "number_of_chunks": 8,
+      "text": "Brewing methods range from simple drip machines to elaborate espresso rituals.",
+      "boundary": {
+        "start": 1069,
+        "end": 1147
+      },
+      "token_length": 16
+    },
+    {
+      "chunk_number": 8,
+      "number_of_chunks": 8,
+      "text": "For many people, a morning cup of coffee is an essential part of the daily routine.",
+      "boundary": {
+        "start": 1147,
+        "end": 1230
+      },
+      "token_length": 20
+    }
+  ]
+}

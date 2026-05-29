@@ -1,0 +1,15 @@
+{
+  "count": 1,
+  "items": [
+    {
+      "chunk_number": 1,
+      "number_of_chunks": 1,
+      "text": "The water cycle describes the continuous movement of water on, above, and below the surface of the Earth. Water evaporates from oceans and lakes, rising into the atmosphere as vapor. As the vapor cools, it condenses into clouds. Eventually the water returns to the surface as precipitation such as rain or snow. Photosynthesis is the process by which green plants convert sunlight into chemical energy. Chlorophyll in the leaves absorbs light, which drives the conversion of carbon dioxide and water into glucose. Oxygen is released as a byproduct of this reaction. Without photosynthesis, most life on Earth could not exist. The history of computing stretches back thousands of years. Early mechanical devices like the abacus helped people perform arithmetic. In the twentieth century, electronic computers transformed science and industry. Today, computers fit in our pockets and connect billions of people across the globe. Coffee is one of the most widely consumed beverages in the world. The beans are harvested from coffee plants, then roasted to develop their flavor. Brewing methods range from simple drip machines to elaborate espresso rituals. For many people, a morning cup of coffee is an essential part of the daily routine.",
+      "boundary": {
+        "start": 0,
+        "end": 1237
+      },
+      "token_length": 243
+    }
+  ]
+}

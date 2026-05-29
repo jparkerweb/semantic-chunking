@@ -17,18 +17,32 @@ All three functions support `embedCallback` for custom embedding providers (Open
 ## Processing Pipeline
 
 1. **Sentence Splitting** - `sentence-parse` library
-2. **Embedding Generation** - `@huggingface/transformers` ONNX models, or custom provider via `embedCallback`
-3. **Similarity Calculation** - Cosine similarity between sentence vectors (batched)
+2. **Embedding Generation** - local ONNX models via `embedding-utils` `createLocalProvider`, or custom provider via `embedCallback`
+3. **Similarity Calculation** - Cosine similarity (`embedding-utils` `cosineSimilarity`) between sentence vectors (batched)
 4. **Chunk Formation** - Based on similarity threshold + max token size
 5. **Chunk Rebalancing** - Multi-pass merge optimization using linked list and global similarity ranking
+
+## embedding-utils Delegation
+
+The internal embedding/tokenizer/similarity layer delegates to `embedding-utils` (eu) primitives rather than calling `@huggingface/transformers` directly:
+
+- **Embedding** - `embeddingUtils.js` builds an eu provider via `createLocalProvider(...)` and calls `provider.embed(texts)`; `@huggingface/transformers` remains the optional peer that eu loads under the hood.
+- **Tokenization / token counting** - `embeddingUtils.js` loads an eu tokenizer via `createTokenizer(...)` and exposes internal `countTokens`/`countTokensBatch` helpers used by `chunkit.js` and `chunkingUtils.js`.
+- **Similarity** - `similarityUtils.js` imports `cosineSimilarity` from eu and re-exports it (no hand-rolled implementation remains).
+
+Retained behavior (no public API change to `chunkit`/`cramit`/`sentenceit`):
+
+- The byte-bounded (50 MB) per-text `lru-cache` in `embeddingUtils.js` wraps the eu provider, preserving hit-rate/memory behavior (eu's own cache is entry-count-bounded).
+- The custom-provider `embedCallback` path is unchanged, including `wrapCallbackWithCache` and `validateEmbeddingResult`.
+- `returnEmbedding` continues to emit typed-array embeddings.
 
 ## Module Responsibilities
 
 | File | Purpose |
 |------|---------|
 | `config.js` | Default configuration values (including merge optimization params) |
-| `embeddingUtils.js` | Model loading, tokenization, embedding generation/batching with LRU cache, callback wrapper |
-| `similarityUtils.js` | Cosine similarity, batch similarity computation returning embeddings, dynamic threshold adjustment |
+| `embeddingUtils.js` | Wraps `embedding-utils` provider/tokenizer: model loading, token counting (`countTokens`/`countTokensBatch`), embedding generation/batching with byte-bounded LRU cache, `embedCallback` wrapper |
+| `similarityUtils.js` | Re-exports `cosineSimilarity` from `embedding-utils`, batch similarity computation returning embeddings, dynamic threshold adjustment |
 | `chunkingUtils.js` | Chunk creation, multi-pass merge optimization using linked list data structure |
 
 ## Configuration Parameters

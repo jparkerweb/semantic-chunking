@@ -1,0 +1,75 @@
+{
+  "count": 7,
+  "items": [
+    {
+      "sentence_number": 1,
+      "number_of_sentences": 7,
+      "text": "A frog hops into a deli and croaks to the cashier, \"I'll have a sandwich, please.\"",
+      "boundary": {
+        "start": 0,
+        "end": 82
+      },
+      "token_length": 30
+    },
+    {
+      "sentence_number": 2,
+      "number_of_sentences": 7,
+      "text": "The cashier, surprised, quickly makes the sandwich and hands it over.",
+      "boundary": {
+        "start": 82,
+        "end": 151
+      },
+      "token_length": 17
+    },
+    {
+      "sentence_number": 3,
+      "number_of_sentences": 7,
+      "text": "The frog takes a big bite, looks around, and then asks, \"Do you have any flies to go with this?\"",
+      "boundary": {
+        "start": 151,
+        "end": 247
+      },
+      "token_length": 28
+    },
+    {
+      "sentence_number": 4,
+      "number_of_sentences": 7,
+      "text": "The cashier, taken aback, replies, \"Sorry, we're all out of flies today.\"",
+      "boundary": {
+        "start": 247,
+        "end": 320
+      },
+      "token_length": 24
+    },
+    {
+      "sentence_number": 5,
+      "number_of_sentences": 7,
+      "text": "The frog shrugs and continues munching on its sandwich, clearly unfazed by the lack of fly toppings.",
+      "boundary": {
+        "start": 320,
+        "end": 420
+      },
+      "token_length": 26
+    },
+    {
+      "sentence_number": 6,
+      "number_of_sentences": 7,
+      "text": "Just another day in the life of a sandwich-loving amphibian!",
+      "boundary": {
+        "start": 420,
+        "end": 480
+      },
+      "token_length": 17
+    },
+    {
+      "sentence_number": 7,
+      "number_of_sentences": 7,
+      "text": "🐸🥪",
+      "boundary": {
+        "start": 480,
+        "end": 484
+      },
+      "token_length": 3
+    }
+  ]
+}

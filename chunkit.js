@@ -10,7 +10,7 @@
 
 import { parseSentences } from 'sentence-parse';
 import { DEFAULT_CONFIG } from './config.js';
-import { initializeEmbeddingUtils, initializeTokenizer, tokenizer, createEmbedding, createEmbeddingBatch, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
+import { initializeEmbeddingUtils, initializeTokenizer, countTokens, createEmbedding, createEmbeddingBatch, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
 import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
 import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
 import { readFileSync } from 'fs';
@@ -179,7 +179,7 @@ export async function chunkit(
             // Convert initialChunks (strings) to chunk objects with text and tokenCount
             const chunkObjects = initialChunks.map(chunkText => ({
                 text: chunkText,
-                tokenCount: tokenizer(chunkText).input_ids.size
+                tokenCount: countTokens(chunkText)
             }));
 
             // Ensure embeddings exist for chunks not in sentenceEmbeddings
@@ -251,13 +251,7 @@ export async function chunkit(
 
             if (returnTokenLength) {
                 try {
-                    const encoded = await tokenizer(prefixedChunk, { padding: true });
-                    if (encoded && encoded.input_ids) {
-                        result.token_length = encoded.input_ids.size;
-                    } else {
-                        console.error('Tokenizer returned unexpected format:', encoded);
-                        result.token_length = 0;
-                    }
+                    result.token_length = countTokens(prefixedChunk);
                 } catch (error) {
                     console.error('Error during tokenization:', error);
                     result.token_length = 0;
@@ -416,13 +410,7 @@ export async function cramit(
 
             if (returnTokenLength) {
                 try {
-                    const encoded = await tokenizer(prefixedChunk, { padding: true });
-                    if (encoded && encoded.input_ids) {
-                        result.token_length = encoded.input_ids.size;
-                    } else {
-                        console.error('Tokenizer returned unexpected format:', encoded);
-                        result.token_length = 0;
-                    }
+                    result.token_length = countTokens(prefixedChunk);
                 } catch (error) {
                     console.error('Error during tokenization:', error);
                     result.token_length = 0;
@@ -587,13 +575,7 @@ export async function sentenceit(
 
             if (returnTokenLength) {
                 try {
-                    const encoded = await tokenizer(prefixedChunk, { padding: true });
-                    if (encoded && encoded.input_ids) {
-                        result.token_length = encoded.input_ids.size;
-                    } else {
-                        console.error('Tokenizer returned unexpected format:', encoded);
-                        result.token_length = 0;
-                    }
+                    result.token_length = countTokens(prefixedChunk);
                 } catch (error) {
                     console.error('Error during tokenization:', error);
                     result.token_length = 0;

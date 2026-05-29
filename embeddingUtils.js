@@ -1,8 +1,8 @@
-import { env, pipeline, AutoTokenizer } from '@huggingface/transformers';
+import { createLocalProvider, createTokenizer } from 'embedding-utils';
 import { LRUCache } from 'lru-cache';
 
-let tokenizer;
-let generateEmbedding;
+let provider;
+let tk;
 const embeddingCache = new LRUCache({
     max: 500,
     maxSize: 50_000_000,
@@ -20,13 +20,12 @@ export async function initializeTokenizer(
     localModelPath = null,
     modelCacheDir = null
 ) {
-    // Configure environment
-    env.allowRemoteModels = true;
-    if (localModelPath) env.localModelPath = localModelPath;
-    if (modelCacheDir) env.cacheDir = modelCacheDir;
-
-    // Only initialize tokenizer, not the embedding pipeline
-    tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
+    // Only initialize the tokenizer, not the embedding provider
+    tk = createTokenizer(onnxEmbeddingModel, {
+        modelPath: localModelPath,
+        cacheDir: modelCacheDir,
+    });
+    await tk.load();
 
     return {
         modelName: onnxEmbeddingModel,
@@ -43,21 +42,25 @@ export async function initializeEmbeddingUtils(
     localModelPath = null,
     modelCacheDir = null
 ) {
-    // Configure environment
-    env.allowRemoteModels = true;
-    if (localModelPath) env.localModelPath = localModelPath;
-    if (modelCacheDir) env.cacheDir = modelCacheDir;
+    // Build the local ONNX embedding provider via embedding-utils.
+    // Pooling is resolved from eu's model registry ('mean' for the default
+    // Xenova/all-MiniLM-L6-v2); 'mean' is passed explicitly to guarantee
+    // parity with the former generateEmbedding({ pooling: 'mean' }) call.
+    provider = createLocalProvider({
+        model: onnxEmbeddingModel,
+        precision: dtype,
+        device: device,
+        modelPath: localModelPath,
+        cacheDir: modelCacheDir,
+        pooling: 'mean',
+    });
 
-    tokenizer = await AutoTokenizer.from_pretrained(onnxEmbeddingModel);
-    const pipelineOptions = {
-        dtype: dtype,
-    };
-
-    if (device !== 'webgpu') {
-        pipelineOptions.device = device;
-    }
-
-    generateEmbedding = await pipeline('feature-extraction', onnxEmbeddingModel, pipelineOptions);
+    // Create and load the tokenizer used for token counting.
+    tk = createTokenizer(onnxEmbeddingModel, {
+        modelPath: localModelPath,
+        cacheDir: modelCacheDir,
+    });
+    await tk.load();
 
     embeddingCache.clear();
 
@@ -72,14 +75,8 @@ export async function initializeEmbeddingUtils(
 // -- Function to generate embeddings --
 // -------------------------------------
 export async function createEmbedding(text) {
-    const cached = embeddingCache.get(text);
-    if (cached) {
-        return cached;
-    }
-
-    const embeddings = await generateEmbedding(text, { pooling: 'mean', normalize: true });
-    embeddingCache.set(text, embeddings.data);
-    return embeddings.data;
+    const results = await createEmbeddingBatch([text]);
+    return results[0];
 }
 
 // ---------------------------------------------------
@@ -142,7 +139,7 @@ export function validateEmbeddingResult(texts, embeddings) {
 // -- Function to generate embeddings in batches --
 // ------------------------------------------------
 export async function createEmbeddingBatch(texts, pipelineInstance = null, tokenizerInstance = null, options = {}) {
-    const pipe = pipelineInstance || generateEmbedding;
+    const embedProvider = pipelineInstance || provider;
     const results = new Array(texts.length);
     const uncachedIndices = [];
     const uncachedTexts = [];
@@ -158,13 +155,12 @@ export async function createEmbeddingBatch(texts, pipelineInstance = null, token
         }
     }
 
-    // Process uncached texts in batch
+    // Process uncached texts in a single batch via the eu provider
     if (uncachedTexts.length > 0) {
+        const { embeddings } = await embedProvider.embed(uncachedTexts);
         for (let j = 0; j < uncachedTexts.length; j++) {
-            const text = uncachedTexts[j];
-            const embeddings = await pipe(text, { pooling: 'mean', normalize: true });
-            const embeddingData = embeddings.data;
-            embeddingCache.set(text, embeddingData);
+            const embeddingData = embeddings[j];
+            embeddingCache.set(uncachedTexts[j], embeddingData);
             results[uncachedIndices[j]] = embeddingData;
         }
     }
@@ -172,4 +168,15 @@ export async function createEmbeddingBatch(texts, pipelineInstance = null, token
     return results;
 }
 
-export { tokenizer, embeddingCache };
+// ------------------------------------------------
+// -- Token counting (delegates to eu tokenizer) --
+// ------------------------------------------------
+export function countTokens(text) {
+    return tk.count(text);
+}
+
+export function countTokensBatch(texts) {
+    return tk.countBatch(texts);
+}
+
+export { embeddingCache };

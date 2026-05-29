@@ -1,0 +1,165 @@
+{
+  "count": 16,
+  "items": [
+    {
+      "sentence_number": 1,
+      "number_of_sentences": 16,
+      "text": "The water cycle describes the continuous movement of water on, above, and below the surface of the Earth.",
+      "boundary": {
+        "start": 0,
+        "end": 105
+      },
+      "token_length": 23
+    },
+    {
+      "sentence_number": 2,
+      "number_of_sentences": 16,
+      "text": "Water evaporates from oceans and lakes, rising into the atmosphere as vapor.",
+      "boundary": {
+        "start": 105,
+        "end": 181
+      },
+      "token_length": 18
+    },
+    {
+      "sentence_number": 3,
+      "number_of_sentences": 16,
+      "text": "As the vapor cools, it condenses into clouds.",
+      "boundary": {
+        "start": 181,
+        "end": 226
+      },
+      "token_length": 15
+    },
+    {
+      "sentence_number": 4,
+      "number_of_sentences": 16,
+      "text": "Eventually the water returns to the surface as precipitation such as rain or snow.",
+      "boundary": {
+        "start": 226,
+        "end": 308
+      },
+      "token_length": 17
+    },
+    {
+      "sentence_number": 5,
+      "number_of_sentences": 16,
+      "text": "Photosynthesis is the process by which green plants convert sunlight into chemical energy.",
+      "boundary": {
+        "start": 308,
+        "end": 398
+      },
+      "token_length": 18
+    },
+    {
+      "sentence_number": 6,
+      "number_of_sentences": 16,
+      "text": "Chlorophyll in the leaves absorbs light, which drives the conversion of carbon dioxide and water into glucose.",
+      "boundary": {
+        "start": 398,
+        "end": 508
+      },
+      "token_length": 26
+    },
+    {
+      "sentence_number": 7,
+      "number_of_sentences": 16,
+      "text": "Oxygen is released as a byproduct of this reaction.",
+      "boundary": {
+        "start": 508,
+        "end": 559
+      },
+      "token_length": 15
+    },
+    {
+      "sentence_number": 8,
+      "number_of_sentences": 16,
+      "text": "Without photosynthesis, most life on Earth could not exist.",
+      "boundary": {
+        "start": 559,
+        "end": 618
+      },
+      "token_length": 15
+    },
+    {
+      "sentence_number": 9,
+      "number_of_sentences": 16,
+      "text": "The history of computing stretches back thousands of years.",
+      "boundary": {
+        "start": 618,
+        "end": 677
+      },
+      "token_length": 12
+    },
+    {
+      "sentence_number": 10,
+      "number_of_sentences": 16,
+      "text": "Early mechanical devices like the abacus helped people perform arithmetic.",
+      "boundary": {
+        "start": 677,
+        "end": 751
+      },
+      "token_length": 14
+    },
+    {
+      "sentence_number": 11,
+      "number_of_sentences": 16,
+      "text": "In the twentieth century, electronic computers transformed science and industry.",
+      "boundary": {
+        "start": 751,
+        "end": 831
+      },
+      "token_length": 14
+    },
+    {
+      "sentence_number": 12,
+      "number_of_sentences": 16,
+      "text": "Today, computers fit in our pockets and connect billions of people across the globe.",
+      "boundary": {
+        "start": 831,
+        "end": 915
+      },
+      "token_length": 18
+    },
+    {
+      "sentence_number": 13,
+      "number_of_sentences": 16,
+      "text": "Coffee is one of the most widely consumed beverages in the world.",
+      "boundary": {
+        "start": 915,
+        "end": 980
+      },
+      "token_length": 15
+    },
+    {
+      "sentence_number": 14,
+      "number_of_sentences": 16,
+      "text": "The beans are harvested from coffee plants, then roasted to develop their flavor.",
+      "boundary": {
+        "start": 980,
+        "end": 1061
+      },
+      "token_length": 17
+    },
+    {
+      "sentence_number": 15,
+      "number_of_sentences": 16,
+      "text": "Brewing methods range from simple drip machines to elaborate espresso rituals.",
+      "boundary": {
+        "start": 1061,
+        "end": 1139
+      },
+      "token_length": 16
+    },
+    {
+      "sentence_number": 16,
+      "number_of_sentences": 16,
+      "text": "For many people, a morning cup of coffee is an essential part of the daily routine.",
+      "boundary": {
+        "start": 1139,
+        "end": 1222
+      },
+      "token_length": 20
+    }
+  ]
+}

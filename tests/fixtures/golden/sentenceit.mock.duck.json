@@ -1,0 +1,75 @@
+{
+  "count": 7,
+  "items": [
+    {
+      "sentence_number": 1,
+      "number_of_sentences": 7,
+      "text": "A duck waddles into a bakery and quacks to the baker, \"I'll have a loaf of bread, please.\"",
+      "boundary": {
+        "start": 0,
+        "end": 90
+      },
+      "token_length": 31
+    },
+    {
+      "sentence_number": 2,
+      "number_of_sentences": 7,
+      "text": "The baker, amused, quickly wraps the loaf and hands it over.",
+      "boundary": {
+        "start": 90,
+        "end": 150
+      },
+      "token_length": 16
+    },
+    {
+      "sentence_number": 3,
+      "number_of_sentences": 7,
+      "text": "The duck takes a nibble, looks around, and then asks, \"Do you have any seeds to go with this?\"",
+      "boundary": {
+        "start": 150,
+        "end": 244
+      },
+      "token_length": 28
+    },
+    {
+      "sentence_number": 4,
+      "number_of_sentences": 7,
+      "text": "The baker, chuckling, replies, \"Sorry, we're all out of seeds today.\"",
+      "boundary": {
+        "start": 244,
+        "end": 313
+      },
+      "token_length": 23
+    },
+    {
+      "sentence_number": 5,
+      "number_of_sentences": 7,
+      "text": "The duck nods and continues nibbling on its bread, clearly unfazed by the lack of seed toppings.",
+      "boundary": {
+        "start": 313,
+        "end": 409
+      },
+      "token_length": 25
+    },
+    {
+      "sentence_number": 6,
+      "number_of_sentences": 7,
+      "text": "Just another day in the life of a bread-loving waterfowl!",
+      "boundary": {
+        "start": 409,
+        "end": 466
+      },
+      "token_length": 17
+    },
+    {
+      "sentence_number": 7,
+      "number_of_sentences": 7,
+      "text": "🦆🍞",
+      "boundary": {
+        "start": 466,
+        "end": 470
+      },
+      "token_length": 3
+    }
+  ]
+}
