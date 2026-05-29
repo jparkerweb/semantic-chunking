@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [2.6.1] - 2026-05-28
+## [2.7.0] - 2026-05-28
 ### 📦 Updated
 - Internal embedding/tokenizer/similarity layer now delegates to the `embedding-utils` package
   - Local ONNX embedding generation routes through eu's `createLocalProvider`
