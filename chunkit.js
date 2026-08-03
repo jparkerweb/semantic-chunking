@@ -36,6 +36,7 @@ export async function printVersion() {
  * @param {number} [options.maxUncappedPasses=100] - Maximum number of uncapped merge passes before throttling kicks in.
  * @param {number} [options.maxMergesPerPassPercentage=40] - Percentage of total chunks that can be merged per pass (0-100).
  * @param {number} [options.uncappedCandidateMerges=12] - Number of top candidate merges to consider when uncapped.
+ * @param {boolean} [options.excludeNonLetterSentences=false] - When true, sentences containing no letters are excluded during parsing.
  */
 export async function chunkit(
     documents,
@@ -57,6 +58,7 @@ export async function chunkit(
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
+        excludeNonLetterSentences = DEFAULT_CONFIG.EXCLUDE_NON_LETTER_SENTENCES,
         embedCallback = null,
         maxMergesPerPass = DEFAULT_CONFIG.MAX_MERGES_PER_PASS,
         maxUncappedPasses = DEFAULT_CONFIG.MAX_UNCAPPED_PASSES,
@@ -133,7 +135,7 @@ export async function chunkit(
         doc.document_text = normalizedText;
 
         // Split the text into sentences
-        const sentences = await parseSentences(doc.document_text);
+        const sentences = await parseSentences(doc.document_text, { excludeNonLetterSentences });
 
         // Compute similarities and create chunks
         const { similarities, average, variance, embeddings } = await computeAdvancedSimilarities(
@@ -280,6 +282,7 @@ export async function chunkit(
  * @param {Object} options - Configuration options
  * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
  *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
+ * @param {boolean} [options.excludeNonLetterSentences=false] - When true, sentences containing no letters are excluded during parsing.
  */
 export async function cramit(
     documents,
@@ -295,6 +298,7 @@ export async function cramit(
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
+        excludeNonLetterSentences = DEFAULT_CONFIG.EXCLUDE_NON_LETTER_SENTENCES,
         embedCallback = null,
     } = {}) {
 
@@ -360,7 +364,7 @@ export async function cramit(
         }
 
         // Split the text into sentences
-        const sentences = await parseSentences(doc.document_text);
+        const sentences = await parseSentences(doc.document_text, { excludeNonLetterSentences });
 
         // Create chunks without considering similarities
         const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
@@ -440,6 +444,7 @@ export async function cramit(
  * @param {Object} options - Configuration options
  * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
  *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
+ * @param {boolean} [options.excludeNonLetterSentences=false] - When true, sentences containing no letters are excluded during parsing.
  */
 export async function sentenceit(
     documents,
@@ -454,6 +459,7 @@ export async function sentenceit(
         returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
         chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
         excludeChunkPrefixInResults = false,
+        excludeNonLetterSentences = DEFAULT_CONFIG.EXCLUDE_NON_LETTER_SENTENCES,
         embedCallback = null,
     } = {}) {
 
@@ -528,7 +534,7 @@ export async function sentenceit(
         }
 
         // Split the text into sentences
-        const chunks = await parseSentences(doc.document_text);
+        const chunks = await parseSentences(doc.document_text, { excludeNonLetterSentences });
 
         if (logging) {
             console.log('\nSENTENCEIT');

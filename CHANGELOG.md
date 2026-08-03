@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.8.0] - 2026-08-03
+### ✨ Added
+- `excludeNonLetterSentences` option (default: `false`) on `chunkit`, `cramit`, and `sentenceit`
+  - When `true`, sentences containing no letters are excluded during parsing
+  - Forwarded to `parseSentences(text, { excludeNonLetterSentences })` from the `sentence-parse` dependency
+  - Exposed as a toggle in the Web UI, including the generated code snippet
+
+### 🔒 Security
+- Added `overrides` to force patched versions of transitive dependencies (resolving 5 high-severity advisories with no upstream fix available in `@huggingface/transformers`)
+  - `adm-zip` → `^0.6.0` (GHSA-xcpc-8h2w-3j85: crafted ZIP triggers 4GB memory allocation)
+  - `sharp` → `^0.35.3` (GHSA-f88m-g3jw-g9cj: inherited libvips CVEs)
+  - `npm audit` now reports 0 vulnerabilities; test suite and ONNX examples verified against the overridden versions
+
 ## [2.7.0] - 2026-05-28
 ### 📦 Updated
 - Internal embedding/tokenizer/similarity layer now delegates to the `embedding-utils` package
