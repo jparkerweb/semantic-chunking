@@ -7,6 +7,8 @@
 // - Callback validation and error handling
 // - Callback caching
 // - Backward compatibility
+// v2.8.0 features:
+// - excludeNonLetterSentences option
 // -------------------------------------------------------------------------------
 
 import { chunkit, cramit, sentenceit } from '../chunkit.js';
@@ -264,6 +266,44 @@ try {
     console.log('  - All edge cases handled');
 } catch (error) {
     assert(false, `Edge case failed: ${error.message}`);
+}
+
+// ============================================================
+// TEST 10: excludeNonLetterSentences option (v2.8.0)
+// ============================================================
+logTest('excludeNonLetterSentences option');
+
+try {
+    // Document with sentences that contain no letters (numbers/punctuation only)
+    const nonLetterDoc = [{ document_text: 'Hello world. 12345. Goodbye world. !!! ???' }];
+
+    // Default (option off): non-letter segments are retained
+    const withNonLetters = await sentenceit(nonLetterDoc, {
+        returnEmbedding: false,
+        returnTokenLength: false,
+        logging: false
+    });
+
+    // Option on: sentences containing no letters are excluded
+    const withoutNonLetters = await sentenceit(nonLetterDoc, {
+        excludeNonLetterSentences: true,
+        returnEmbedding: false,
+        returnTokenLength: false,
+        logging: false
+    });
+
+    assert(
+        withoutNonLetters.length < withNonLetters.length,
+        'excludeNonLetterSentences drops non-letter sentences'
+    );
+    assert(
+        withoutNonLetters.every(s => /\p{L}/u.test(s.text)),
+        'Every remaining sentence contains at least one letter'
+    );
+    console.log(`  - Default: ${withNonLetters.length} sentences`);
+    console.log(`  - Excluded: ${withoutNonLetters.length} sentences`);
+} catch (error) {
+    assert(false, `excludeNonLetterSentences failed: ${error.message}`);
 }
 
 // ============================================================

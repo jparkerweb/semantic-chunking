@@ -13,6 +13,7 @@ const defaultFormValues = {
     returnTokenLength: true,
     chunkPrefix: null,
     excludeChunkPrefixInResults: false,
+    excludeNonLetterSentences: false,
     maxMergesPerPass: 500,
     maxUncappedPasses: 100,
     maxMergesPerPassPercentage: 40,

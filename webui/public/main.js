@@ -16,6 +16,7 @@ function setDefaultFormValues() {
     document.getElementById('returnEmbedding').checked = defaultFormValues.returnEmbedding;
     document.getElementById('returnTokenLength').checked = defaultFormValues.returnTokenLength;
     document.getElementById('excludeChunkPrefixInResults').checked = defaultFormValues.excludeChunkPrefixInResults;
+    document.getElementById('excludeNonLetterSentences').checked = defaultFormValues.excludeNonLetterSentences;
 
     // Set advanced merge params
     document.getElementById('maxMergesPerPass').value = defaultFormValues.maxMergesPerPass;
@@ -467,7 +468,8 @@ const myChunks = await chunkit(
         returnEmbedding: ${formData.returnEmbedding},
         returnTokenLength: ${formData.returnTokenLength},
         chunkPrefix: "${formData.chunkPrefix}",
-        excludeChunkPrefixInResults: ${formData.excludeChunkPrefixInResults},${mergeOptionsStr}
+        excludeChunkPrefixInResults: ${formData.excludeChunkPrefixInResults},
+        excludeNonLetterSentences: ${formData.excludeNonLetterSentences},${mergeOptionsStr}
     }
 );
 

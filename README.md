@@ -223,6 +223,7 @@ const myChunks = await chunkit(documents, chunkitOptions);
   - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
   - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
   - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
+  - `excludeNonLetterSentences`: Boolean (optional, default `false`) - If set to `true`, sentences that contain no letters (e.g., lines of only numbers, punctuation, or symbols) are excluded during sentence parsing.
 
 ## Output
 
@@ -500,6 +501,7 @@ There is an additional function you can import to just "cram" sentences together
   - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
   - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
   - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
+  - `excludeNonLetterSentences`: Boolean (optional, default `false`) - If set to `true`, sentences that contain no letters (e.g., lines of only numbers, punctuation, or symbols) are excluded during sentence parsing.
 
 Basic usage:
 
@@ -558,6 +560,7 @@ There is an additional function you can import to just split sentences.
   - `returnTokenLength`: Boolean (optional, default `false`) - If set to `true`, each chunk will include the token length. This can be useful for understanding the size of each chunk in terms of tokens, which is important for token-based processing limits. The token length is calculated using the tokenizer specified in `onnxEmbeddingModel`.
   - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
   - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
+  - `excludeNonLetterSentences`: Boolean (optional, default `false`) - If set to `true`, sentences that contain no letters (e.g., lines of only numbers, punctuation, or symbols) are excluded during sentence parsing.
 
 Basic usage:
 
