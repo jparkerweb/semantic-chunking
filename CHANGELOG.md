@@ -2,6 +2,68 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0] - 2026-08-12
+
+Major performance/architecture release. Chunk boundaries, ordering, and token
+counts are unchanged (locked by the golden characterization suite, including
+the real-ONNX passes). Measured on a 40-sentence document (ONNX path,
+`returnEmbedding: true`): 2.x took ~2000-2600ms **per call** with RSS climbing;
+3.0 takes ~100-165ms per call after the first, with flat RSS.
+
+### Added
+- **`createChunker(config)` instance API** (new `chunker.js`): binds the model
+  configuration (`onnxEmbeddingModel`, `dtype`, `device`, `localModelPath`,
+  `modelCacheDir`, `embedCallback`, `cache`) once and returns
+  `chunkit`/`cramit`/`sentenceit` methods that take only per-call chunking
+  options, plus `warmup(texts?)` (pre-builds the native session; pass a
+  realistic batch - the first inference after session creation runs ~2x slower
+  than steady state) and `dispose()`. Holds **no module-global state**:
+  concurrent calls and multiple chunkers with different configs are safe
+  (2.x's module-global provider/tokenizer raced under concurrency).
+- **`cache` option** (`'request'` | `'instance'` | `false`, default
+  `'request'`) on `createChunker` and the legacy functions:
+  - `'request'`: embeddings are deduplicated within one call and retained no
+    longer - nothing outlives the call (important when chunking sensitive
+    content).
+  - `'instance'`: a byte-bounded LRU (500 entries / 50 MB / 1h TTL - same
+    shape as 2.x's internal cache) persists across calls on one chunker.
+  - `false`: no caching.
+- **`modelName` / `dtypeLabel` config**: lets `embedCallback` users declare
+  the real identity reported in result `model_name`/`dtype` (defaults remain
+  `'custom-embedding'`/`'custom'`).
+- **Re-exports `disposeLocalPipelines` / `disposeLocalTokenizers`** from
+  embedding-utils for clean shutdown of the shared native resources.
+- New offline test suite for the instance API (`tests/chunker.test.js`).
+
+### Changed
+- **No more per-call model re-initialization.** Requires `embedding-utils`
+  >= 0.6.0, which shares one native ONNX session and one loaded tokenizer per
+  unique model config process-wide. 2.x re-created the InferenceSession
+  (~1.5s + hundreds of MB) and re-parsed the tokenizer (~350ms) on **every**
+  `chunkit`/`cramit`/`sentenceit` call.
+- **`chunkit`'s final chunk-embedding pass is batched**: one model run for all
+  final chunks instead of one single-item run per chunk. Returned values are
+  unchanged on CPU; on GPU execution providers batch shape can perturb values
+  by ~1e-7 (fp32 roundoff).
+- `chunkit`/`cramit`/`sentenceit` are now thin shims over `createChunker`
+  (cheap per call thanks to the shared registries). Their options and output
+  shape are unchanged.
+- `createChunks` (chunkingUtils.js) accepts an injected `countTokens` function
+  as an optional last parameter (defaults to the legacy module-global
+  tokenizer for pre-v3 deep importers).
+
+### Breaking
+- **Cross-call embedding cache retention is no longer the default.** 2.x kept
+  a module-global 50 MB text-keyed cache that persisted across calls on the
+  `embedCallback` path (and leaked between different callers' configs). v3
+  defaults to `'request'` scope; opt back into persistence per chunker with
+  `cache: 'instance'`. Identical inputs still produce identical outputs -
+  only the caching/retention behavior changed.
+- `embedding-utils` peer moved to `^0.6.0` (required for the shared
+  session/tokenizer registries).
+- `embeddingUtils.js` is deprecated (kept working for deep importers; no
+  longer used by the library itself).
+
 ## [2.8.0] - 2026-08-03
 ### ✨ Added
 - `excludeNonLetterSentences` option (default: `false`) on `chunkit`, `cramit`, and `sentenceit`

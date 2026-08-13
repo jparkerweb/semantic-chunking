@@ -1,4 +1,4 @@
-import { countTokens } from './embeddingUtils.js';
+import { countTokens as legacyCountTokens } from './embeddingUtils.js';
 import { cosineSimilarity } from './similarityUtils.js';
 
 // -----------------------------------------------------------
@@ -256,7 +256,11 @@ async function executeMergePass(head, maxTokens, similarityThreshold, options, e
 // -----------------------------------------------------------
 // -- Function to create chunks of text based on similarity --
 // -----------------------------------------------------------
-export function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging) {
+// `countTokens` is injected by the v3 instance pipeline (chunker-owned
+// tokenizer). The default falls back to the legacy module-global tokenizer in
+// embeddingUtils.js so pre-v3 deep importers that call initializeTokenizer /
+// initializeEmbeddingUtils first keep working unchanged.
+export function createChunks(sentences, similarities, maxTokenSize, similarityThreshold, logging, countTokens = legacyCountTokens) {
     let chunks = [];
     let currentChunk = [sentences[0]];
     

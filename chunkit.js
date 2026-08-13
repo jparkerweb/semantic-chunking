@@ -7,13 +7,23 @@
 // == npm package: https://www.npmjs.com/package/semantic-chunking ==
 // == github repo: https://github.com/jparkerweb/semantic-chunking ==
 // ==================================================================
+//
+// v3: `chunkit` / `cramit` / `sentenceit` are thin shims over the instance
+// API (`createChunker`, see chunker.js). Creating a chunker per call is cheap
+// because embedding-utils >= 0.6.0 shares the native ONNX session and
+// tokenizer process-wide — the multi-second per-call model re-initialization
+// of 2.x is gone. Long-lived processes should still prefer `createChunker`
+// directly: it binds config once, supports cache modes, warmup, and holds no
+// per-call construction at all.
 
-import { parseSentences } from 'sentence-parse';
-import { DEFAULT_CONFIG } from './config.js';
-import { initializeEmbeddingUtils, initializeTokenizer, countTokens, createEmbedding, createEmbeddingBatch, wrapCallbackWithCache, validateEmbeddingResult, embeddingCache } from './embeddingUtils.js';
-import { computeAdvancedSimilarities, adjustThreshold } from './similarityUtils.js';
-import { createChunks, optimizeAndRebalanceChunks, applyPrefixToChunk } from './chunkingUtils.js';
 import { readFileSync } from 'fs';
+import { DEFAULT_CONFIG } from './config.js';
+import { createChunker } from './chunker.js';
+
+// Process-wide native resource cleanup (shared sessions/tokenizers live in
+// embedding-utils' registries; call these on shutdown or between tests).
+export { disposeLocalPipelines, disposeLocalTokenizers } from 'embedding-utils';
+export { createChunker };
 
 const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url)));
 const VERSION = packageJson.version;
@@ -22,6 +32,42 @@ export async function printVersion() {
     const versionText = `-- semantic-chunking v${VERSION} --`;
     const lineLength = versionText.length;
     console.log(`\n${'-'.repeat(lineLength)}\n${versionText}\n${'-'.repeat(lineLength)}`);
+}
+
+/**
+ * Splits a 2.x-style flat option bag into chunker construction config and
+ * per-call options.
+ * @param {Object} options - Legacy combined options.
+ * @returns {{ config: Object, callOptions: Object }} Split options.
+ */
+function splitLegacyOptions(options) {
+    const {
+        onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
+        dtype = DEFAULT_CONFIG.DTYPE,
+        device = DEFAULT_CONFIG.DEVICE,
+        localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
+        modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
+        embedCallback = null,
+        modelName = null,
+        dtypeLabel = null,
+        cache = 'request',
+        ...callOptions
+    } = options;
+
+    return {
+        config: {
+            onnxEmbeddingModel,
+            dtype,
+            device,
+            localModelPath,
+            modelCacheDir,
+            embedCallback,
+            modelName,
+            dtypeLabel,
+            cache,
+        },
+        callOptions,
+    };
 }
 
 // ---------------------------
@@ -37,241 +83,12 @@ export async function printVersion() {
  * @param {number} [options.maxMergesPerPassPercentage=40] - Percentage of total chunks that can be merged per pass (0-100).
  * @param {number} [options.uncappedCandidateMerges=12] - Number of top candidate merges to consider when uncapped.
  * @param {boolean} [options.excludeNonLetterSentences=false] - When true, sentences containing no letters are excluded during parsing.
+ * @param {'request'|'instance'|false} [options.cache='request'] - Embedding cache mode (see createChunker).
  */
-export async function chunkit(
-    documents,
-    {
-        logging = DEFAULT_CONFIG.LOGGING,
-        maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
-        similarityThreshold = DEFAULT_CONFIG.SIMILARITY_THRESHOLD,
-        dynamicThresholdLowerBound = DEFAULT_CONFIG.DYNAMIC_THRESHOLD_LOWER_BOUND,
-        dynamicThresholdUpperBound = DEFAULT_CONFIG.DYNAMIC_THRESHOLD_UPPER_BOUND,
-        numSimilaritySentencesLookahead = DEFAULT_CONFIG.NUM_SIMILARITY_SENTENCES_LOOKAHEAD,
-        combineChunks = DEFAULT_CONFIG.COMBINE_CHUNKS,
-        combineChunksSimilarityThreshold = DEFAULT_CONFIG.COMBINE_CHUNKS_SIMILARITY_THRESHOLD,
-        onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        dtype = DEFAULT_CONFIG.DTYPE,
-        device = DEFAULT_CONFIG.DEVICE,
-        localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
-        modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
-        returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
-        returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
-        chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
-        excludeChunkPrefixInResults = false,
-        excludeNonLetterSentences = DEFAULT_CONFIG.EXCLUDE_NON_LETTER_SENTENCES,
-        embedCallback = null,
-        maxMergesPerPass = DEFAULT_CONFIG.MAX_MERGES_PER_PASS,
-        maxUncappedPasses = DEFAULT_CONFIG.MAX_UNCAPPED_PASSES,
-        maxMergesPerPassPercentage = DEFAULT_CONFIG.MAX_MERGES_PER_PASS_PERCENTAGE,
-        uncappedCandidateMerges = DEFAULT_CONFIG.UNCAPPED_CANDIDATE_MERGES,
-    } = {}) {
-
-    if(logging) { printVersion(); }
-
-    // Input validation
-    if (!Array.isArray(documents)) {
-        throw new Error('Input must be an array of document objects');
-    }
-
-    // Create unified embedding interface - either user callback or ONNX
-    let embedBatch;
-    let modelName;
-    let usedDtype;
-
-    if (embedCallback) {
-        // Use user-provided callback - initialize only tokenizer for token counting
-        modelName = 'custom-embedding';
-        usedDtype = 'custom';
-
-        // Initialize tokenizer only (not the full embedding pipeline)
-        await initializeTokenizer(
-            onnxEmbeddingModel,
-            localModelPath,
-            modelCacheDir
-        );
-
-        const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
-        embedBatch = async (texts) => {
-            try {
-                const embeddings = await cachedCallback(texts);
-                validateEmbeddingResult(texts, embeddings);
-                return embeddings;
-            } catch (error) {
-                throw new Error(`Embedding failed: ${error.message}`);
-            }
-        };
-    } else {
-        // Initialize embedding utilities and set optional paths (existing ONNX behavior)
-        const initResult = await initializeEmbeddingUtils(
-            onnxEmbeddingModel,
-            dtype,
-            device,
-            localModelPath,
-            modelCacheDir
-        );
-        modelName = initResult.modelName;
-        usedDtype = initResult.dtype;
-        // Create unified embedBatch using ONNX pipeline
-        embedBatch = async (texts) => {
-            try {
-                return await createEmbeddingBatch(texts);
-            } catch (error) {
-                throw new Error(`Embedding failed: ${error.message}`);
-            }
-        };
-    }
-
-    // Process each document
-    const allResults = await Promise.all(documents.map(async (doc) => {
-        if (!doc.document_text) {
-            throw new Error('Each document must have a document_text property');
-        }
-
-        // Normalize document text by converting single line breaks to spaces
-        // but preserving multiple line breaks
-        let normalizedText = doc.document_text.replace(/([^\n])\n([^\n])/g, '$1 $2');
-        // Convert multiple spaces to single space
-        normalizedText = normalizedText.replace(/\s{2,}/g, ' ');
-        doc.document_text = normalizedText;
-
-        // Split the text into sentences
-        const sentences = await parseSentences(doc.document_text, { excludeNonLetterSentences });
-
-        // Compute similarities and create chunks
-        const { similarities, average, variance, embeddings } = await computeAdvancedSimilarities(
-            sentences,
-            {
-                numSimilaritySentencesLookahead,
-                logging,
-            },
-            embedBatch
-        );
-
-        // Store embeddings indexed by sentence for merge phase
-        const sentenceEmbeddings = new Map();
-        sentences.forEach((sentence, index) => {
-            sentenceEmbeddings.set(sentence, embeddings[index]);
-        });
-
-        // Dynamically adjust the similarity threshold based on variance and average
-        let dynamicThreshold = similarityThreshold;
-        if (average != null && variance != null) {
-            dynamicThreshold = adjustThreshold(average, variance, similarityThreshold, dynamicThresholdLowerBound, dynamicThresholdUpperBound);
-        }
-
-        // Create the initial chunks using the adjusted threshold
-        const initialChunks = createChunks(sentences, similarities, maxTokenSize, dynamicThreshold, logging);
-
-        // Log initial chunks if needed
-        if (logging) {
-            console.log('\n=============\ninitialChunks\n=============');
-            initialChunks.forEach((chunk, index) => {
-                console.log("\n");
-                console.log(`--------------`);
-                console.log(`-- Chunk ${(index + 1)} --`);
-                console.log(`--------------`);
-                console.log(chunk.substring(0, 50) + '...');
-            });
-        }
-
-        let finalChunks;
-
-        // Combine similar chunks and balance sizes if requested
-        if (combineChunks) {
-            // Convert initialChunks (strings) to chunk objects with text and tokenCount
-            const chunkObjects = initialChunks.map(chunkText => ({
-                text: chunkText,
-                tokenCount: countTokens(chunkText)
-            }));
-
-            // Ensure embeddings exist for chunks not in sentenceEmbeddings
-            // (chunks may be composed of multiple sentences)
-            const chunksNeedingEmbeddings = chunkObjects.filter(
-                chunk => !sentenceEmbeddings.has(chunk.text)
-            );
-            if (chunksNeedingEmbeddings.length > 0) {
-                const textsToEmbed = chunksNeedingEmbeddings.map(c => c.text);
-                const newEmbeddings = await embedBatch(textsToEmbed);
-                chunksNeedingEmbeddings.forEach((chunk, i) => {
-                    sentenceEmbeddings.set(chunk.text, newEmbeddings[i]);
-                });
-            }
-
-            const mergeOptions = {
-                maxMergesPerPass,
-                maxUncappedPasses,
-                maxMergesPerPassPercentage,
-                uncappedCandidateMerges
-            };
-
-            const optimizedChunks = await optimizeAndRebalanceChunks(
-                chunkObjects,
-                sentenceEmbeddings,
-                maxTokenSize,
-                combineChunksSimilarityThreshold,
-                mergeOptions,
-                embedBatch
-            );
-
-            // Extract text from chunk objects for downstream processing
-            finalChunks = optimizedChunks.map(chunk => chunk.text);
-
-            if (logging) {
-                console.log('\n\n=============\ncombinedChunks\n=============');
-                finalChunks.forEach((chunk, index) => {
-                    console.log("\n\n\n");
-                    console.log("--------------------");
-                    console.log("Chunk " + (index + 1));
-                    console.log("--------------------");
-                    console.log(chunk.substring(0, 50) + '...');
-                });
-            }
-        } else {
-            finalChunks = initialChunks;
-        }
-
-        const documentName = doc.document_name || ""; // Normalize document_name
-        const documentId = Date.now();
-        const numberOfChunks = finalChunks.length;
-
-        return Promise.all(finalChunks.map(async (chunk, index) => {
-            const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
-            const result = {
-                document_id: documentId,
-                document_name: documentName,
-                number_of_chunks: numberOfChunks,
-                chunk_number: index + 1,
-                model_name: modelName,
-                dtype: usedDtype,
-                text: prefixedChunk
-            };
-
-            if (returnEmbedding) {
-                const [embedding] = await embedBatch([prefixedChunk]);
-                result.embedding = embedding;
-            }
-
-            if (returnTokenLength) {
-                try {
-                    result.token_length = countTokens(prefixedChunk);
-                } catch (error) {
-                    console.error('Error during tokenization:', error);
-                    result.token_length = 0;
-                }
-            }
-
-            // Remove prefix if requested (after embedding calculation)
-            if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
-                const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
-                result.text = result.text.replace(prefixPattern, '');
-            }
-
-            return result;
-        }));
-    }));
-
-    // Flatten the results array since we're processing multiple documents
-    return allResults.flat();
+export async function chunkit(documents, options = {}) {
+    if (options.logging) { printVersion(); }
+    const { config, callOptions } = splitLegacyOptions(options);
+    return createChunker(config).chunkit(documents, callOptions);
 }
 
 // --------------------------
@@ -283,158 +100,13 @@ export async function chunkit(
  * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
  *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
  * @param {boolean} [options.excludeNonLetterSentences=false] - When true, sentences containing no letters are excluded during parsing.
+ * @param {'request'|'instance'|false} [options.cache='request'] - Embedding cache mode (see createChunker).
  */
-export async function cramit(
-    documents,
-    {
-        logging = DEFAULT_CONFIG.LOGGING,
-        maxTokenSize = DEFAULT_CONFIG.MAX_TOKEN_SIZE,
-        onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        dtype = DEFAULT_CONFIG.DTYPE,
-        device = DEFAULT_CONFIG.DEVICE,
-        localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
-        modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
-        returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
-        returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
-        chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
-        excludeChunkPrefixInResults = false,
-        excludeNonLetterSentences = DEFAULT_CONFIG.EXCLUDE_NON_LETTER_SENTENCES,
-        embedCallback = null,
-    } = {}) {
-
-    if(logging) { printVersion(); }
-
-    // Input validation
-    if (!Array.isArray(documents)) {
-        throw new Error('Input must be an array of document objects');
-    }
-
-    // Create unified embedding interface - either user callback or ONNX
-    let embedBatch;
-    let modelName;
-    let usedDtype;
-
-    if (embedCallback) {
-        // Use user-provided callback - initialize only tokenizer for token counting
-        modelName = 'custom-embedding';
-        usedDtype = 'custom';
-
-        // Initialize tokenizer only (not the full embedding pipeline)
-        await initializeTokenizer(
-            onnxEmbeddingModel,
-            localModelPath,
-            modelCacheDir
-        );
-
-        const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
-        embedBatch = async (texts) => {
-            try {
-                const embeddings = await cachedCallback(texts);
-                validateEmbeddingResult(texts, embeddings);
-                return embeddings;
-            } catch (error) {
-                throw new Error(`cramit embedding failed: ${error.message}`);
-            }
-        };
-    } else {
-        // Initialize embedding utilities with paths (existing ONNX behavior)
-        const initResult = await initializeEmbeddingUtils(
-            onnxEmbeddingModel,
-            dtype,
-            device,
-            localModelPath,
-            modelCacheDir
-        );
-        modelName = initResult.modelName;
-        usedDtype = initResult.dtype;
-        // Create unified embedBatch using ONNX pipeline
-        embedBatch = async (texts) => {
-            try {
-                return await createEmbeddingBatch(texts);
-            } catch (error) {
-                throw new Error(`cramit embedding failed: ${error.message}`);
-            }
-        };
-    }
-
-    // Process each document
-    const allResults = await Promise.all(documents.map(async (doc) => {
-        if (!doc.document_text) {
-            throw new Error('Each document must have a document_text property');
-        }
-
-        // Split the text into sentences
-        const sentences = await parseSentences(doc.document_text, { excludeNonLetterSentences });
-
-        // Create chunks without considering similarities
-        const chunks = createChunks(sentences, null, maxTokenSize, 0, logging);
-
-        if (logging) {
-            console.log('\nCRAMIT');
-            console.log('=============\nChunks\n=============');
-            chunks.forEach((chunk, index) => {
-                console.log("\n");
-                console.log(`--------------`);
-                console.log(`-- Chunk ${(index + 1)} --`);
-                console.log(`--------------`);
-                console.log(chunk.substring(0, 50) + '...');
-            });
-        }
-
-        const documentName = doc.document_name || ""; // Normalize document_name
-        const documentId = Date.now();
-        const numberOfChunks = chunks.length;
-
-        // Pre-compute embeddings for all chunks if needed (batched for efficiency)
-        let chunkEmbeddings = null;
-        if (returnEmbedding) {
-            const prefixedChunks = chunks.map(chunk => applyPrefixToChunk(chunkPrefix, chunk));
-            try {
-                chunkEmbeddings = await embedBatch(prefixedChunks);
-            } catch (error) {
-                throw new Error(`cramit embedding failed: ${error.message}`);
-            }
-        }
-
-        return Promise.all(chunks.map(async (chunk, index) => {
-            const prefixedChunk = applyPrefixToChunk(chunkPrefix, chunk);
-            const result = {
-                document_id: documentId,
-                document_name: documentName,
-                number_of_chunks: numberOfChunks,
-                chunk_number: index + 1,
-                model_name: modelName,
-                dtype: usedDtype,
-                text: prefixedChunk
-            };
-
-            if (returnEmbedding) {
-                result.embedding = chunkEmbeddings[index];
-            }
-
-            if (returnTokenLength) {
-                try {
-                    result.token_length = countTokens(prefixedChunk);
-                } catch (error) {
-                    console.error('Error during tokenization:', error);
-                    result.token_length = 0;
-                }
-            }
-
-            // Remove prefix if requested (after embedding calculation)
-            if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
-                const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
-                result.text = result.text.replace(prefixPattern, '');
-            }
-
-            return result;
-        }));
-    }));
-
-    // Flatten the results array since we're processing multiple documents
-    return allResults.flat();
+export async function cramit(documents, options = {}) {
+    if (options.logging) { printVersion(); }
+    const { config, callOptions } = splitLegacyOptions(options);
+    return createChunker(config).cramit(documents, callOptions);
 }
-
 
 // ------------------------------
 // -- Main sentenceit function --
@@ -445,159 +117,10 @@ export async function cramit(
  * @param {function(string[]): Promise<number[][]>} [options.embedCallback=null] - Optional callback for custom embeddings.
  *   Receives array of texts, must return array of embedding vectors. When provided, ONNX model initialization is skipped.
  * @param {boolean} [options.excludeNonLetterSentences=false] - When true, sentences containing no letters are excluded during parsing.
+ * @param {'request'|'instance'|false} [options.cache='request'] - Embedding cache mode (see createChunker).
  */
-export async function sentenceit(
-    documents,
-    {
-        logging = DEFAULT_CONFIG.LOGGING,
-        onnxEmbeddingModel = DEFAULT_CONFIG.ONNX_EMBEDDING_MODEL,
-        dtype = DEFAULT_CONFIG.DTYPE,
-        device = DEFAULT_CONFIG.DEVICE,
-        localModelPath = DEFAULT_CONFIG.LOCAL_MODEL_PATH,
-        modelCacheDir = DEFAULT_CONFIG.MODEL_CACHE_DIR,
-        returnEmbedding = DEFAULT_CONFIG.RETURN_EMBEDDING,
-        returnTokenLength = DEFAULT_CONFIG.RETURN_TOKEN_LENGTH,
-        chunkPrefix = DEFAULT_CONFIG.CHUNK_PREFIX,
-        excludeChunkPrefixInResults = false,
-        excludeNonLetterSentences = DEFAULT_CONFIG.EXCLUDE_NON_LETTER_SENTENCES,
-        embedCallback = null,
-    } = {}) {
-
-    if(logging) { printVersion(); }
-
-    // Input validation
-    if (!Array.isArray(documents)) {
-        throw new Error('Input must be an array of document objects');
-    }
-
-    // Create unified embedding interface - either user callback or ONNX
-    let embedBatch;
-    let modelName;
-    let usedDtype;
-
-    if (embedCallback) {
-        // Use user-provided callback - initialize only tokenizer for token counting
-        modelName = 'custom-embedding';
-        usedDtype = 'custom';
-
-        // Initialize tokenizer only (not the full embedding pipeline)
-        await initializeTokenizer(
-            onnxEmbeddingModel,
-            localModelPath,
-            modelCacheDir
-        );
-
-        const cachedCallback = wrapCallbackWithCache(embedCallback, embeddingCache);
-        embedBatch = async (texts) => {
-            try {
-                const embeddings = await cachedCallback(texts);
-                validateEmbeddingResult(texts, embeddings);
-                return embeddings;
-            } catch (error) {
-                throw new Error(`sentenceit embedding failed: ${error.message}`);
-            }
-        };
-    } else if (returnEmbedding) {
-        // Initialize embedding utilities with paths (existing ONNX behavior)
-        const initResult = await initializeEmbeddingUtils(
-            onnxEmbeddingModel,
-            dtype,
-            device,
-            localModelPath,
-            modelCacheDir
-        );
-        modelName = initResult.modelName;
-        usedDtype = initResult.dtype;
-        // Create unified embedBatch using ONNX pipeline
-        embedBatch = async (texts) => {
-            try {
-                return await createEmbeddingBatch(texts);
-            } catch (error) {
-                throw new Error(`sentenceit embedding failed: ${error.message}`);
-            }
-        };
-    } else if (returnTokenLength) {
-        // Initialize tokenizer only for token counting
-        await initializeTokenizer(
-            onnxEmbeddingModel,
-            localModelPath,
-            modelCacheDir
-        );
-        modelName = onnxEmbeddingModel;
-        usedDtype = dtype;
-    }
-
-    // Process each document
-    const allResults = await Promise.all(documents.map(async (doc) => {
-        if (!doc.document_text) {
-            throw new Error('Each document must have a document_text property');
-        }
-
-        // Split the text into sentences
-        const chunks = await parseSentences(doc.document_text, { excludeNonLetterSentences });
-
-        if (logging) {
-            console.log('\nSENTENCEIT');
-            console.log('=============\nSentences\n=============');
-            chunks.forEach((chunk, index) => {
-                console.log("\n");
-                console.log(`--------------`);
-                console.log(`-- Sentence ${(index + 1)} --`);
-                console.log(`--------------`);
-                console.log(chunk.substring(0, 50) + '...');
-            });
-        }
-
-        const documentName = doc.document_name || ""; // Normalize document_name
-        const documentId = Date.now();
-        const numberOfChunks = chunks.length;
-
-        // Pre-compute embeddings for all sentences if needed (batched for efficiency)
-        let sentenceEmbeddings = null;
-        if (returnEmbedding) {
-            const prefixedChunks = chunks.map(chunk => chunkPrefix ? applyPrefixToChunk(chunkPrefix, chunk) : chunk);
-            try {
-                sentenceEmbeddings = await embedBatch(prefixedChunks);
-            } catch (error) {
-                throw new Error(`sentenceit embedding failed: ${error.message}`);
-            }
-        }
-
-        return Promise.all(chunks.map(async (chunk, index) => {
-            const prefixedChunk = chunkPrefix ? applyPrefixToChunk(chunkPrefix, chunk) : chunk;
-            const result = {
-                document_id: documentId,
-                document_name: documentName,
-                number_of_sentences: numberOfChunks,
-                sentence_number: index + 1,
-                text: prefixedChunk
-            };
-
-            if (returnEmbedding) {
-                result.model_name = modelName;
-                result.dtype = usedDtype;
-                result.embedding = sentenceEmbeddings[index];
-            }
-
-            if (returnTokenLength) {
-                try {
-                    result.token_length = countTokens(prefixedChunk);
-                } catch (error) {
-                    console.error('Error during tokenization:', error);
-                    result.token_length = 0;
-                }
-            }
-
-            // Remove prefix if requested (after embedding calculation)
-            if (excludeChunkPrefixInResults && chunkPrefix && chunkPrefix.trim()) {
-                const prefixPattern = new RegExp(`^${chunkPrefix}:\\s*`);
-                result.text = result.text.replace(prefixPattern, '');
-            }
-
-            return result;
-        }));
-    }));
-
-    // Flatten the results array since we're processing multiple documents
-    return allResults.flat();
+export async function sentenceit(documents, options = {}) {
+    if (options.logging) { printVersion(); }
+    const { config, callOptions } = splitLegacyOptions(options);
+    return createChunker(config).sentenceit(documents, callOptions);
 }
