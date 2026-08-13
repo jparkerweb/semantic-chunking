@@ -12,7 +12,7 @@ Setup, examples, servers, Docker, and model downloads. See [full details](.agent
 
 ## Architecture
 
-Core library exports `chunkit()`, `cramit()`, and `sentenceit()`. Processing pipeline: sentence splitting, embedding generation (local ONNX or custom `embedCallback`), cosine similarity, chunk formation, and multi-pass merge optimization. The internal embedding/tokenizer/similarity layer delegates to `embedding-utils` primitives (`createLocalProvider`, `createTokenizer`, `cosineSimilarity`); the byte-bounded per-text LRU cache and the `embedCallback` path are retained with no public API change. Includes an Express API server and Web UI. See [full details](.agents-docs/AGENTS-architecture.md).
+Core library exports the v3 instance API `createChunker(config)` plus the legacy `chunkit()`, `cramit()`, and `sentenceit()` shims (unchanged options/output). Processing pipeline (`pipeline.js`): sentence splitting, embedding generation (local ONNX or custom `embedCallback`), cosine similarity, chunk formation, and multi-pass merge optimization — parameterized by an instance context (`embedding-context.js`, no module globals; cache modes 'request'/'instance'/false). Delegates to `embedding-utils` >= 0.6.0 primitives (`createLocalProvider`, `createTokenizer`, `cosineSimilarity`), whose process-level registries share the native ONNX session/tokenizer (no per-call re-init). `embeddingUtils.js` is deprecated (kept for deep importers). Includes an Express API server and Web UI. See [full details](.agents-docs/AGENTS-architecture.md).
 
 ## Key Patterns
 

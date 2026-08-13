@@ -2,9 +2,15 @@
 
 # Architecture
 
-## Core Library (`chunkit.js`)
+## Core Library (`chunkit.js`, `chunker.js`)
 
-Three exported functions:
+v3 is instance-based. `createChunker(config)` (chunker.js) binds the model
+configuration once (model, dtype, device, paths, `embedCallback`, `cache`
+mode) and returns per-call `chunkit`/`cramit`/`sentenceit` methods plus
+`warmup(texts?)` and `dispose()`. It holds no module-global state, so
+concurrent calls and multiple chunkers with different configs are safe.
+
+The classic exports remain and are thin shims over `createChunker`:
 
 | Function | Purpose | Key Differentiator |
 |----------|---------|-------------------|
@@ -12,7 +18,9 @@ Three exported functions:
 | `cramit()` | Dense packing | Fills chunks to max token size, ignores similarity |
 | `sentenceit()` | Sentence splitting | Returns individual sentences |
 
-All three functions support `embedCallback` for custom embedding providers (OpenAI, Cohere, etc.). When provided, ONNX models are not initialized.
+All support `embedCallback` for custom embedding providers (OpenAI, Cohere, etc.). When provided, no ONNX provider is created (the tokenizer still loads for token counting), and `modelName`/`dtypeLabel` config can declare the reported identity. `disposeLocalPipelines`/`disposeLocalTokenizers` are re-exported from embedding-utils for shutdown.
+
+Cache modes (`cache` config, default `'request'`): `'request'` dedups embeddings within one call and retains nothing after; `'instance'` persists a byte-bounded LRU (500 entries / 50 MB / 1h TTL) across calls on one chunker; `false` disables caching. chunkit's final chunk-embedding pass is batched (one model run for all chunks).
 
 ## Processing Pipeline
 
@@ -24,26 +32,26 @@ All three functions support `embedCallback` for custom embedding providers (Open
 
 ## embedding-utils Delegation
 
-The internal embedding/tokenizer/similarity layer delegates to `embedding-utils` (eu) primitives rather than calling `@huggingface/transformers` directly:
+The embedding/tokenizer/similarity layer delegates to `embedding-utils` (eu, >= 0.6.0) primitives rather than calling `@huggingface/transformers` directly:
 
-- **Embedding** - `embeddingUtils.js` builds an eu provider via `createLocalProvider(...)` and calls `provider.embed(texts)`; `@huggingface/transformers` remains the optional peer that eu loads under the hood.
-- **Tokenization / token counting** - `embeddingUtils.js` loads an eu tokenizer via `createTokenizer(...)` and exposes internal `countTokens`/`countTokensBatch` helpers used by `chunkit.js` and `chunkingUtils.js`.
+- **Embedding** - `embedding-context.js` builds an eu provider via `createLocalProvider(...)` (with eu's own per-input cache disabled — this package owns caching policy) and calls `provider.embed(texts)`. eu's process-level registries share one native ONNX session and one loaded tokenizer per unique model config, so context/chunker construction is cheap and there is no per-call model re-initialization.
+- **Tokenization / token counting** - `embedding-context.js` loads an eu tokenizer via `createTokenizer(...)`; `countTokens` is injected into `createChunks` (chunkingUtils.js) as a parameter.
 - **Similarity** - `similarityUtils.js` imports `cosineSimilarity` from eu and re-exports it (no hand-rolled implementation remains).
 
-Retained behavior (no public API change to `chunkit`/`cramit`/`sentenceit`):
-
-- The byte-bounded (50 MB) per-text `lru-cache` in `embeddingUtils.js` wraps the eu provider, preserving hit-rate/memory behavior (eu's own cache is entry-count-bounded).
-- The custom-provider `embedCallback` path is unchanged, including `wrapCallbackWithCache` and `validateEmbeddingResult`.
-- `returnEmbedding` continues to emit typed-array embeddings.
+The custom-provider `embedCallback` path validates results via `validateEmbeddingResult` and participates in the same cache-mode scoping. `returnEmbedding` continues to emit typed-array embeddings.
 
 ## Module Responsibilities
 
 | File | Purpose |
 |------|---------|
 | `config.js` | Default configuration values (including merge optimization params) |
-| `embeddingUtils.js` | Wraps `embedding-utils` provider/tokenizer: model loading, token counting (`countTokens`/`countTokensBatch`), embedding generation/batching with byte-bounded LRU cache, `embedCallback` wrapper |
+| `chunker.js` | `createChunker` instance factory: binds config, applies per-call defaults, exposes warmup/dispose |
+| `embedding-context.js` | Instance-based embedding/tokenizer context: eu provider/tokenizer, cache modes ('request'/'instance'/false), embedCallback validation, warmup |
+| `pipeline.js` | The three document-processing pipelines (extracted from 2.x bodies), parameterized by a context; chunkit's final embedding pass is batched |
+| `chunkit.js` | Legacy `chunkit`/`cramit`/`sentenceit` shims over `createChunker`, `printVersion`, re-exports |
+| `embeddingUtils.js` | **Deprecated** (kept for pre-v3 deep importers): module-global provider/tokenizer wrappers and byte-bounded LRU cache |
 | `similarityUtils.js` | Re-exports `cosineSimilarity` from `embedding-utils`, batch similarity computation returning embeddings, dynamic threshold adjustment |
-| `chunkingUtils.js` | Chunk creation, multi-pass merge optimization using linked list data structure |
+| `chunkingUtils.js` | Chunk creation (`countTokens` injected; legacy fallback), multi-pass merge optimization using linked list data structure |
 
 ## Configuration Parameters
 

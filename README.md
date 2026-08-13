@@ -190,6 +190,47 @@ const myChunks = await chunkit(documents, chunkitOptions);
 
 **NOTE** 🚨 The Embedding model (`onnxEmbeddingModel`) will be downloaded to this package's cache directory the first it is run (file size will depend on the specified model; see the model's table ).
 
+### Instance API — `createChunker` (v3, recommended for servers)
+
+`createChunker(config)` binds the model configuration once and returns `chunkit` / `cramit` / `sentenceit` methods that take only per-call chunking options. The underlying ONNX session and tokenizer are shared process-wide (embedding-utils >= 0.6.0), the chunker holds no module-global state (concurrent calls and multiple chunkers with different configs are safe), and `warmup()` lets you pre-build the native session before real traffic.
+
+```javascript
+import { createChunker } from 'semantic-chunking';
+
+const chunker = createChunker({
+    onnxEmbeddingModel: 'Xenova/all-MiniLM-L6-v2',
+    dtype: 'q8',
+    device: 'cpu',
+    localModelPath: './models',
+    modelCacheDir: './models',
+    cache: 'request',            // 'request' (default) | 'instance' | false
+});
+
+// Optional: pre-build the session. Pass texts shaped like production traffic —
+// the first inference after session creation runs ~2x slower than steady state.
+await chunker.warmup(['A realistic warmup sentence about your domain.']);
+
+const myChunks = await chunker.chunkit(documents, { maxTokenSize: 500, returnEmbedding: true });
+```
+
+**Cache modes (`cache` config):**
+
+| Mode | Behavior |
+|---|---|
+| `'request'` (default) | Embeddings are deduplicated within one call and dropped when it ends. Nothing is retained afterwards — choose this when chunking sensitive content. |
+| `'instance'` | A byte-bounded LRU (500 entries / 50 MB / 1h TTL) persists across calls on this chunker. Keys are raw input text, so content is retained in memory. |
+| `false` | No caching. |
+
+**Shutdown / tests:** the shared native session and tokenizer live in embedding-utils' process-level registries. Release them with the re-exported helpers:
+
+```javascript
+import { disposeLocalPipelines, disposeLocalTokenizers } from 'semantic-chunking';
+await disposeLocalPipelines();
+disposeLocalTokenizers();
+```
+
+The classic `chunkit(documents, options)` / `cramit` / `sentenceit` functions still work exactly as before — they are now thin shims over `createChunker` and get the same session reuse automatically.
+
 ## Parameters
 
 `chunkit` accepts an array of document objects and an optional configuration object. Here are the details for each parameter:
@@ -224,6 +265,8 @@ const myChunks = await chunkit(documents, chunkitOptions);
   - `chunkPrefix`: String (optional, default `null`) - A prefix to add to each chunk (e.g., "search_document: "). This is particularly useful when using embedding models that are trained with specific task prefixes, like the nomic-embed-text-v1.5 model. The prefix is added before calculating embeddings or token lengths.
   - `excludeChunkPrefixInResults`: Boolean (optional, default `false`) - If set to `true`, the chunk prefix will be removed from the results. This is useful when you want to remove the prefix from the results while still maintaining the prefix for embedding calculations.
   - `excludeNonLetterSentences`: Boolean (optional, default `false`) - If set to `true`, sentences that contain no letters (e.g., lines of only numbers, punctuation, or symbols) are excluded during sentence parsing.
+  - `cache`: String|Boolean (optional, default `'request'`) - Embedding cache mode: `'request'` (dedup within one call, nothing retained afterwards), `'instance'` (byte-bounded LRU persists across calls), or `false` (no caching). See the Instance API section above.
+  - `modelName` / `dtypeLabel`: String (optional, default `null`) - Overrides the `model_name`/`dtype` reported in results when using `embedCallback` (defaults remain `custom-embedding`/`custom`).
 
 ## Output
 

@@ -1,3 +1,12 @@
+// ==========================================================================
+// DEPRECATED (v3): this module's module-global provider/tokenizer singletons
+// are no longer used by chunkit/cramit/sentenceit — the instance-based
+// embedding-context.js replaced them (no globals, no per-call re-init, no
+// cross-call content retention). It is kept only so pre-v3 deep importers of
+// 'semantic-chunking/embeddingUtils.js' keep working. New code should use
+// `createChunker` (chunker.js) or embedding-utils directly.
+// ==========================================================================
+
 import { createLocalProvider, createTokenizer } from 'embedding-utils';
 import { LRUCache } from 'lru-cache';
 
