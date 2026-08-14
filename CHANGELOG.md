@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.2] - 2026-08-14
+
+### Update
+- dependencies update
+
+## [3.0.1] - 2026-08-14
+
+ ### Updated
+- bumped version number in WebUI
+
 ## [3.0.0] - 2026-08-12
 
 Major performance/architecture release. Chunk boundaries, ordering, and token
